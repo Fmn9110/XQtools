@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>随机抓阄 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        .draw-box {
+            min-height: 200px;
+            background: linear-gradient(135deg, #fbcfe8 0%, #f472b6 100%);
+            border-radius: 40px;
+            box-shadow: 0 40px 100px -20px rgba(244, 114, 182, 0.4);
+            position: relative;
+            overflow: hidden;
+            border: 4px solid #fff;
+        }
+        .draw-text {
+            font-size: clamp(2rem, 8vw, 4rem);
+            color: white;
+            font-weight: 900;
+            z-index: 10;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .draw-flicker {
+            animation: flicker 0.1s infinite;
+        }
+        @keyframes flicker {
+            0% { transform: scale(0.98); opacity: 0.8; }
+            50% { transform: scale(1.02); opacity: 1; }
+            100% { transform: scale(0.98); opacity: 0.8; }
+        }
+        .particle {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float-up 3s infinite linear;
+        }
+        @keyframes float-up {
+            0% { transform: translateY(100px) scale(0); opacity: 0; }
+            50% { opacity: 0.4; }
+            100% { transform: translateY(-150px) scale(1.5); opacity: 0; }
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-5xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🎁 幸运 <span class="gradient-text">抓阄机</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">公平、有趣、又充满悬念。把选择交给运气。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white flex flex-col items-center animate-item shadow-2xl" style="animation-delay: 0.2s">
+            
+            <div class="w-full max-w-2xl mb-12">
+                <div class="draw-box flex items-center justify-center" id="drawBox">
+                    <div class="draw-text" id="drawText">准备就绪</div>
+                    <div class="particle" style="width:10px;height:10px;left:20%;animation-delay:0s;"></div>
+                    <div class="particle" style="width:15px;height:15px;left:50%;animation-delay:1s;"></div>
+                    <div class="particle" style="width:8px;height:8px;left:80%;animation-delay:0.5s;"></div>
+                </div>
+            </div>
+
+            <div class="w-full grid md:grid-cols-2 gap-10">
+                <!-- Config -->
+                <div class="space-y-6">
+                    <div class="relative group">
+                        <label class="block text-[10px] font-black text-gray-300 uppercase tracking-widest mb-2 pl-4">Pool / 抽签池 (每行一个)</label>
+                        <textarea id="poolInput" rows="5" placeholder="输入名单...&#10;张三&#10;李四" 
+                            class="w-full p-5 bg-pink-50/20 rounded-3xl border-2 border-transparent focus:border-pink-200 outline-none font-bold text-gray-600 transition-all shadow-inner resize-none"></textarea>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <div class="flex-1 relative">
+                            <label class="block text-[10px] font-black text-gray-300 uppercase tracking-widest mb-2 pl-4">Mode / 模式</label>
+                            <select id="modeSelect" class="w-full p-4 bg-gray-50 rounded-2xl border-none outline-none font-bold text-gray-500 shadow-inner appearance-none cursor-pointer">
+                                <option value="keep">🔄 抽完放回</option>
+                                <option value="remove">🗑️ 抽完剔除</option>
+                            </select>
+                        </div>
+                        <button onclick="resetPool()" class="px-6 py-4 bg-white border-2 border-pink-50 text-pink-300 hover:bg-pink-50 hover:border-pink-200 font-black rounded-2xl transition-all text-sm">
+                            重置数据
+                        </button>
+                    </div>
+
+                    <button onclick="startDraw()" id="drawBtn" class="w-full py-5 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-2xl shadow-xl shadow-pink-100 transition-all active:scale-95 text-xl flex items-center justify-center gap-2">
+                        🎰 开启抓阄！
+                    </button>
+                </div>
+
+                <!-- Records -->
+                <div id="resultPanel" class="bg-gray-50/50 rounded-[3rem] p-8 border-2 border-pink-50/50 shadow-inner flex flex-col max-h-[400px]">
+                    <div class="flex justify-between items-center mb-6">
+                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">History / 中签记录 <span class="text-pink-400 ml-2" id="recordCount">0</span></span>
+                        <button onclick="clearRecords()" class="text-[10px] font-black text-gray-300 hover:text-rose-400 uppercase tracking-widest transition-colors">Clear</button>
+                    </div>
+                    <ul id="recordList" class="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
+                        <!-- records inserted here -->
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>当理性无法给出答案时，或许感性的运气能为你推开那扇窗。无论是分奶茶还是定分工，“绝对随机”是送给秩序最好的礼物。注：抽完剔除模式会在抽取后自动更新你的名单哦。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const poolInput = document.getElementById('poolInput');
+        const drawBtn = document.getElementById('drawBtn');
+        const drawText = document.getElementById('drawText');
+        const drawBox = document.getElementById('drawBox');
+        const modeSelect = document.getElementById('modeSelect');
+        const recordList = document.getElementById('recordList');
+        const recordCount = document.getElementById('recordCount');
+
+        let isDrawing = false;
+        let pool = [];
+        let records = [];
+        const defaultInitial = "张三\n李四\n王五\n赵六\n孙七\n周八";
+
+        if(!poolInput.value) poolInput.value = defaultInitial;
+
+        function startDraw() {
+            if(isDrawing) return;
+            pool = poolInput.value.split('\n').map(l => l.trim()).filter(l => l);
+            if(pool.length === 0) { Utils.toast('抽签池不能为空哦', 'error'); return; }
+
+            isDrawing = true;
+            drawBtn.innerText = '正在洗牌...';
+            drawBtn.classList.add('opacity-50', 'pointer-events-none');
+            drawBox.classList.add('animate-pulse');
+            drawText.classList.add('draw-flicker');
+
+            let flicker = setInterval(() => {
+                drawText.innerText = pool[Math.floor(Math.random() * pool.length)];
+            }, 50);
+
+            setTimeout(() => {
+                clearInterval(flicker);
+                const finalIndex = Math.floor(Math.random() * pool.length);
+                const winner = pool[finalIndex];
+
+                drawText.innerText = winner;
+                drawText.classList.remove('draw-flicker');
+                drawBox.classList.remove('animate-pulse');
+                
+                records.unshift({name: winner, time: new Date().toLocaleTimeString()});
+                updateRecordUI();
+
+                if(modeSelect.value === 'remove') {
+                    pool.splice(finalIndex, 1);
+                    poolInput.value = pool.join('\n');
+                }
+
+                isDrawing = false;
+                drawBtn.innerText = '在此抽取！';
+                drawBtn.classList.remove('opacity-50', 'pointer-events-none');
+                Utils.toast('结果已揭晓 ✨', 'success');
+            }, 1500);
+        }
+
+        function updateRecordUI() {
+            recordCount.innerText = records.length;
+            recordList.innerHTML = records.map((r, i) => `
+                <li class="p-4 bg-white rounded-2xl border-2 border-pink-50 shadow-sm flex justify-between items-center animate-item">
+                    <span class="font-black text-gray-700">${r.name}</span>
+                    <span class="text-[10px] font-black text-pink-300 uppercase tracking-widest">${r.time}</span>
+                </li>
+            `).join('');
+        }
+
+        function clearRecords() {
+            records = [];
+            updateRecordUI();
+            drawText.innerText = "准备就绪";
+            Utils.toast('已清空历史 ✨', 'info');
+        }
+
+        function resetPool() {
+            poolInput.value = defaultInitial;
+            Utils.toast('数据已重置 ✨', 'info');
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

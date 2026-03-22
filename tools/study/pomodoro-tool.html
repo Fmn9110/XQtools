@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>番茄工作法时钟 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .timer-circle { transition: stroke-dashoffset 0.3s ease; }
+        @keyframes pulse-ring { 0% { transform: scale(0.95); opacity: 0.5; } 50% { transform: scale(1.05); opacity: 0.2; } 100% { transform: scale(0.95); opacity: 0.5; } }
+        .pulse-effect { animation: pulse-ring 2s infinite ease-in-out; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">番茄专注实验室</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">25分钟深度专注，5分钟身心小憩。提升效率，从当下开始。</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-14 mb-12 bg-white shadow-2xl animate-item flex flex-col items-center relative overflow-hidden" style="animation-delay: 0.2s">
+            <!-- Decorative Elements -->
+            <div class="absolute -right-10 -top-10 w-40 h-40 bg-pink-50 rounded-full opacity-50 -z-10"></div>
+            
+            <div class="relative w-72 h-72 md:w-85 md:h-85 mb-14 flex items-center justify-center">
+                <!-- Outer Pulse Ring -->
+                <div id="ringEffect" class="absolute inset-0 rounded-full border-4 border-pink-100/30 -z-10 hidden"></div>
+                
+                <svg class="w-full h-full transform -rotate-90 filter drop-shadow-lg">
+                    <circle cx="50%" cy="50%" r="46%" stroke="#fff1f3" stroke-width="12" fill="none" />
+                    <circle id="progress" cx="50%" cy="50%" r="46%" stroke="url(#paint0_linear)" stroke-width="12" fill="none" stroke-dasharray="868" stroke-dashoffset="0" stroke-linecap="round" class="timer-circle" />
+                    <defs>
+                        <linearGradient id="paint0_linear" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#fb7185" />
+                            <stop offset="100%" stop-color="#f472b6" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <span id="timeDisplay" class="text-6xl md:text-8xl font-black text-slate-800 tracking-tighter transition-all font-mono">25:00</span>
+                    <div id="statusLabel" class="mt-6 flex items-center gap-3 px-5 py-2 bg-pink-50 rounded-full border border-pink-100 transition-all transform scale-90">
+                        <span id="statusDot" class="w-2 h-2 bg-pink-400 rounded-full"></span>
+                        <span id="statusText" class="text-[10px] font-black text-pink-400 uppercase tracking-widest">READY 待命中</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-5 w-full max-w-md">
+                 <button id="startBtn" class="flex-[2] py-5 bg-pink-400 text-white font-black rounded-[2.5rem] shadow-xl hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-lg flex items-center justify-center gap-3 group">
+                    <span id="startIcon">🚀</span> <span id="startText">开始专注 (FOCUS)</span>
+                 </button>
+                 <button id="resetBtn" class="flex-1 py-5 bg-white border-2 border-pink-50 text-pink-300 font-black rounded-[2.5rem] hover:bg-pink-50 hover:text-pink-400 transition-all shadow-sm text-sm uppercase tracking-widest">
+                    RESET
+                 </button>
+            </div>
+            
+            <!-- Statistics -->
+            <div class="mt-14 w-full grid grid-cols-2 gap-8 border-t border-slate-50 pt-10">
+                <div class="text-center group">
+                    <p class="text-[10px] font-black text-pink-300 uppercase tracking-widest mb-1 group-hover:text-pink-400 transition-colors">Completed Poms</p>
+                    <p id="statPoms" class="text-2xl font-black text-slate-700 font-mono">0</p>
+                </div>
+                <div class="text-center group border-l border-slate-50">
+                    <p class="text-[10px] font-black text-pink-300 uppercase tracking-widest mb-1 group-hover:text-pink-400 transition-colors">Focus Minutes</p>
+                    <p id="statMins" class="text-2xl font-black text-slate-700 font-mono">0</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let timeLeft = 25 * 60;
+        let timer = null;
+        let isBreak = false;
+        let total = 25 * 60;
+        const DASH_ARRAY = 868; 
+        
+        let poms = parseInt(localStorage.getItem('qPomPoms') || '0');
+        let focusMins = parseInt(localStorage.getItem('qPomMins') || '0');
+
+        const display = document.getElementById('timeDisplay');
+        const progress = document.getElementById('progress');
+        const startBtn = document.getElementById('startBtn');
+        const startText = document.getElementById('startText');
+        const startIcon = document.getElementById('startIcon');
+        const statusText = document.getElementById('statusText');
+        const statusDot = document.getElementById('statusDot');
+        const ring = document.getElementById('ringEffect');
+
+        function updateDisplay() {
+            const mins = Math.floor(timeLeft / 60);
+            const secs = timeLeft % 60;
+            display.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            
+            const offset = DASH_ARRAY - (timeLeft / total) * DASH_ARRAY;
+            progress.style.strokeDashoffset = offset;
+            
+            if(timeLeft <= 10 && timer) display.classList.add('text-rose-500', 'scale-110');
+            else display.classList.remove('text-rose-500', 'scale-110');
+        }
+
+        function updateStats(finishedPom = false) {
+            if(finishedPom) {
+                poms++;
+                focusMins += 25;
+                localStorage.setItem('qPomPoms', poms);
+                localStorage.setItem('qPomMins', focusMins);
+            }
+            document.getElementById('statPoms').textContent = poms;
+            document.getElementById('statMins').textContent = focusMins;
+        }
+
+        startBtn.onclick = () => {
+            if(timer) {
+                clearInterval(timer);
+                timer = null;
+                startText.innerText = "继续计时 (RESUME)";
+                startIcon.innerText = "▶️";
+                startBtn.classList.replace('bg-pink-400', 'bg-slate-400');
+                statusText.innerText = "PAUSED 暂停中";
+                statusDot.classList.remove('animate-pulse');
+                ring.classList.add('hidden');
+            } else {
+                timer = setInterval(() => {
+                    if(timeLeft > 0) {
+                        timeLeft--;
+                        updateDisplay();
+                    } else {
+                        clearInterval(timer);
+                        timer = null;
+                        handleTimerEnd();
+                    }
+                }, 1000);
+                startText.innerText = "暂停计时 (PAUSE)";
+                startIcon.innerText = "⏸️";
+                startBtn.classList.replace('bg-slate-400', 'bg-pink-400');
+                statusText.innerText = isBreak ? "RESTING 休息中" : "FOCUSING 专注中";
+                statusDot.classList.add('animate-pulse');
+                ring.classList.remove('hidden');
+                ring.classList.add('pulse-effect');
+            }
+        };
+
+        function handleTimerEnd() {
+            playBeep();
+            ring.classList.add('hidden');
+            if(!isBreak) {
+                updateStats(true);
+                Utils.toast('🎉 专注达成！休息一下吧 ✨', 'success');
+                isBreak = true;
+                timeLeft = total = 5 * 60;
+                statusDot.style.backgroundColor = '#fbbf24';
+                statusText.style.color = '#fbbf24';
+            } else {
+                Utils.toast('☕ 休息结束，准备开始新的专注吗？', 'info');
+                isBreak = false;
+                timeLeft = total = 25 * 60;
+                statusDot.style.backgroundColor = '';
+                statusText.style.color = '';
+            }
+            startText.innerText = isBreak ? "开始休息 (BREAK)" : "重新开始 (RESTART)";
+            startIcon.innerText = "☕";
+            startBtn.classList.replace('bg-pink-400', 'bg-amber-400');
+            updateDisplay();
+        }
+
+        function playBeep() {
+            try {
+                const ctx = new(window.AudioContext||window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.type = 'sine'; osc.frequency.value = 880;
+                gain.gain.setValueAtTime(0, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime+0.1);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.5);
+                osc.start(); osc.stop(ctx.currentTime + 1.5);
+            } catch(e) {}
+        }
+
+        document.getElementById('resetBtn').onclick = () => {
+            if(!confirm('确定要重置当前计时吗？')) return;
+            clearInterval(timer);
+            timer = null;
+            isBreak = false;
+            timeLeft = total = 25 * 60;
+            updateDisplay();
+            startText.innerText = "开始专注 (FOCUS)";
+            startIcon.innerText = "🚀";
+            startBtn.className = "flex-[2] py-5 bg-pink-400 text-white font-black rounded-[2.5rem] shadow-xl hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-lg flex items-center justify-center gap-3 group";
+            statusText.innerText = "READY 待命中";
+            statusText.style.color = '';
+            statusDot.style.backgroundColor = '';
+            statusDot.classList.remove('animate-pulse');
+            ring.classList.add('hidden');
+            Utils.toast('计时器已重置 🔄');
+        };
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    updateDisplay();
+                    updateStats();
+                }, 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

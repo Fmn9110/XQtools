@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>经典台词 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🎬 经典 <span class="gradient-text">电影台词</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">遇见那个直击灵魂的瞬间。总有一句台词能读懂你。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item text-center" style="animation-delay: 0.2s">
+            <div class="bg-gradient-to-br from-indigo-900 to-slate-900 rounded-[3rem] p-10 md:p-20 mb-10 shadow-2xl relative group overflow-hidden min-h-[220px] flex flex-col items-center justify-center border-4 border-gray-800">
+                <div class="absolute top-6 left-6 text-6xl text-white/5 font-black group-hover:scale-125 transition-transform">“</div>
+                <div class="absolute bottom-6 right-6 text-6xl text-white/5 font-black group-hover:scale-125 transition-transform">”</div>
+                
+                <p class="text-xl md:text-2xl text-white leading-relaxed italic font-bold mb-6 z-10 transition-all duration-500 opacity-0 transform translate-y-4" id="quote"></p>
+                <p class="text-sm md:text-base text-indigo-300 font-black tracking-widest z-10 opacity-0 transition-all duration-500 delay-100" id="movie"></p>
+            </div>
+
+            <button onclick="next()" class="w-full max-w-sm py-4 bg-gray-800 hover:bg-black text-white font-black rounded-2xl shadow-xl shadow-gray-200 transition-all active:scale-95 flex items-center justify-center gap-2 text-lg">
+                🎬 换一瞬间精彩
+            </button>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>电影是每秒24帧的谎言，但台词却是最真实的情感投射。有时候，我们喜欢的不是那一句话，而是那句话呈现出的，某个失落已久的自己。在这个喧嚣的世界，愿这份静谧能治愈你。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const lines=[
+            {q:'生活就像一盒巧克力，你永远不知道下一颗是什么味道。',m:'《阿甘正传》'},
+            {q:'愿你在被打击时，记起你的珍贵，抵抗恶意；愿你在迷茫时，坚信你的珍贵。',m:'《无问西东》'},
+            {q:'有些人浅薄，有些人金玉其外败絮其中。有一天你会遇到一个彩虹般绚丽的人，从此以后其他人都不过是匆匆浮云。',m:'《怦然心动》'},
+            {q:'星星在哪里都一样，不一样的是你用什么心情看它。',m:'《这个杀手不太冷》'},
+            {q:'人生就是一列开往坟墓的列车，路途上会有很多站，很难有人可以自始自终陪着走完。',m:'《千与千寻》'},
+            {q:'我们一路奋战，不是为了改变世界，而是不让世界改变我们。',m:'《熔炉》'},
+            {q:'不要因为走得太远，忘了我们为什么出发。',m:'《荒野生存》'},
+            {q:'人不能只做好事不做坏事。但如果一辈子做坏事，偶尔做件好事，也不算坏人了吧？',m:'《无间道》'},
+            {q:'有些鱼是关不住的，因为它们属于天空。',m:'《大鱼海棠》'},
+            {q:'只要这世界还有人在等我，我就没法就这么一走了之。',m:'《名侦探柯南》'},
+            {q:'哪怕只是微小的光，也能照亮黑暗。',m:'《追光者》'},
+        ];
+
+        let idx=0;
+        function shuffle(){for(let i=lines.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[lines[i],lines[j]]=[lines[j],lines[i]];}}
+        shuffle();
+
+        function next(){
+            const q = document.getElementById('quote');
+            const m = document.getElementById('movie');
+            
+            q.classList.remove('opacity-100', 'translate-y-0');
+            q.classList.add('opacity-0', 'translate-y-4');
+            m.classList.remove('opacity-100');
+            m.classList.add('opacity-0');
+
+            setTimeout(() => {
+                const l=lines[idx%lines.length];
+                q.textContent = l.q;
+                m.textContent = '—— ' + l.m;
+                
+                q.classList.remove('opacity-0', 'translate-y-4');
+                q.classList.add('opacity-100', 'translate-y-0');
+                m.classList.remove('opacity-0');
+                m.classList.add('opacity-100');
+                
+                idx++;
+                Utils.toast('已加载新台词 ✨', 'info');
+            }, 500);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', next);
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

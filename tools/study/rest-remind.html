@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>休息提醒 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .timer-circle { transition: stroke-dashoffset 1s linear; }
+        .pulse-soft { animation: pulse-soft 2s ease-in-out infinite; }
+        @keyframes pulse-soft { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.8; transform: scale(0.98); } }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">健康学习定时提醒</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s italic">合理安排休息，让大脑在高效与放松间完美切换。🔋</p>
+        </header>
+
+        <article class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 animate-item" style="animation-delay: 0.2s">
+            <button onclick="startTimer(20)" class="group p-8 bg-white border-2 border-pink-50 rounded-[3rem] shadow-sm hover:shadow-xl hover:border-pink-200 transition-all transform hover:-translate-y-2 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 text-4xl opacity-5 group-hover:opacity-10 transition-opacity">⚡</div>
+                <p class="text-[10px] font-black text-pink-300 uppercase tracking-[0.2em] mb-3 leading-none">Short Focus</p>
+                <p class="text-6xl font-black text-slate-800 group-hover:text-pink-400 transition-colors tracking-tighter">20</p>
+                <p class="text-xs font-bold text-gray-400 mt-2">分钟 (MIN)</p>
+            </button>
+            <button onclick="startTimer(30)" class="group p-8 bg-white border-2 border-pink-50 rounded-[3rem] shadow-sm hover:shadow-xl hover:border-pink-200 transition-all transform hover:-translate-y-2 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 text-4xl opacity-5 group-hover:opacity-10 transition-opacity">🧠</div>
+                <p class="text-[10px] font-black text-pink-300 uppercase tracking-[0.2em] mb-3 leading-none">Standard Focus</p>
+                <p class="text-6xl font-black text-slate-800 group-hover:text-pink-400 transition-colors tracking-tighter">30</p>
+                <p class="text-xs font-bold text-gray-400 mt-2">分钟 (MIN)</p>
+            </button>
+            <button onclick="startTimer(45)" class="group p-8 bg-white border-2 border-pink-50 rounded-[3rem] shadow-sm hover:shadow-xl hover:border-pink-200 transition-all transform hover:-translate-y-2 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 text-4xl opacity-5 group-hover:opacity-10 transition-opacity">🏔️</div>
+                <p class="text-[10px] font-black text-pink-300 uppercase tracking-[0.2em] mb-3 leading-none">Deep Focus</p>
+                <p class="text-6xl font-black text-slate-800 group-hover:text-pink-400 transition-colors tracking-tighter">45</p>
+                <p class="text-xs font-bold text-gray-400 mt-2">分钟 (MIN)</p>
+            </button>
+        </article>
+
+        <section class="cute-card p-10 md:p-16 mb-12 bg-white shadow-2xl animate-item flex flex-col items-center" style="animation-delay: 0.3s">
+            <div id="visualBox" class="relative w-64 h-64 md:w-80 md:h-80 flex flex-col items-center justify-center mb-12">
+                 <svg class="w-full h-full transform -rotate-90 filter drop-shadow-sm">
+                    <circle cx="50%" cy="50%" r="46%" stroke="#fff1f2" stroke-width="10" fill="none" />
+                    <circle id="progress" cx="50%" cy="50%" r="46%" stroke="#ffb7c5" stroke-width="10" fill="none" stroke-dasharray="868" stroke-dashoffset="0" stroke-linecap="round" class="timer-circle" />
+                </svg>
+                <div class="absolute flex flex-col items-center">
+                    <p id="timer" class="text-7xl font-black text-slate-800 tracking-tighter font-mono">--:--</p>
+                    <div id="statusWrap" class="mt-4 px-4 py-1.5 bg-slate-50 border border-slate-100 rounded-full flex items-center gap-2 opacity-60">
+                         <span id="dot" class="w-1.5 h-1.5 bg-slate-300 rounded-full"></span>
+                         <p id="status" class="text-[10px] text-slate-300 font-black uppercase tracking-[0.4em]">Idle Standby</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-4 w-full justify-center mb-14">
+                <button onclick="stop()" class="px-10 py-5 bg-slate-50 text-slate-400 font-black rounded-2xl hover:bg-slate-100 transition-all shadow-inner text-sm tracking-widest flex items-center gap-3 active:scale-95">
+                    ⏹️ 停止并清除 (STOP)
+                </button>
+                <button onclick="testNotify()" class="px-8 py-5 bg-pink-50 text-pink-400 font-black rounded-2xl hover:bg-pink-100 transition-all shadow-sm text-[10px] uppercase tracking-widest">
+                    Test Notification 🔔
+                </button>
+            </div>
+            
+            <div class="p-8 bg-slate-50/50 rounded-[3rem] border border-slate-100 text-left w-full relative overflow-hidden">
+                <div class="absolute -right-6 top-1/2 -translate-y-1/2 text-8xl opacity-5 pointer-events-none">🌿</div>
+                <h3 class="text-[10px] font-black text-pink-300 uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
+                    <span class="w-3 h-3 bg-pink-400 rounded-full"></span> 养生休息小贴士 (Health Tips)
+                </h3>
+                <ul class="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm font-bold text-slate-600">
+                    <li class="flex items-start gap-3">
+                        <span class="mt-1 w-2 h-2 bg-pink-200 rounded-full shrink-0"></span>
+                        <span>20-20-20法则：远眺 20 英尺外 20 秒，环节睫状肌压力。</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="mt-1 w-2 h-2 bg-pink-200 rounded-full shrink-0"></span>
+                        <span>站立伸展肩颈：每小时起身一次，舒缓腰椎与颈椎。</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="mt-1 w-2 h-2 bg-pink-200 rounded-full shrink-0"></span>
+                        <span>深度呼吸：闭目冥想 1 分钟，排空大脑积压的疲劳感。</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="mt-1 w-2 h-2 bg-pink-200 rounded-full shrink-0"></span>
+                        <span>补水补能：喝一杯常温水，甚至可以稍微走动增加循环。</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+        
+        <footer class="text-gray-300 text-[10px] uppercase font-black tracking-[0.4em] pb-12 animate-item" style="animation-delay: 0.3s">
+            Ergonomic Productivity & Well-being Lab
+        </footer>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let interval, remaining = 0, totalTime = 0;
+        const DASH_ARRAY = 868;
+
+        function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+
+        function startTimer(min){
+            stop();
+            remaining = min * 60;
+            totalTime = remaining;
+            updateUI();
+            
+            const status = document.getElementById('status');
+            const dot = document.getElementById('dot');
+            const wrap = document.getElementById('statusWrap');
+            const timer = document.getElementById('timer');
+            const box = document.getElementById('visualBox');
+
+            status.textContent = '专注学习中..';
+            status.classList.replace('text-slate-300', 'text-pink-400');
+            dot.classList.replace('bg-slate-300', 'bg-pink-400');
+            dot.classList.add('animate-pulse');
+            wrap.classList.remove('opacity-60');
+            timer.classList.add('text-pink-500');
+            box.classList.add('pulse-soft');
+
+            interval = setInterval(() => {
+                remaining--;
+                updateUI();
+                if(remaining <= 0){
+                    stop();
+                    triggerAlert(min);
+                }
+            }, 1000);
+        }
+
+        function triggerAlert(min) {
+            Utils.toast('☕ 学习够久了，该休息一下啦！✨', 'success');
+            
+            // Notification
+            if('Notification' in window && Notification.permission === 'granted'){
+                new Notification('😴 休息提醒', {
+                    body: `专注学习 ${min} 分钟，现在是惬意的休息时间啦`,
+                    icon: '../../assets/img/icon.png' // Fallback to index if needed
+                });
+            }
+            
+            // Audio (Simple synthesis for robustness)
+            try {
+                const ctx = new(window.AudioContext||window.webkitAudioContext)();
+                if(ctx) {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.type = 'sine'; osc.frequency.value = 440;
+                    gain.gain.setValueAtTime(0, ctx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime+0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.5);
+                    osc.start(); osc.stop(ctx.currentTime + 1.5);
+                }
+            } catch(e) {}
+        }
+
+        function updateUI() {
+            document.getElementById('timer').textContent = fmt(remaining);
+            const offset = DASH_ARRAY - (remaining / totalTime) * DASH_ARRAY;
+            document.getElementById('progress').style.strokeDashoffset = isNaN(offset) ? 0 : offset;
+        }
+
+        function stop(){
+            clearInterval(interval);
+            const status = document.getElementById('status');
+            const dot = document.getElementById('dot');
+            const wrap = document.getElementById('statusWrap');
+            const timer = document.getElementById('timer');
+            const box = document.getElementById('visualBox');
+
+            timer.textContent = '--:--';
+            status.textContent = 'Idle Standby';
+            status.classList.replace('text-pink-400', 'text-slate-300');
+            dot.classList.replace('bg-pink-400', 'bg-slate-300');
+            dot.classList.remove('animate-pulse');
+            wrap.classList.add('opacity-60');
+            timer.classList.remove('text-pink-500');
+            box.classList.remove('pulse-soft');
+            document.getElementById('progress').style.strokeDashoffset = 0;
+        }
+
+        function testNotify() {
+             if('Notification' in window) {
+                Notification.requestPermission().then(permission => {
+                    if(permission === 'granted') {
+                        new Notification('🔔 提醒已激活', {body: '休息提醒通知已准备就绪！'});
+                        Utils.toast('通知权限已获取 ✨');
+                    } else {
+                        Utils.toast('通知权限被拒绝 📵', 'warning');
+                    }
+                });
+             }
+        }
+
+        if('Notification' in window) Notification.requestPermission();
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

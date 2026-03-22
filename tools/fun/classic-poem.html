@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>古诗词随机赏析 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">📜 古诗词 <span class="gradient-text">随机赏析</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">跨越千年的对话，在字里行间遇见最美的时光。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            <div class="bg-gradient-to-br from-pink-50/70 to-orange-50/50 rounded-[2.5rem] p-8 md:p-12 border-2 border-pink-100/50 shadow-inner text-center relative overflow-hidden group mb-10">
+                <div class="absolute top-4 left-6 text-7xl opacity-5 group-hover:scale-110 transition-transform select-none">🏮</div>
+                
+                <p class="text-[10px] font-black text-pink-300 uppercase tracking-[0.5em] mb-4" id="pDynasty">唐 · 李白</p>
+                <p class="text-2xl md:text-4xl font-black text-gray-800 mb-8 tracking-tight" id="pTitle">静夜思</p>
+                
+                <div class="max-w-xl mx-auto border-y border-pink-100/30 py-8 md:py-12">
+                    <div class="text-lg md:text-2xl text-gray-700 leading-relaxed tracking-[0.2em] font-serif whitespace-pre-wrap" id="pContent">床前明月光，\n疑是地上霜。\n举头望明月，\n低头思故乡。</div>
+                </div>
+                
+                <p class="text-xs md:text-sm text-gray-400 mt-8 italic font-medium leading-relaxed" id="pNote">📝 最著名的思乡诗，每个中国人都会背。</p>
+            </div>
+            
+            <button onclick="nextPoem()" class="theme-download-btn w-full max-w-md mx-auto block py-5 text-xl">🎲 邂逅下一首</button>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.3s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">📖</span>
+                    赏析说明
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50">
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        古诗词是中华文明的魁宝，凝练了华夏民族数千年的哲学思考与审美意趣。每次刷新，系统将从精选库中随机召唤一首经典名篇供您品鉴。
+                    </p>
+                </div>
+            </section>
+            <section class="animate-item" style="animation-delay: 0.4s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">💡</span>
+                    诗意生活
+                </h2>
+                <div class="bg-white p-6 rounded-2xl border border-pink-50 shadow-sm leading-relaxed">
+                    <p class="text-gray-500 text-sm">“腹有诗书气自华。” 每日品味一首古诗，让忙碌的生活慢下来，感受文字中流淌的力量与温情。</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const poems = [
+            {dynasty:'唐 · 李白',title:'静夜思',content:'床前明月光，\n疑是地上霜。\n举头望明月，\n低头思故乡。',note:'最著名的思乡诗，每个中国人都会背。'},
+            {dynasty:'唐 · 杜甫',title:'春望',content:'国破山河在，城春草木深。\n感时花溅泪，恨别鸟惊心。\n烽火连三月，家书抵万金。\n白头搔更短，浑欲不胜簪。',note:'安史之乱中的忧国忧民之作。'},
+            {dynasty:'宋 · 苏轼',title:'水调歌头',content:'明月几时有？把酒问青天。\n不知天上宫阙，今夕是何年。\n但愿人长久，千里共婵娟。',note:'中秋望月的千古绝唱。'},
+            {dynasty:'唐 · 王维',title:'鹿柴',content:'空山不见人，\n但闻人语响。\n返景入深林，\n复照青苔上。',note:'以声写静，以光写幽的山水佳作。'},
+            {dynasty:'唐 · 白居易',title:'赋得古原草送别',content:'离离原上草，一岁一枯荣。\n野火烧不尽，春风吹又生。\n远芳侵古道，晴翠接荒城。\n又送王孙去，萋萋满别情。',note:'生命力的赞歌，也是离别的深情。'},
+            {dynasty:'宋 · 李清照',title:'如梦令',content:'昨夜雨疏风骤，\n浓睡不消残酒。\n试问卷帘人，\n却道海棠依旧。\n知否，知否？\n应是绿肥红瘦。',note:'婉约词派的代表作，细腻动人。'},
+            {dynasty:'唐 · 王之涣',title:'登鹳雀楼',content:'白日依山尽，\n黄河入海流。\n欲穷千里目，\n更上一层楼。',note:'五绝中的千古名篇，寓理于景。'},
+            {dynasty:'宋 · 辛弃疾',title:'破阵子',content:'醉里挑灯看剑，梦回吹角连营。\n八百里分麾下炙，五十弦翻塞外声。\n沙场秋点兵。',note:'豪放词的巅峰之作，满腔壮志。'},
+            {dynasty:'唐 · 孟浩然',title:'春晓',content:'春眠不觉晓，\n处处闻啼鸟。\n夜来风雨声，\n花落知多少。',note:'清新自然，一首读来便是整个春天。'},
+            {dynasty:'唐 · 杜牧',title:'清明',content:'清明时节雨纷纷，\n路上行人欲断魂。\n借问酒家何处有？\n牧童遥指杏花村。',note:'清明节的最佳古诗。'},
+        ];
+        
+        function nextPoem() {
+            const p = poems[Math.floor(Math.random()*poems.length)];
+            document.getElementById('pDynasty').textContent = p.dynasty;
+            document.getElementById('pTitle').textContent = p.title;
+            document.getElementById('pContent').textContent = p.content;
+            document.getElementById('pNote').textContent = '📝 ' + p.note;
+            Utils.toast('已切换至《' + p.title + '》', 'success');
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+            nextPoem();
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

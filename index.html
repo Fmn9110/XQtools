@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>小Q工具箱 - 纯前端、好用的550+工具合集</title>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/pinyin-match@1.2.5/dist/main.js"></script>
+
+</head>
+
+<body>
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='index.html'">
+                <div
+                    class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">
+                    Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <div class="hidden md:flex space-x-6 text-gray-500 text-sm font-semibold">
+                <a href="index.html" class="hover:text-pink-500 transition-colors">首页</a>
+                <a href="categories.html" class="hover:text-pink-500 transition-colors">全部分类</a>
+                <a href="tools.html" class="hover:text-pink-500 transition-colors">所有工具</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="container text-center px-4">
+        <h1 class="text-3xl md:text-5xl font-extrabold mb-4 animate-item" style="animation-delay: 0.1s">
+            你的 <span class="gradient-text">万能</span> 实验室
+        </h1>
+        <p class="text-gray-400 text-sm md:text-base mb-6 max-w-xl mx-auto animate-item" style="animation-delay: 0.2s">
+            550+ 免费工具，完全在本地运行。安全、好玩、超实用！
+        </p>
+
+        <div class="max-w-lg mx-auto relative group animate-item z-40" style="animation-delay: 0.3s">
+            <input type="text" id="toolSearch" placeholder="搜索工具，如：图片压缩..."
+                class="w-full px-6 py-3 rounded-2xl outline-none shadow-sm text-base bg-white">
+            <div id="searchResults"
+                class="absolute left-0 right-0 mt-3 bg-white rounded-2xl shadow-2xl z-40 hidden max-h-80 overflow-y-auto p-2 border border-pink-50">
+            </div>
+        </div>
+    </header>
+
+    <section class="container px-4">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-gray-700">热门分类</h2>
+            <a href="categories.html" class="text-pink-400 text-sm font-bold hover:underline">查看全部 →</a>
+        </div>
+
+        <div id="categoryGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 md:gap-4 animate-item"
+            style="animation-delay: 0.4s">
+        </div>
+    </section>
+
+    <section class="container px-4 mb-10">
+        <h2 class="text-xl font-bold text-gray-700 mb-6">✨ 常用工具</h2>
+        <div id="recommendedTools" class="grid grid-cols-1 md:grid-cols-3 gap-6 animate-item"
+            style="animation-delay: 0.5s">
+        </div>
+    </section>
+
+    <footer class="bg-white py-8 border-t border-pink-50 mt-10">
+        <div class="container text-center">
+            <p class="text-gray-400 text-xs">© 2026 小Q工具箱. 所有处理均在本地完成，绝不上传数据。💖</p>
+        </div>
+    </footer>
+
+    <script src="assets/js/data.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script>
+        // 渲染分类 - 缩小了Padding使页面更紧凑
+        function renderCategories() {
+            const grid = document.getElementById('categoryGrid');
+            grid.innerHTML = window.categories.map(cat => `
+                <div class="cute-card p-3 md:p-4 flex flex-col items-center text-center cursor-pointer" onclick="location.href='categories.html?cat=${cat.slug}'">
+                    <div class="text-2xl md:text-3xl mb-1 md:mb-2">${cat.icon}</div>
+                    <div class="font-bold text-gray-700 text-xs md:text-sm">${cat.name}</div>
+                    <div class="text-[10px] text-gray-300 mt-1">${cat.count}工具</div>
+                </div>
+            `).join('');
+        }
+
+        // 渲染推荐工具 - 分批渲染优化
+        function renderRecommended() {
+            const grid = document.getElementById('recommendedTools');
+            // 首屏仅渲染前 6 个热门工具
+            const initialTools = window.toolsData.slice(0, 6);
+            
+            const renderItem = (tool) => `
+                <div class="cute-card p-5 group cursor-pointer border-b-4 border-pink-100" onclick="location.href='tools/${tool.category}/${tool.slug}.html'">
+                    <div class="flex justify-between items-center mb-3">
+                        <div class="w-10 h-10 bg-pink-50 rounded-xl flex items-center justify-center text-xl group-hover:bg-pink-500 group-hover:text-white transition-all">
+                            ${tool.icon || '🛠️'}
+                        </div>
+                        <span class="text-[10px] font-bold px-2 py-0.5 bg-pink-100 text-pink-500 rounded-full">HOT</span>
+                    </div>
+                    <h3 class="text-lg font-bold mb-1 text-gray-800">${tool.name}</h3>
+                    <p class="text-gray-400 text-xs mb-3 line-clamp-1">${tool.desc}</p>
+                    <div class="text-pink-400 text-xs font-bold flex items-center">
+                        GO <span class="ml-1 transform group-hover:translate-x-1 transition-transform">→</span>
+                    </div>
+                </div>
+            `;
+
+            grid.innerHTML = initialTools.map(renderItem).join('');
+
+            // 延迟渲染后续工具，避免阻塞主线程（如果有更多推荐）
+            if (window.toolsData.length > 6) {
+                setTimeout(() => {
+                    const moreTools = window.toolsData.slice(6, 12);
+                    grid.insertAdjacentHTML('beforeend', moreTools.map(renderItem).join(''));
+                }, 100);
+            }
+        }
+
+        // 搜索逻辑 (保留原逻辑)
+        const searchInput = document.getElementById('toolSearch');
+        const searchResults = document.getElementById('searchResults');
+
+        searchInput.addEventListener('input', (e) => {
+            const val = e.target.value.trim();
+            if (!val) {
+                searchResults.classList.add('hidden');
+                return;
+            }
+
+            const results = Utils.searchTools(val, window.toolsData).slice(0, 8);
+
+            if (results.length > 0) {
+                searchResults.innerHTML = results.map(t => `
+                    <div class="p-3 hover:bg-pink-50 cursor-pointer rounded-xl flex items-center space-x-3 transition-colors" 
+                        onclick="location.href='tools/${t.category}/${t.slug}.html'">
+                        <div class="w-8 h-8 bg-gray-50 rounded flex items-center justify-center text-sm">${t.icon || '🔧'}</div>
+                        <div class="flex-1 min-width-0">
+                            <div class="font-bold text-gray-800 text-sm">${t.name}</div>
+                            <div class="text-[10px] text-gray-400 truncate">${t.desc}</div>
+                        </div>
+                    </div>
+                `).join('');
+                searchResults.classList.remove('hidden');
+            } else {
+                searchResults.innerHTML = '<div class="p-4 text-center text-gray-400 text-sm">哎呀，没找到...</div>';
+                searchResults.classList.remove('hidden');
+            }
+        });
+
+        // --- 新增：页面加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            // 使用 requestAnimationFrame 确保动画不阻塞交互
+            requestAnimationFrame(() => {
+                const item = document.createElement('div');
+                item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+                item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+                item.style.position = 'fixed';
+                item.style.left = `${e.clientX - 10}px`;
+                item.style.top = `${e.clientY - 10}px`;
+                item.style.pointerEvents = 'none';
+                document.body.appendChild(item);
+                setTimeout(() => item.remove(), 1000);
+            });
+        });
+        
+        // 针对 PWA 滑动优化，如果是滑动操作则不触发昂贵的特效
+        let isScrolling = false;
+        window.addEventListener('scroll', () => { isScrolling = true; clearTimeout(window.scrollTimer); window.scrollTimer = setTimeout(() => isScrolling = false, 100); }, { passive: true });
+
+        // 初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCategories();
+            renderRecommended();
+        });
+    </script>
+
+    <!-- 移动端底部导航 -->
+    <div class="mobile-tab-bar">
+        <a href="index.html" class="flex flex-col items-center text-pink-500">
+            <span class="text-xl mb-1">🏠</span>
+            <span class="text-[10px] font-bold">首页</span>
+        </a>
+        <a href="categories.html" class="flex flex-col items-center text-gray-400">
+            <span class="text-xl mb-1">🗂️</span>
+            <span class="text-[10px] font-bold">分类</span>
+        </a>
+        <a href="tools.html" class="flex flex-col items-center text-gray-400">
+            <span class="text-xl mb-1">🛠️</span>
+            <span class="text-[10px] font-bold">全部</span>
+        </a>
+    </div>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="assets/css/webmeji.css">
+    <script src="assets/js/webmeji-config.js"></script>
+    <script src="assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="assets/js/pwa-register.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>个性签名 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🖋️ 艺术 <span class="gradient-text">个性签名</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">名字是你的第一张名片。在这里定制属于你的流云水袖。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white flex flex-col items-center animate-item shadow-2xl" style="animation-delay: 0.2s">
+            
+            <div class="w-full max-w-md mb-10 space-y-6">
+                <div class="relative group">
+                    <label class="block text-[10px] font-black text-gray-300 uppercase tracking-widest mb-2 pl-4">Your Name / 阁下大名</label>
+                    <input type="text" id="nameInput" placeholder="请输入名字..." 
+                        class="w-full p-5 bg-pink-50/20 rounded-2xl border-2 border-transparent focus:border-pink-200 outline-none font-bold text-gray-600 transition-all shadow-inner text-center text-xl">
+                </div>
+
+                <p class="text-[10px] font-black text-gray-300 uppercase tracking-widest text-center">Style Selection / 风格选择</p>
+                <div class="flex gap-3 justify-center">
+                    <button onclick="genSig('连笔')" class="flex-1 py-3 bg-sky-500 hover:bg-sky-600 text-white font-black rounded-xl text-xs transition-all shadow-lg active:scale-95">连笔风</button>
+                    <button onclick="genSig('艺术')" class="flex-1 py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-black rounded-xl text-xs transition-all shadow-lg active:scale-95">艺术体</button>
+                    <button onclick="genSig('花体')" class="flex-1 py-3 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-xl text-xs transition-all shadow-lg active:scale-95">花体字</button>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 rounded-[3rem] p-8 border-2 border-pink-50 shadow-inner mb-10 group">
+                <div class="bg-white p-4 rounded-[2rem] shadow-2xl relative overflow-hidden transition-transform group-hover:scale-105">
+                    <canvas id="sigCanvas" width="400" height="150" class="mx-auto block max-w-full h-auto"></canvas>
+                </div>
+            </div>
+
+            <button onclick="dl()" class="w-full max-w-xs py-5 bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-2xl shadow-xl shadow-emerald-100 transition-all active:scale-95 text-lg flex items-center justify-center gap-2">
+                📥 下载我的大作
+            </button>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>在数字时代，手写体带有一种温度。虽然这只是算法生成的艺术字，但它依然能为你的社交简介或信件增加一份独特的仪式感。注：高清下载后的图片为透明底 PNG 哦。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const canvas=document.getElementById('sigCanvas'),ctx=canvas.getContext('2d');
+        
+        function genSig(style){
+            const name=document.getElementById('nameInput').value.trim()||'你的名字';
+            ctx.clearRect(0,0,400,150);
+            
+            const styles={
+                '连笔':{font:'italic 48px "楷体", cursive',color:'#333',decor:true},
+                '艺术':{font:'bold 52px "华文行楷", cursive',color:'#1a1a6c',decor:false},
+                '花体':{font:'italic bold 46px "Palace Script MT", cursive',color:'#8b0000',decor:true},
+            };
+            
+            const s=styles[style];
+            ctx.font=s.font;ctx.fillStyle=s.color;ctx.textAlign='center';ctx.textBaseline='middle';
+            ctx.fillText(name,200,75);
+            
+            if(s.decor){
+                ctx.strokeStyle=s.color;ctx.lineWidth=1;ctx.globalAlpha=0.2;
+                ctx.beginPath();ctx.moveTo(50,110);ctx.bezierCurveTo(100,90,300,90,350,110);ctx.stroke();
+                ctx.beginPath();ctx.moveTo(60,40);ctx.bezierCurveTo(120,30,280,30,340,40);ctx.stroke();
+                ctx.globalAlpha=1;
+            }
+            Utils.toast(`风格已切换: ${style} ✨`, 'info');
+        }
+
+        function dl(){
+            const a=document.createElement('a');
+            a.download='my-signature.png';
+            a.href=canvas.toDataURL();
+            a.click();
+            Utils.toast('已保存至画廊 💾', 'success');
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+            genSig('连笔');
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy  -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

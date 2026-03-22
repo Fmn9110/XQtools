@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>血型性格速查 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50"><div class="container mx-auto flex justify-between items-center"><div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'"><div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div><span class="text-2xl font-bold gradient-text">小Q工具箱</span></div><a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a></div></nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">🩸 血型性格速查</h1>
+            <p class="text-gray-500">看看不同血型的性格特征和配对参考</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <button onclick="show('A')" class="p-6 bg-red-50 hover:bg-red-100 rounded-2xl text-center transition-colors"><span class="text-4xl font-black text-red-500">A</span><p class="text-xs text-gray-400 mt-1">完美主义者</p></button>
+                <button onclick="show('B')" class="p-6 bg-blue-50 hover:bg-blue-100 rounded-2xl text-center transition-colors"><span class="text-4xl font-black text-blue-500">B</span><p class="text-xs text-gray-400 mt-1">自由奔放</p></button>
+                <button onclick="show('AB')" class="p-6 bg-purple-50 hover:bg-purple-100 rounded-2xl text-center transition-colors"><span class="text-4xl font-black text-purple-500">AB</span><p class="text-xs text-gray-400 mt-1">理性双面</p></button>
+                <button onclick="show('O')" class="p-6 bg-green-50 hover:bg-green-100 rounded-2xl text-center transition-colors"><span class="text-4xl font-black text-green-500">O</span><p class="text-xs text-gray-400 mt-1">乐观领袖</p></button>
+            </div>
+            <div id="result" class="hidden"></div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center"><span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">!</span>使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>点击你的血型查看性格描述。</li><li>仅供娱乐参考。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">血型真的决定性格吗？</div><div class="text-gray-500 text-sm">目前没有科学证据支持血型与性格有直接关联，本工具仅供娱乐参考。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const data = {
+            'A': {color:'red',emoji:'🅰️',traits:'认真负责、追求完美、有条理、细心谨慎',pros:'可靠、有条理、注重细节',cons:'过于敏感、容易焦虑',love:'最佳: A型/AB型 | 互补: O型',famous:'周杰伦、孙燕姿、宫崎骏'},
+            'B': {color:'blue',emoji:'🅱️',traits:'自由奔放、好奇心强、乐观随性、独立自主',pros:'创意丰富、适应力强',cons:'注意力分散、缺乏耐心',love:'最佳: B型/AB型 | 互补: O型',famous:'爱因斯坦、张学友、吴彦祖'},
+            'AB': {color:'purple',emoji:'🆎',traits:'理性冷静、善于分析、多才多艺、双重性格',pros:'聪明理性、多面手',cons:'犹豫不决、难以亲近',love:'最佳: AB型 | 互补: A型/B型',famous:'太宰治、林俊杰、桥本环奈'},
+            'O': {color:'green',emoji:'🅾️',traits:'乐观开朗、领导力强、大方豪爽、目标明确',pros:'行动力强、社交达人',cons:'过于直率、好胜心强',love:'最佳: O型 | 互补: A型',famous:'约翰·列侬、李小龙、猫王'},
+        };
+
+        function show(type) {
+            const d = data[type];
+            document.getElementById('result').innerHTML = `
+                <div class="bg-${d.color}-50 rounded-3xl p-8">
+                    <p class="text-center text-5xl mb-3">${d.emoji}</p>
+                    <p class="text-center text-2xl font-black text-${d.color}-600 mb-4">${type}型血</p>
+                    <p class="text-center text-gray-600 mb-6">${d.traits}</p>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-white/80 rounded-xl p-4"><p class="text-xs text-gray-400 mb-1">✅ 优势</p><p class="text-sm font-bold text-gray-700">${d.pros}</p></div>
+                        <div class="bg-white/80 rounded-xl p-4"><p class="text-xs text-gray-400 mb-1">⚡ 挑战</p><p class="text-sm font-bold text-gray-700">${d.cons}</p></div>
+                        <div class="bg-white/80 rounded-xl p-4"><p class="text-xs text-gray-400 mb-1">💕 配对</p><p class="text-sm font-bold text-gray-700">${d.love}</p></div>
+                        <div class="bg-white/80 rounded-xl p-4"><p class="text-xs text-gray-400 mb-1">🌟 名人</p><p class="text-sm font-bold text-gray-700">${d.famous}</p></div>
+                    </div>
+                </div>`;
+            document.getElementById('result').classList.remove('hidden');
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>名片二维码生成 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f6]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-rose-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg font-bold">Q</div>
+                <span class="text-2xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-400 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-4 md:py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4 tracking-tight">名片二维码生成</h1>
+            <p class="text-gray-500 text-lg">快速生成电子名片二维码，扫描即可直接保存联系人 📇</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white flex flex-col items-center border border-rose-50 shadow-sm rounded-3xl">
+                <div class="flex-1 w-full space-y-8 text-left">
+                    <h3 class="font-bold text-gray-800 text-xl flex items-center gap-2">
+                        <span class="w-2 h-6 bg-pink-400 rounded-full"></span> 填写名片信息
+                    </h3>
+                    
+                    <div class="space-y-5">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="block text-xs font-bold text-gray-400 uppercase">姓名 <span class="text-pink-400">*</span></label>
+                                <input type="text" id="vc-name" class="w-full p-4 border border-gray-100 rounded-2xl bg-gray-50 focus:bg-white focus:ring-4 focus:ring-pink-100 outline-none transition-all text-sm font-medium" placeholder="例如: 张三">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-xs font-bold text-gray-400 uppercase">电话 <span class="text-pink-400">*</span></label>
+                                <input type="tel" id="vc-phone" class="w-full p-4 border border-gray-100 rounded-2xl bg-gray-50 focus:bg-white focus:ring-4 focus:ring-pink-100 outline-none transition-all text-sm font-medium" placeholder="例如: 13800138000">
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-gray-400 uppercase">公司 (可选)</label>
+                            <input type="text" id="vc-org" class="w-full p-4 border border-gray-100 rounded-2xl bg-gray-50 focus:bg-white focus:ring-4 focus:ring-pink-100 outline-none transition-all text-sm font-medium" placeholder="例如: 某某科技有限公司">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="block text-xs font-bold text-gray-400 uppercase">职位 (可选)</label>
+                                <input type="text" id="vc-title" class="w-full p-4 border border-gray-100 rounded-2xl bg-gray-50 focus:bg-white focus:ring-4 focus:ring-pink-100 outline-none transition-all text-sm font-medium" placeholder="例如: 产品经理">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-xs font-bold text-gray-400 uppercase">邮箱 (可选)</label>
+                                <input type="email" id="vc-email" class="w-full p-4 border border-gray-100 rounded-2xl bg-gray-50 focus:bg-white focus:ring-4 focus:ring-pink-100 outline-none transition-all text-sm font-medium" placeholder="例如: example@mail.com">
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-gray-400 uppercase">个人主页 (可选)</label>
+                            <input type="url" id="vc-url" class="w-full p-4 border border-gray-100 rounded-2xl bg-gray-50 focus:bg-white focus:ring-4 focus:ring-pink-100 outline-none transition-all text-sm font-medium" placeholder="例如: https://me.com">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 pt-6 border-t border-rose-50">
+                            <div class="space-y-2">
+                                <label class="block text-xs font-bold text-gray-400 uppercase">前景色</label>
+                                <input type="color" id="fg-color" value="#000000" class="w-full h-12 p-1 rounded-2xl cursor-pointer border border-gray-100 bg-gray-50 hover:border-pink-200 transition-all">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-xs font-bold text-gray-400 uppercase">背景色</label>
+                                <input type="color" id="bg-color" value="#ffffff" class="w-full h-12 p-1 rounded-2xl cursor-pointer border border-gray-100 bg-gray-50 hover:border-pink-200 transition-all">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full md:w-80 flex flex-col items-center space-y-8">
+                    <h3 class="font-bold text-gray-800 text-xl border-b border-rose-50 pb-3 w-full text-center">效果预览</h3>
+                    
+                    <div class="p-6 bg-white border border-rose-50 rounded-[2.5rem] w-full aspect-square flex items-center justify-center relative shadow-inner overflow-hidden">
+                        <canvas id="qr-canvas" class="w-full h-full object-contain hidden z-10 block"></canvas>
+                        <!-- placeholder -->
+                        <div id="qr-placeholder" class="absolute inset-0 flex flex-col items-center justify-center text-pink-200 z-0">
+                            <span class="text-8xl mb-4 opacity-40">📇</span>
+                            <span class="text-sm font-bold opacity-60">请填写必要信息</span>
+                        </div>
+                    </div>
+
+                    <div class="w-full space-y-4">
+                        <button id="downloadBtn" class="w-full py-4 bg-pink-400 text-white rounded-xl font-bold shadow-lg shadow-pink-100 hover:bg-pink-500 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+                            <span>💾 保存名片码</span>
+                        </button>
+                        <p class="text-xs text-gray-400 text-center font-medium leading-relaxed">扫码即可将个人资料一键存入手机通讯录</p>
+                    </div>
+                </div>
+            </div>
+        </section>d:opacity-50 disabled:cursor-not-allowed" disabled>保存高清二维码</button>
+                        <p class="text-xs text-gray-400 text-center italic">扫码即可将您存入通讯录</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">!</span>
+                    使用说明
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50">
+                    <ul class="space-y-4 text-gray-600 list-disc list-inside">
+                        <li>点击上传区域选择文件。</li>
+                        <li>在工具区调整您需要的参数。</li>
+                        <li>确认无误后点击“执行”或“下载”。</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2>
+                <div class="space-y-4">
+                    <div class="bg-white p-4 rounded-xl border border-pink-50">
+                        <div class="font-bold text-gray-700 mb-1">隐私性如何？</div>
+                        <div class="text-gray-500 text-sm">所有操作均为本地处理，不经过任何服务器。</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs">
+        © 2026 小Q工具箱 · 纯前端离线实验室
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const vcName = document.getElementById('vc-name');
+        const vcPhone = document.getElementById('vc-phone');
+        const vcOrg = document.getElementById('vc-org');
+        const vcTitle = document.getElementById('vc-title');
+        const vcEmail = document.getElementById('vc-email');
+        const vcUrl = document.getElementById('vc-url');
+        
+        const fgColor = document.getElementById('fg-color');
+        const bgColor = document.getElementById('bg-color');
+        const canvas = document.getElementById('qr-canvas');
+        const placeholder = document.getElementById('qr-placeholder');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        let qr;
+
+        function generateQR() {
+            const name = vcName.value.trim();
+            const phone = vcPhone.value.trim();
+            const org = vcOrg.value.trim();
+            const title = vcTitle.value.trim();
+            const email = vcEmail.value.trim();
+            const url = vcUrl.value.trim();
+
+            if(!name || !phone) {
+                placeholder.classList.remove('hidden');
+                canvas.classList.add('hidden');
+                downloadBtn.disabled = true;
+                return;
+            }
+
+            let val = `BEGIN:VCARD\nVERSION:3.0\n`;
+            val += `N:${name}\nFN:${name}\n`;
+            if(org) val += `ORG:${org}\n`;
+            if(title) val += `TITLE:${title}\n`;
+            if(phone) val += `TEL:${phone}\n`;
+            if(email) val += `EMAIL:${email}\n`;
+            if(url) val += `URL:${url}\n`;
+            val += `END:VCARD`;
+
+            placeholder.classList.add('hidden');
+            canvas.classList.remove('hidden');
+            downloadBtn.disabled = false;
+
+            if(!qr) {
+                qr = new QRious({
+                    element: canvas,
+                    size: 800,
+                    padding: 20
+                });
+            }
+
+            qr.set({
+                value: val,
+                foreground: fgColor.value,
+                background: bgColor.value,
+                level: 'M' // Using M for VCards to allow for more data without becoming too dense
+            });
+        }
+
+        [vcName, vcPhone, vcOrg, vcTitle, vcEmail, vcUrl, fgColor, bgColor].forEach(el => {
+            el.addEventListener('input', generateQR);
+            el.addEventListener('change', generateQR);
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            if(!vcName.value.trim() || !vcPhone.value.trim() || !qr) return;
+            Utils.downloadFile(canvas.toDataURL('image/png'), 'vcard-qr_' + Date.now() + '.png', 'image/png');
+            Utils.toast('二维码已保存', 'success');
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

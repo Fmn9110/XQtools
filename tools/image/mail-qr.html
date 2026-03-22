@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>邮件二维码生成 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7] min-h-screen font-['Outfit']">
+    <!-- 导航栏 -->
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-pink-100 px-4 md:px-6 py-3">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2 md:gap-3 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-8 h-8 md:w-10 md:h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-xl md:text-2xl shadow-lg shadow-pink-200">Q</div>
+                <span class="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-rose-400">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="px-4 py-2 rounded-full bg-pink-50 text-pink-500 hover:bg-pink-100 transition-all text-sm font-semibold">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12 animate-fade-in">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-[#4a4a4a] mb-4">邮件二维码生成</h1>
+            <p class="text-gray-500">一扫即发，让邮件联系变得更简单 ✉️</p>
+        </header>
+
+        <section class="grid lg:grid-cols-2 gap-8 mb-12">
+            <!-- 配置区 -->
+            <div class="space-y-6">
+                <div class="cute-card p-6 md:p-8 bg-white/70 backdrop-blur-sm border border-white/50 shadow-xl shadow-pink-100/50 rounded-[2rem]">
+                    <h3 class="text-lg font-bold text-[#4a4a4a] mb-6 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-pink-400 rounded-full"></span>
+                        邮件信息
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-400 mb-2 px-1">收件人地址</label>
+                            <input type="email" id="emailTo" placeholder="example@mail.com" class="w-full px-6 py-4 border-2 border-pink-100 rounded-2xl focus:border-pink-300 outline-none transition-all font-bold text-pink-500 bg-white shadow-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-400 mb-2 px-1">邮件主题</label>
+                            <input type="text" id="emailSubject" placeholder="你好，有个事找你" class="w-full px-6 py-4 border-2 border-pink-100 rounded-2xl focus:border-pink-300 outline-none transition-all font-bold text-pink-500 bg-white shadow-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-400 mb-2 px-1">正文预览</label>
+                            <textarea id="emailBody" rows="4" placeholder="在此输入邮件正文内容..." class="w-full px-6 py-4 border-2 border-pink-100 rounded-2xl focus:border-pink-300 outline-none transition-all font-bold text-pink-500 bg-white shadow-sm resize-none"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cute-card p-6 md:p-8 bg-white/70 backdrop-blur-sm border border-white/50 shadow-xl shadow-pink-100/50 rounded-[2rem]">
+                    <h3 class="text-lg font-bold text-[#4a4a4a] mb-6 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-pink-400 rounded-full"></span>
+                        外观定制
+                    </h3>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-400 mb-2">二维码颜色</label>
+                            <input type="color" id="qrDark" value="#4a4a4a" class="w-full h-11 rounded-lg cursor-pointer border-2 border-pink-50 bg-white p-1">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-400 mb-2">背景色</label>
+                            <input type="color" id="qrLight" value="#ffffff" class="w-full h-11 rounded-lg cursor-pointer border-2 border-pink-50 bg-white p-1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 预览区 -->
+            <div class="flex flex-col">
+                <div class="cute-card p-8 bg-white/70 backdrop-blur-sm border border-white/50 shadow-xl shadow-pink-100/50 rounded-[2rem] flex-1 flex flex-col items-center justify-center text-center">
+                    <div id="qrcode" class="bg-white p-6 rounded-3xl shadow-lg mb-8 border-4 border-pink-50"></div>
+                    
+                    <div class="space-y-4 w-full px-4">
+                        <button id="downloadBtn" class="w-full cute-button px-6 py-4 bg-gradient-to-r from-pink-400 to-rose-400 text-white rounded-2xl font-bold shadow-lg shadow-pink-200 hover:scale-105 transition-all text-lg flex items-center justify-center gap-2">
+                            <span>🚀</span> 下载二维码
+                        </button>
+                        <button id="resetBtn" class="w-full px-8 py-4 bg-white text-gray-400 rounded-2xl font-bold border-2 border-gray-100 hover:bg-gray-50 transition-all">清空内容</button>
+                    </div>
+                    
+                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-8">LIVE PREVIEW</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 说明区 -->
+        <div class="grid md:grid-cols-2 gap-8 mb-12 animate-fade-in">
+            <section class="space-y-6">
+                <h2 class="text-2xl font-bold text-[#4a4a4a] flex items-center gap-3">
+                    <span class="w-10 h-10 bg-white rounded-2xl flex items-center justify-center shadow-sm">🎯</span>
+                    专属指南及提示
+                </h2>
+                <div class="bg-white/60 backdrop-blur-sm rounded-[2rem] p-8 border border-white shadow-xl shadow-pink-100/20">
+                    <ul class="space-y-4">
+                        <li class="flex gap-4">
+                            <span class="flex-shrink-0 w-6 h-6 bg-pink-100 text-pink-500 rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                            <p class="text-[#6b7280] text-sm leading-relaxed">用户扫码后会自动拉起手机默认邮件客户端，并自动填充好收件人、主题和正文内容。</p>
+                        </li>
+                        <li class="flex gap-4">
+                            <span class="flex-shrink-0 w-6 h-6 bg-pink-100 text-pink-500 rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                            <p class="text-[#6b7280] text-sm leading-relaxed">建议主题和正文不要过长，过长的内容会使二维码过于密集，导致扫码困难。</p>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="space-y-6">
+                <h2 class="text-2xl font-bold text-[#4a4a4a] flex items-center gap-3">
+                    <span class="w-10 h-10 bg-white rounded-2xl flex items-center justify-center shadow-sm">💬</span>
+                    常见答疑
+                </h2>
+                <div class="space-y-4">
+                    <div class="bg-white/60 backdrop-blur-sm p-6 rounded-[2rem] border border-white shadow-lg shadow-pink-100/20">
+                        <h3 class="font-bold text-[#4a4a4a] mb-2 flex items-center gap-2">
+                            <span class="w-2 h-2 bg-pink-400 rounded-full"></span>
+                            支持所有邮箱吗？
+                        </h3>
+                        <p class="text-gray-500 text-sm leading-relaxed">基于标准的 `mailto:` 协议，几乎支持所有主流移动端邮件应用。</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- 加载遮罩 -->
+    <div id="loader-overlay" class="fixed inset-0 bg-pink-50/80 backdrop-blur-sm z-[100] flex items-center justify-center hidden">
+        <div class="cute-loader-candy"></div>
+    </div>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const qrContainer = document.getElementById('qrcode');
+        const emailTo = document.getElementById('emailTo');
+        const emailSubject = document.getElementById('emailSubject');
+        const emailBody = document.getElementById('emailBody');
+        const qrDark = document.getElementById('qrDark');
+        const qrLight = document.getElementById('qrLight');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const loader = document.getElementById('loader-overlay');
+
+        let qrcode = new QRCode(qrContainer, {
+            width: 256,
+            height: 256,
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+        function generateQR() {
+            const to = emailTo.value.trim();
+            const subject = encodeURIComponent(emailSubject.value.trim());
+            const body = encodeURIComponent(emailBody.value.trim());
+            
+            const mailto = `mailto:${to}?subject=${subject}&body=${body}`;
+            
+            qrcode.clear();
+            qrcode._htOption.colorDark = qrDark.value;
+            qrcode._htOption.colorLight = qrLight.value;
+            qrcode.makeCode(mailto);
+        }
+
+        [emailTo, emailSubject, emailBody, qrDark, qrLight].forEach(el => {
+            el.oninput = generateQR;
+        });
+
+        downloadBtn.onclick = () => {
+            const img = qrContainer.querySelector('img');
+            if (img) {
+                Utils.downloadFile(img.src, `email_qr_${Date.now()}.png`, 'image/png');
+                Utils.toast('下载成功', 'success');
+            }
+        };
+
+        resetBtn.onclick = () => {
+            emailTo.value = '';
+            emailSubject.value = '';
+            emailBody.value = '';
+            generateQR();
+        };
+
+        // 初始化
+        window.onload = generateQR;
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

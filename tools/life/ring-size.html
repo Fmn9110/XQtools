@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>戒指尺寸换算 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50"><div class="container mx-auto flex justify-between items-center"><div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'"><div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div><span class="text-2xl font-bold gradient-text">小Q工具箱</span></div><a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a></div></nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">💍 戒指尺寸换算</h1>
+            <p class="text-gray-500">中国/美国/欧洲/日本 戒指尺码对照</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="mb-6"><label class="block text-xs font-bold text-gray-400 uppercase mb-2">输入指围周长 (mm)</label>
+            <input type="number" id="circumference" value="56" step="0.5" class="w-full p-4 bg-gray-50 rounded-xl border border-pink-100 outline-none" oninput="calc()"></div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-pink-50 rounded-2xl p-6 text-center"><p class="text-3xl font-black text-pink-500" id="rCN">-</p><p class="text-xs text-gray-400">中国号</p></div>
+                <div class="bg-blue-50 rounded-2xl p-6 text-center"><p class="text-3xl font-black text-blue-500" id="rUS">-</p><p class="text-xs text-gray-400">美国号</p></div>
+                <div class="bg-green-50 rounded-2xl p-6 text-center"><p class="text-3xl font-black text-green-500" id="rEU">-</p><p class="text-xs text-gray-400">欧洲号</p></div>
+                <div class="bg-purple-50 rounded-2xl p-6 text-center"><p class="text-3xl font-black text-purple-500" id="rJP">-</p><p class="text-xs text-gray-400">日本号</p></div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm"><thead><tr class="bg-gray-50"><th class="p-2">周长mm</th><th class="p-2">直径mm</th><th class="p-2">中国</th><th class="p-2">美国</th><th class="p-2">欧洲</th><th class="p-2">日本</th></tr></thead>
+                <tbody id="sizeTable"></tbody></table>
+            </div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center"><span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">!</span>使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>用细绳绕手指一圈，量出周长(mm)。</li><li>输入周长自动换算各国戒指号。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">怎么量指围？</div><div class="text-gray-500 text-sm">用细线/纸条绕手指根部一圈，标记交叉点，展开量长度即为周长。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const sizes = [
+            {circ:44.2,dia:14.1,cn:4,us:3,eu:44,jp:4},{circ:45.5,dia:14.5,cn:5,us:3.5,eu:45,jp:5},
+            {circ:46.8,dia:14.9,cn:6,us:4,eu:47,jp:6},{circ:48.0,dia:15.3,cn:7,us:4.5,eu:48,jp:7},
+            {circ:49.3,dia:15.7,cn:8,us:5,eu:49,jp:8},{circ:50.6,dia:16.1,cn:9,us:5.5,eu:50,jp:9},
+            {circ:51.8,dia:16.5,cn:10,us:6,eu:52,jp:10},{circ:53.1,dia:16.9,cn:11,us:6.5,eu:53,jp:11},
+            {circ:54.4,dia:17.3,cn:12,us:7,eu:54,jp:12},{circ:55.7,dia:17.7,cn:13,us:7.5,eu:55,jp:13},
+            {circ:56.9,dia:18.1,cn:14,us:8,eu:57,jp:14},{circ:58.2,dia:18.5,cn:15,us:8.5,eu:58,jp:15},
+            {circ:59.5,dia:18.9,cn:16,us:9,eu:59,jp:16},{circ:60.8,dia:19.3,cn:17,us:9.5,eu:60,jp:17},
+            {circ:62.1,dia:19.8,cn:18,us:10,eu:62,jp:18},{circ:63.4,dia:20.2,cn:19,us:10.5,eu:63,jp:19},
+            {circ:64.6,dia:20.6,cn:20,us:11,eu:65,jp:20},{circ:65.9,dia:21.0,cn:21,us:11.5,eu:66,jp:21},
+        ];
+
+        function calc() {
+            const c = parseFloat(document.getElementById('circumference').value);
+            // 找最近的尺码
+            let best = sizes[0];
+            let minDiff = 999;
+            sizes.forEach(s => {
+                const diff = Math.abs(s.circ - c);
+                if (diff < minDiff) { minDiff = diff; best = s; }
+            });
+            document.getElementById('rCN').textContent = best.cn;
+            document.getElementById('rUS').textContent = best.us;
+            document.getElementById('rEU').textContent = best.eu;
+            document.getElementById('rJP').textContent = best.jp;
+        }
+
+        let html = '';
+        sizes.forEach(s => {
+            html += `<tr class="border-b hover:bg-pink-50"><td class="p-2 text-center">${s.circ}</td><td class="p-2 text-center">${s.dia}</td><td class="p-2 text-center font-bold">${s.cn}</td><td class="p-2 text-center">${s.us}</td><td class="p-2 text-center">${s.eu}</td><td class="p-2 text-center">${s.jp}</td></tr>`;
+        });
+        document.getElementById('sizeTable').innerHTML = html;
+        calc();
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

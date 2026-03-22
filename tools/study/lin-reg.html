@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>线性回归 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">线性回归方程计算</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">输入坐标点，精准计算回归方程与 R² 相关系数。</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 mb-12 bg-white shadow-2xl animate-item" style="animation-delay: 0.2s">
+            <p class="text-[10px] font-black text-pink-400 uppercase tracking-widest mb-3">Input Data 输入数据 (每行一个 x,y)</p>
+            <textarea id="data" rows="5" placeholder="1,2&#10;2,4&#10;3,5&#10;4,4&#10;5,5" class="w-full p-6 bg-gray-50 rounded-[2rem] border-2 border-pink-50 outline-none focus:border-pink-200 transition-all font-mono text-sm mb-6 shadow-inner resize-none font-bold text-slate-600"></textarea>
+            
+            <button onclick="calc()" class="w-full py-4 bg-pink-400 text-white font-black rounded-2xl shadow-lg hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 mb-8">
+                🚀 开始回归演算
+            </button>
+
+            <div id="chartContainer" class="hidden animate-fade-in mb-8">
+                <p class="text-[10px] font-black text-pink-300 uppercase tracking-widest mb-3 text-center">Linear Fit Visualization 线拟合可视化</p>
+                <div class="relative bg-pink-50/10 rounded-[2.5rem] border-2 border-dashed border-pink-100 p-4 md:p-8 overflow-hidden">
+                    <canvas id="chart" width="600" height="300" class="w-full h-auto rounded-xl"></canvas>
+                </div>
+            </div>
+
+            <div id="result" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-4 animate-fade-in">
+                <!-- Results generated here -->
+            </div>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        function calc(){
+            const dataVal = document.getElementById('data').value.trim();
+            if(!dataVal) {
+                Utils.toast('请输入数据点哦', 'warning');
+                return;
+            }
+            const lines=dataVal.split('\n');
+            const pts=lines.map(l=>{
+                const pair = l.includes(',') ? l.split(',') : (l.includes(' ') ? l.split(/\s+/) : [l]);
+                const x = parseFloat(pair[0]);
+                const y = parseFloat(pair[1]);
+                return {x,y};
+            }).filter(p=>!isNaN(p.x) && !isNaN(p.y));
+
+            if(pts.length < 2){
+                Utils.toast('至少需要 2 个数据点哦 🍭', 'warning');
+                return;
+            }
+
+            const n=pts.length;
+            const sx=pts.reduce((s,p)=>s+p.x,0), sy=pts.reduce((s,p)=>s+p.y,0);
+            const sxy=pts.reduce((s,p)=>s+p.x*p.y,0), sx2=pts.reduce((s,p)=>s+p.x**2,0);
+            
+            const denom = (n*sx2 - sx**2);
+            if (Math.abs(denom) < 1e-10) {
+                Utils.toast('所有点的 x 坐标相同，无法进行线性回归哦', 'warning');
+                return;
+            }
+
+            const b = (n*sxy - sx*sy) / denom;
+            const a = (sy - b*sx) / n;
+            const yMean = sy/n;
+            const ssTot = pts.reduce((s,p)=>s+(p.y-yMean)**2, 0);
+            const ssRes = pts.reduce((s,p)=>s+(p.y-(a+b*p.x))**2, 0);
+            const r2 = ssTot === 0 ? 1 : 1 - ssRes/ssTot;
+
+            // Render Results
+            document.getElementById('result').innerHTML = `
+                <div class="p-6 bg-pink-400 rounded-3xl text-white col-span-full shadow-lg">
+                    <p class="text-[10px] font-black opacity-60 uppercase tracking-widest mb-1">Equation 方程</p>
+                    <p class="text-2xl md:text-3xl font-black">y = ${b.toFixed(4)}x ${a >= 0 ? '+' : '-'} ${Math.abs(a).toFixed(4)}</p>
+                </div>
+                <div class="p-4 bg-pink-50/50 rounded-2xl border border-pink-100 flex justify-between items-center px-6">
+                    <span class="text-[10px] font-black text-pink-400 uppercase tracking-widest">R² (Score) 相关系数</span>
+                    <span class="text-lg font-black text-slate-700">${r2.toFixed(4)}</span>
+                </div>
+                <div class="p-4 bg-pink-50/50 rounded-2xl border border-pink-100 flex justify-between items-center px-6">
+                    <span class="text-[10px] font-black text-pink-400 uppercase tracking-widest">Slope (k) 斜率</span>
+                    <span class="text-lg font-black text-slate-700">${b.toFixed(4)}</span>
+                </div>
+            `;
+            document.getElementById('result').classList.remove('hidden');
+
+            // Draw Chart
+            const canvas = document.getElementById('chart'), ctx = canvas.getContext('2d');
+            document.getElementById('chartContainer').classList.remove('hidden');
+            
+            ctx.clearRect(0, 0, 600, 300);
+            const xCoords = pts.map(p=>p.x), yCoords = pts.map(p=>p.y);
+            const xMin=Math.min(...xCoords), xMax=Math.max(...xCoords);
+            const yMin=Math.min(...yCoords), yMax=Math.max(...yCoords);
+            
+            const padding = 40;
+            const graphW = 600 - padding * 2;
+            const graphH = 300 - padding * 2;
+
+            const xRange = (xMax - xMin) || 1;
+            const yRange = (yMax - yMin) || 1;
+
+            const scX = x => padding + (x - xMin) / xRange * graphW;
+            const scY = y => 300 - padding - (y - yMin) / yRange * graphH;
+
+            // Axes
+            ctx.strokeStyle='#fee2e2'; ctx.lineWidth=2;
+            ctx.beginPath(); 
+            ctx.moveTo(padding, padding / 2); ctx.lineTo(padding, 300 - padding); 
+            ctx.lineTo(600 - padding / 2, 300 - padding); 
+            ctx.stroke();
+            
+            // Points
+            pts.forEach(p=>{
+                ctx.fillStyle='#f472b6';
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = 'rgba(244, 114, 182, 0.3)';
+                ctx.beginPath(); ctx.arc(scX(p.x), scY(p.y), 6, 0, Math.PI*2); ctx.fill();
+                ctx.shadowBlur = 0;
+            });
+
+            // Line
+            ctx.strokeStyle='#ec4899'; ctx.lineWidth=3;
+            ctx.setLineDash([8, 4]);
+            ctx.beginPath(); 
+            ctx.moveTo(scX(xMin), scY(a+b*xMin)); 
+            ctx.lineTo(scX(xMax), scY(a+b*xMax)); 
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            Utils.toast('回归演算完成 ✨', 'success');
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

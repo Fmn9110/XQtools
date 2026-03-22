@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>你画我猜词库 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🎨 你画 <span class="gradient-text">我猜词库</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">随机抽取灵感，开启你的画笔表演。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white text-center animate-item" style="animation-delay: 0.2s">
+            <div class="flex gap-3 flex-wrap justify-center mb-10 animate-item" style="animation-delay: 0.3s">
+                <button onclick="setCat('简单', this)" class="dw-cat px-6 py-2 rounded-full font-black text-xs uppercase tracking-widest bg-emerald-500 text-white shadow-lg shadow-emerald-100 transition-all border-2 border-transparent hover:scale-105 active:scale-95">😊 简单</button>
+                <button onclick="setCat('普通', this)" class="dw-cat px-6 py-2 rounded-full font-black text-xs uppercase tracking-widest bg-pink-50 text-pink-300 transition-all border-2 border-transparent hover:bg-pink-100 hover:scale-105 active:scale-95">😐 普通</button>
+                <button onclick="setCat('困难', this)" class="dw-cat px-6 py-2 rounded-full font-black text-xs uppercase tracking-widest bg-pink-50 text-pink-300 transition-all border-2 border-transparent hover:bg-pink-100 hover:scale-105 active:scale-95">😈 困难</button>
+                <button onclick="setCat('成语', this)" class="dw-cat px-6 py-2 rounded-full font-black text-xs uppercase tracking-widest bg-pink-50 text-pink-300 transition-all border-2 border-transparent hover:bg-pink-100 hover:scale-105 active:scale-95">📚 成语</button>
+            </div>
+            
+            <div class="bg-gradient-to-br from-pink-50/70 to-indigo-50/50 rounded-[2.5rem] p-10 md:p-16 mb-10 border-2 border-pink-100/50 shadow-inner group relative overflow-hidden animate-item" style="animation-delay: 0.4s">
+                <div class="absolute top-4 left-6 text-7xl opacity-5 group-hover:scale-110 transition-transform select-none">✏️</div>
+                <p class="text-[10px] font-black text-pink-300 uppercase tracking-[0.5em] mb-4" id="diffLabel">EASY / 简单</p>
+                <p class="text-3xl md:text-6xl font-black text-gray-800 tracking-tight" id="word">？</p>
+            </div>
+            
+            <button onclick="drawWord()" class="theme-download-btn w-full max-w-md mx-auto block py-5 text-xl animate-item" style="animation-delay: 0.5s">🎲 立即抽取词语</button>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.6s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">🎮</span>
+                    玩法说明
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50 leading-relaxed text-gray-600 text-sm">
+                    <ul class="space-y-4">
+                        <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full bg-pink-50 text-pink-400 flex items-center justify-center text-[10px] font-bold">1</span> 选择适合您的难度等级。</li>
+                        <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full bg-pink-50 text-pink-400 flex items-center justify-center text-[10px] font-bold">2</span> 抽取词语后，隐藏屏幕不让对方看见。</li>
+                        <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full bg-pink-50 text-pink-400 flex items-center justify-center text-[10px] font-bold">3</span> 在限定时间内用画笔表达词语，让同伴猜测。</li>
+                    </ul>
+                </div>
+            </section>
+            <section class="animate-item" style="animation-delay: 0.7s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">💡</span>
+                    小贴士
+                </h2>
+                <div class="bg-white p-6 rounded-2xl border border-pink-50 shadow-sm leading-relaxed text-gray-500 text-sm">
+                    <p>抓关键特征比完美作画更重要。如果是成语，可以尝试拆分意象。最重要的是享受互动的乐趣！💖</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const words = {
+            '简单':['太阳','月亮','苹果','猫','狗','花','树','鱼','汽车','房子','雨伞','书本','杯子','鞋子','帽子','手机','电视','大象','兔子','蝴蝶','西瓜','香蕉','蛋糕','冰淇淋','足球'],
+            '普通':['自行车','飞机','消防车','游泳','滑板','演讲','厨师','医生','钢琴','画家','电影院','过山车','海豚','长颈鹿','机器人','宇航员','显微镜','火箭','彩虹','风筝'],
+            '困难':['量子力学','人工智能','经济危机','光合作用','相对论','区块链','全球变暖','暗物质','平行宇宙','蝴蝶效应','薛定谔的猫','时间旅行','潜意识','灵感','自由','命运'],
+            '成语':['画蛇添足','守株待兔','掩耳盗铃','对牛弹琴','亡羊补牢','刻舟求剑','杯弓蛇影','鸡飞蛋打','叶公好龙','井底之蛙','盲人摸象','铁杵磨针','望梅止渴','狐假虎威','画龙点睛','自相矛盾'],
+        };
+        let currentCat = '简单';
+        
+        function setCat(cat, btn) {
+            currentCat = cat;
+            document.querySelectorAll('.dw-cat').forEach(b => {
+                b.classList.remove('bg-emerald-500', 'text-white', 'shadow-lg', 'shadow-emerald-100');
+                b.classList.add('bg-pink-50', 'text-pink-300');
+            });
+            btn.classList.remove('bg-pink-50', 'text-pink-300');
+            btn.classList.add('bg-emerald-500', 'text-white', 'shadow-lg', 'shadow-emerald-100');
+            document.getElementById('diffLabel').textContent = `${cat.toUpperCase()} / ${cat}`;
+        }
+        
+        function drawWord() {
+            const pool = words[currentCat];
+            const w = pool[Math.floor(Math.random()*pool.length)];
+            document.getElementById('word').textContent = w;
+            Utils.toast('新词语已就绪', 'success');
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

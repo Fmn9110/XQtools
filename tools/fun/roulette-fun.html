@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>自定义大转盘 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        .wheel-container {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            margin: 0 auto;
+        }
+        #wheel {
+            width: 100%;
+            height: 100%;
+            border: 8px solid white;
+            border-radius: 50%;
+            box-shadow: 0 40px 100px -20px rgba(0,0,0,0.15);
+        }
+        .pointer {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🎡 幸运 <span class="gradient-text">大转盘</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">自定义你的选项。每一次旋转，都是与命运的一场温柔博弈。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white flex flex-col items-center animate-item shadow-2xl" style="animation-delay: 0.2s">
+            
+            <div class="w-full max-w-sm mb-10">
+                <div class="relative group">
+                    <label class="block text-[10px] font-black text-gray-300 uppercase tracking-widest mb-2 pl-4">Options / 选项 (一行一个)</label>
+                    <textarea id="opts" rows="4" placeholder="火锅&#10;奶茶&#10;睡觉&#10;代码" 
+                        class="w-full p-5 bg-pink-50/20 rounded-3xl border-2 border-transparent focus:border-pink-200 outline-none font-bold text-gray-600 transition-all shadow-inner resize-none custom-scrollbar"></textarea>
+                </div>
+            </div>
+
+            <div class="wheel-container mb-12">
+                <div class="pointer text-4xl">▼</div>
+                <canvas id="wheel" width="300" height="300"></canvas>
+            </div>
+
+            <div class="w-full max-w-sm">
+                <button onclick="spin()" id="spinBtn" class="w-full py-5 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-2xl shadow-xl shadow-pink-100 transition-all active:scale-95 text-xl flex items-center justify-center gap-2">
+                    🎡 开启旋转！
+                </button>
+                <div class="mt-8 text-center min-h-[40px]">
+                    <p class="text-2xl font-black text-gray-800 animate-item" id="result"></p>
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>如果你在两个选项之间犹豫不举，转盘会给你一个结果。有趣的是，当转盘转动的那一刻，你内心深处真正期待的那个答案往往会浮出水面。听从内心的声音吧！💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const canvas = document.getElementById('wheel');
+        const ctx = canvas.getContext('2d');
+        const colors = [
+            '#ff8da1', '#ffb7c5', '#818cf8', '#60a5fa', 
+            '#34d399', '#fbbf24', '#fb923c', '#f472b6'
+        ];
+        
+        let angle = 0;
+        let spinning = false;
+
+        function getItems() {
+            return document.getElementById('opts').value.trim().split('\n').map(s => s.trim()).filter(Boolean);
+        }
+
+        function draw(items) {
+            const n = items.length || 1;
+            const arc = 2 * Math.PI / n;
+            ctx.clearRect(0, 0, 300, 300);
+            
+            items.forEach((item, i) => {
+                ctx.beginPath();
+                ctx.moveTo(150, 150);
+                ctx.arc(150, 150, 140, angle + i * arc, angle + (i + 1) * arc);
+                ctx.fillStyle = colors[i % colors.length];
+                ctx.fill();
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 4;
+                ctx.stroke();
+
+                // Text
+                ctx.save();
+                ctx.translate(150, 150);
+                ctx.rotate(angle + i * arc + arc / 2);
+                ctx.fillStyle = '#fff';
+                
+                let fontSize = 18;
+                if (n > 8) fontSize = 16;
+                if (n > 15) fontSize = 12;
+
+                ctx.font = `900 ${fontSize}px "Outfit", sans-serif`;
+                ctx.textAlign = 'right';
+                const text = item.length > 8 ? item.slice(0, 8) + '…' : item;
+                ctx.fillText(text, 125, 5);
+                ctx.restore();
+            });
+
+            // Center circle
+            ctx.beginPath();
+            ctx.arc(150, 150, 15, 0, Math.PI * 2);
+            ctx.fillStyle = "#fff";
+            ctx.fill();
+        }
+
+        function spin() {
+            if (spinning) return;
+            const items = getItems();
+            if (items.length < 2) {
+                Utils.toast('请至少输入 2 个选项哦', 'warning');
+                return;
+            }
+
+            spinning = true;
+            document.getElementById('result').textContent = '';
+            const totalAngle = Math.random() * 360 + 1440; // At least 4 rounds
+            const duration = 4000;
+            const start = performance.now();
+            const startAngle = angle;
+
+            function anim(now) {
+                const t = Math.min((now - start) / duration, 1);
+                const ease = 1 - Math.pow(1 - t, 4); // Quartic ease out
+                angle = startAngle + ease * totalAngle * Math.PI / 180;
+                draw(items);
+
+                if (t < 1) {
+                    requestAnimationFrame(anim);
+                } else {
+                    spinning = false;
+                    const n = items.length;
+                    const arc = 360 / n;
+                    const deg = (((-angle * 180 / Math.PI % 360) + 360) % 360);
+                    const idx = Math.floor(((deg + 270) % 360) / arc); // 270 is offset for arrow at top
+                    
+                    const winner = items[idx];
+                    const resEl = document.getElementById('result');
+                    resEl.innerHTML = `<span class="text-pink-400">🎉</span> 结果已揭晓：<span class="text-pink-500">${winner}</span>`;
+                    resEl.classList.add('scale-110');
+                    setTimeout(()=>resEl.classList.remove('scale-110'), 200);
+                    Utils.toast(`今日上签: ${winner} ✨`, 'success');
+                }
+            }
+            requestAnimationFrame(anim);
+        }
+
+        document.getElementById('opts').addEventListener('input', () => draw(getItems()));
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+            draw(['火锅', '奶茶', '睡觉', '代码', '游戏', '逛街']);
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy  -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

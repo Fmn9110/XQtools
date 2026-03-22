@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>52周存钱法 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div>
+                <span class="text-2xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">🐷 52周存钱计划</h1>
+            <p class="text-gray-500">阶梯式每周递增存钱，一年可以攒下不少哦！</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase mb-2">第一周存入 (元)</label>
+                    <input type="number" id="startAmount" value="10" class="w-full p-4 bg-gray-50 rounded-xl border border-pink-100 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase mb-2">每周递增 (元)</label>
+                    <input type="number" id="increment" value="10" class="w-full p-4 bg-gray-50 rounded-xl border border-pink-100 outline-none">
+                </div>
+            </div>
+            <button onclick="genPlan()" class="w-full py-4 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl text-lg">📋 生成存钱计划</button>
+            <div id="result" class="hidden mt-8">
+                <div class="bg-green-50 rounded-2xl p-6 text-center mb-6">
+                    <p class="text-gray-500 text-sm">一年共计存下</p>
+                    <p class="text-5xl font-black text-green-500 my-2" id="totalSaved">0</p>
+                    <p class="text-gray-400">元 🎉</p>
+                </div>
+                <div class="grid grid-cols-4 md:grid-cols-13 gap-1" id="weekGrid"></div>
+                <div class="mt-4 overflow-x-auto max-h-60">
+                    <table class="w-full text-sm"><thead><tr class="bg-gray-50 sticky top-0"><th class="p-2">周</th><th class="p-2 text-right">本周存入</th><th class="p-2 text-right">累计</th></tr></thead>
+                    <tbody id="detailTable"></tbody></table>
+                </div>
+            </div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center"><span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">!</span>使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>设定第一周存入金额和每周递增额。</li><li>查看52周后的总存款额。</li><li>可以反向执行（从大到小也行）。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">最后几周压力太大？</div><div class="text-gray-500 text-sm">可以设置较小的递增额，或反向从大额开始递减。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        function genPlan() {
+            const start = parseFloat(document.getElementById('startAmount').value);
+            const inc = parseFloat(document.getElementById('increment').value);
+            let total = 0, cum = 0;
+            let tableHtml = '';
+            let gridHtml = '';
+
+            for (let w = 1; w <= 52; w++) {
+                const amount = start + (w - 1) * inc;
+                cum += amount;
+                total = cum;
+                const intensity = Math.min(255, Math.round((w / 52) * 200));
+                gridHtml += `<div class="w-full aspect-square rounded flex items-center justify-center text-[8px] font-bold text-white" style="background:rgb(${100-intensity/3},${180+intensity/4},${100-intensity/4})" title="第${w}周: ¥${amount}">${w}</div>`;
+                tableHtml += `<tr class="border-b border-gray-50 hover:bg-gray-50"><td class="p-2 text-center">第${w}周</td><td class="p-2 text-right">¥${amount}</td><td class="p-2 text-right font-bold">¥${cum}</td></tr>`;
+            }
+
+            document.getElementById('totalSaved').textContent = '¥' + total.toLocaleString();
+            document.getElementById('weekGrid').innerHTML = gridHtml;
+            document.getElementById('detailTable').innerHTML = tableHtml;
+            document.getElementById('result').classList.remove('hidden');
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

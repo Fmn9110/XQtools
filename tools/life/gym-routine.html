@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>基础健身计划 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div>
+                <span class="text-2xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">💪 基础健身计划</h1>
+            <p class="text-gray-500">根据你的目标生成一周健身动作安排</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase mb-2">健身目标</label>
+                    <select id="goal" class="w-full p-4 bg-gray-50 rounded-xl border border-pink-100 outline-none">
+                        <option value="fat">减脂塑形</option>
+                        <option value="muscle">增肌力量</option>
+                        <option value="health">健康维护</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase mb-2">训练水平</label>
+                    <select id="level" class="w-full p-4 bg-gray-50 rounded-xl border border-pink-100 outline-none">
+                        <option value="beginner">新手入门</option>
+                        <option value="intermediate">中级进阶</option>
+                    </select>
+                </div>
+            </div>
+            <button onclick="genPlan()" class="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl text-lg">📋 生成计划</button>
+            <div id="result" class="hidden mt-8 space-y-4" ></div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center"><span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">!</span>使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>选择你的健身目标和训练水平。</li><li>自动生成一周7天的训练计划。</li><li>每个动作包含组数和次数建议。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">没有器械怎么办？</div><div class="text-gray-500 text-sm">本计划以徒手训练为主，不需要专业器械。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const plans = {
+            fat: {
+                beginner: [
+                    {day:'周一',focus:'全身燃脂',exercises:['开合跳 3×30秒','深蹲 3×15','俯卧撑(跪姿) 3×10','平板支撑 3×20秒','高抬腿 3×20秒']},
+                    {day:'周二',focus:'有氧 + 核心',exercises:['原地慢跑 5分钟','仰卧起坐 3×15','俄罗斯转体 3×20','登山跑 3×15','拉伸 5分钟']},
+                    {day:'周三',focus:'休息日',exercises:['散步30分钟','全身拉伸15分钟']},
+                    {day:'周四',focus:'下半身',exercises:['弓步蹲 3×12(每侧)','臀桥 3×15','靠墙深蹲 3×30秒','小腿提踵 3×20','泡沫轴放松']},
+                    {day:'周五',focus:'上半身',exercises:['俯卧撑 3×12','三头撑 3×10','超人式 3×12','站姿划船(弹力带) 3×15','拉伸']},
+                    {day:'周六',focus:'HIIT间歇',exercises:['波比跳 4×8','深蹲跳 4×10','俯卧撑 4×10','高抬腿 4×20秒','休息30秒/组']},
+                    {day:'周日',focus:'完全休息',exercises:['充分休息','轻度散步','补充营养']}
+                ],
+                intermediate: [
+                    {day:'周一',focus:'全身HIIT',exercises:['波比跳 5×10','深蹲跳 4×15','俯卧撑 4×15','登山跑 4×20','平板支撑 3×45秒']},
+                    {day:'周二',focus:'核心强化',exercises:['卷腹 4×20','俄罗斯转体 4×25','仰卧举腿 4×15','侧平板 3×30秒(每侧)','死虫式 3×12']},
+                    {day:'周三',focus:'有氧',exercises:['快走/慢跑 30分钟','跳绳 3×3分钟','拉伸15分钟']},
+                    {day:'周四',focus:'下半身',exercises:['保加利亚分腿蹲 4×12','单腿臀桥 4×12','深蹲 4×20','箭步跳 3×10(每侧)','拉伸']},
+                    {day:'周五',focus:'上半身+核心',exercises:['钻石俯卧撑 4×12','三头撑 4×15','超人式 4×15','平板开合 3×12','拉伸']},
+                    {day:'周六',focus:'Tabata训练',exercises:['20秒全力+10秒休息×8组','动作循环：波比跳/深蹲/俯卧撑/高抬腿','总计4分钟×3轮','组间休息1分钟']},
+                    {day:'周日',focus:'休息恢复',exercises:['泡沫轴放松20分钟','全身拉伸','充足睡眠']}
+                ]
+            },
+            muscle: {
+                beginner: [
+                    {day:'周一',focus:'胸部+三头',exercises:['俯卧撑 4×12','宽距俯卧撑 3×10','三头撑(椅子) 3×12','钻石俯卧撑 3×8','拉伸']},
+                    {day:'周二',focus:'背部+二头',exercises:['超人式 4×15','反向划船(桌下) 3×10','弹力带划船 3×15','弹力带弯举 3×15','拉伸']},
+                    {day:'周三',focus:'休息',exercises:['散步','拉伸15分钟']},
+                    {day:'周四',focus:'腿部+臀部',exercises:['深蹲 4×15','弓步蹲 3×12','臀桥 4×15','靠墙深蹲 3×45秒','小腿提踵 3×20']},
+                    {day:'周五',focus:'肩部+核心',exercises:['俯身飞鸟 3×15','倒立撑(靠墙) 3×8','侧平举(弹力带) 3×15','平板支撑 3×45秒','仰卧起坐 3×20']},
+                    {day:'周六',focus:'全身复合',exercises:['波比跳 3×10','深蹲+推举 3×12','弓步+转体 3×10(每侧)','俯卧撑+划船 3×10']},
+                    {day:'周日',focus:'休息',exercises:['补充蛋白质','充分休息','轻度活动']}
+                ],
+                intermediate: [
+                    {day:'周一',focus:'推(胸+肩+三头)',exercises:['俯卧撑 5×15','下斜俯卧撑 4×12','钻石俯卧撑 4×10','倒立撑 4×8','三头撑 4×15']},
+                    {day:'周二',focus:'拉(背+二头)',exercises:['引体向上/反向划船 4×8','弹力带划船 4×15','超人式 4×15','弹力带弯举 4×15','身体划船 3×10']},
+                    {day:'周三',focus:'腿部',exercises:['保加利亚蹲 4×12','深蹲 5×20','单腿臀桥 4×12','跳跃深蹲 3×15','小腿提踵 4×25']},
+                    {day:'周四',focus:'休息',exercises:['泡沫轴放松','拉伸']},
+                    {day:'周五',focus:'推(加强)',exercises:['宽距俯卧撑 4×15','击掌俯卧撑 3×8','派克俯卧撑 4×10','三头撑 4×15','平板支撑 3×60秒']},
+                    {day:'周六',focus:'拉+腿',exercises:['引体向上 4×最大次数','弓步蹲 4×15','臀桥 4×20','弹力带高位下拉 4×15','核心训练15分钟']},
+                    {day:'周日',focus:'休息恢复',exercises:['充分休息','营养补充','拉伸活动']}
+                ]
+            },
+            health: {
+                beginner: [
+                    {day:'周一',focus:'轻度有氧',exercises:['快走30分钟','拉伸全身15分钟']},
+                    {day:'周二',focus:'力量基础',exercises:['深蹲 2×10','俯卧撑(跪姿) 2×8','臀桥 2×12','平板支撑 2×15秒','拉伸']},
+                    {day:'周三',focus:'休息',exercises:['散步20分钟']},
+                    {day:'周四',focus:'有氧+柔韧',exercises:['慢跑/快走 20分钟','瑜伽拉伸 15分钟']},
+                    {day:'周五',focus:'力量维护',exercises:['深蹲 2×12','俯卧撑 2×10','弓步蹲 2×10','超人式 2×10','拉伸']},
+                    {day:'周六',focus:'户外活动',exercises:['骑车/游泳/爬山 30-45分钟','享受运动乐趣']},
+                    {day:'周日',focus:'休息',exercises:['充分休息','轻度散步']}
+                ],
+                intermediate: [
+                    {day:'周一',focus:'有氧训练',exercises:['慢跑 30分钟','拉伸15分钟']},
+                    {day:'周二',focus:'上半身',exercises:['俯卧撑 3×15','三头撑 3×12','弹力带划船 3×15','超人式 3×12','拉伸']},
+                    {day:'周三',focus:'瑜伽/柔韧',exercises:['瑜伽流 30分钟','深度拉伸15分钟']},
+                    {day:'周四',focus:'下半身',exercises:['深蹲 3×15','弓步蹲 3×12','臀桥 3×15','小腿提踵 3×20','拉伸']},
+                    {day:'周五',focus:'有氧+核心',exercises:['快走/慢跑25分钟','平板支撑 3×30秒','仰卧起坐 3×15','拉伸']},
+                    {day:'周六',focus:'户外运动',exercises:['骑车/游泳/爬山 45分钟','享受大自然']},
+                    {day:'周日',focus:'休息恢复',exercises:['休息日','可做轻度拉伸']}
+                ]
+            }
+        };
+
+        const dayColors = ['bg-red-50 border-red-100','bg-orange-50 border-orange-100','bg-yellow-50 border-yellow-100','bg-green-50 border-green-100','bg-blue-50 border-blue-100','bg-indigo-50 border-indigo-100','bg-purple-50 border-purple-100'];
+
+        function genPlan() {
+            const goal = document.getElementById('goal').value;
+            const level = document.getElementById('level').value;
+            const plan = plans[goal][level];
+
+            let html = '';
+            plan.forEach((d, i) => {
+                html += `<div class="rounded-2xl p-5 border ${dayColors[i]}">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="font-bold text-gray-700">${d.day}</span>
+                        <span class="text-sm bg-white px-3 py-1 rounded-full text-gray-500">${d.focus}</span>
+                    </div>
+                    <ul class="space-y-1 text-sm text-gray-600">
+                        ${d.exercises.map(e => '<li>• ' + e + '</li>').join('')}
+                    </ul>
+                </div>`;
+            });
+            document.getElementById('result').innerHTML = html;
+            document.getElementById('result').classList.remove('hidden');
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>藏头诗智能生成器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">📜 藏头诗 <span class="gradient-text">生成器</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">输入关键字，自动生成一首富有诗意的藏头诗。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            <div class="max-w-md mx-auto mb-8">
+                <label class="block text-xs font-black text-pink-300 uppercase tracking-widest mb-3 text-center">输入藏头字（2-8个汉字）</label>
+                <input type="text" id="keyword" placeholder="如：我爱你" maxlength="8" class="w-full p-5 bg-pink-50/30 rounded-2xl border-2 border-transparent focus:border-pink-100 outline-none text-center text-2xl font-bold text-gray-700 transition-all">
+            </div>
+            <button onclick="generate()" class="theme-download-btn w-full max-w-md mx-auto block py-4 text-lg">✨ 生成藏头诗</button>
+            
+            <div id="result" class="hidden mt-12 animate-item">
+                <div class="bg-gradient-to-br from-pink-50/50 to-orange-50/30 rounded-[2.5rem] p-8 md:p-12 text-center border-2 border-pink-100/50 shadow-inner">
+                    <div id="poem" class="text-xl md:text-2xl leading-relaxed font-serif text-gray-700 tracking-[0.2em] space-y-4"></div>
+                    <button onclick="copyPoem()" class="theme-secondary-btn mt-8 px-8 py-3">📋 复制诗句</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.3s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">📖</span>
+                    使用说明
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50">
+                    <ul class="space-y-4 text-gray-600 text-sm">
+                        <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full bg-pink-50 text-pink-400 flex items-center justify-center text-[10px] font-bold">1</span> 输入2-8个汉字作为藏头字。</li>
+                        <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full bg-pink-50 text-pink-400 flex items-center justify-center text-[10px] font-bold">2</span> 每个字会作为诗句的首字。</li>
+                        <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full bg-pink-50 text-pink-400 flex items-center justify-center text-[10px] font-bold">3</span> 基于内置词库自动生成，支持五言和七言。</li>
+                    </ul>
+                </div>
+            </section>
+            <section class="animate-item" style="animation-delay: 0.4s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">?</span>
+                    常见问题
+                </h2>
+                <div class="space-y-4">
+                    <div class="bg-white p-6 rounded-2xl border border-pink-50 shadow-sm">
+                        <div class="font-bold text-gray-700 mb-2">诗句质量如何？</div>
+                        <div class="text-gray-500 text-sm leading-relaxed">基于前端词库随机组合，风格偏趣味性，适合娱乐、表白或日常互动。</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const lines5 = {
+            love:['情深似海深','意浓花满枝','心系千里远','梦绕百花间','相思入骨髓','温柔如月光','携手共白头','执念永不改'],
+            nature:['风起云涌时','月照长河流','花开满山岗','雪落碧松间','春来百鸟鸣','秋去叶纷飞','星辰大海远','山高水长流'],
+            mood:['欢歌笑语中','泪洒相思地','独坐思故人','放眼看天下','豪情满乾坤','淡然品清茶','悠然见南山','快意游天涯'],
+            time:['年华如水逝','岁月不待人','光阴似箭飞','日月交替换','朝暮各不同','晨起迎朝阳','暮色映长天','今朝更胜昔']
+        };
+        const lines7 = {
+            love:['深情款款向天涯','一片真心付与她','千山万水总关情','柔情蜜意在心间','天涯海角共此时','白云深处有人家','相逢何必曾相识','此情可待成追忆'],
+            nature:['春风十里不如你','明月高悬照九州','落花有意随流水','白雪皑皑覆青山','碧波荡漾映蓝天','清风明月本无价','山花烂漫迎春归','秋水长天一色连'],
+            mood:['笑看人生几度秋','豪气冲天贯古今','闲庭信步赏春光','无边风月任遨游','壮志凌云冲霄汉','悠然自得乐逍遥','一腔热血酬壮志','快意恩仇走天涯'],
+            time:['百年光阴如弹指','千载岁月一瞬间','年年岁岁花相似','日日夜夜盼君归','朝朝暮暮在心头','年华似水流不住','光阴荏苒催人老','今生今世永相随']
+        };
+
+        const allCategories = ['love','nature','mood','time'];
+
+        function pickLine(char, use7) {
+            const lib = use7 ? lines7 : lines5;
+            const cat = allCategories[Math.floor(Math.random() * allCategories.length)];
+            const pool = lib[cat];
+            const line = pool[Math.floor(Math.random() * pool.length)];
+            return char + line.slice(1);
+        }
+
+        function generate() {
+            const kw = document.getElementById('keyword').value.trim();
+            if (kw.length < 2) { Utils.toast('请输入至少2个汉字', 'info'); return; }
+            const use7 = Math.random() > 0.5;
+            let poem = '';
+            for (let i = 0; i < kw.length; i++) {
+                const line = pickLine(kw[i], use7);
+                poem += `<p><span class="text-pink-500 font-bold md:text-3xl text-2xl mr-1">${kw[i]}</span>${line.slice(1)}${use7 ? '。' : '，'}</p>`;
+            }
+            document.getElementById('poem').innerHTML = poem;
+            document.getElementById('result').classList.remove('hidden');
+            Utils.toast('诗句已生成', 'success');
+        }
+
+        function copyPoem() {
+            const text = document.getElementById('poem').innerText;
+            navigator.clipboard.writeText(text).then(() => Utils.toast('已复制到剪贴板', 'success'));
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

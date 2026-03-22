@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>像素绘画 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7] min-h-screen font-['Outfit']">
+    <!-- 导航栏 -->
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-pink-100 px-4 md:px-6 py-3">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2 md:gap-3 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-8 h-8 md:w-10 md:h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-xl md:text-2xl shadow-lg shadow-pink-200">Q</div>
+                <span class="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-rose-400">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="px-4 py-2 rounded-full bg-pink-50 text-pink-500 hover:bg-pink-100 transition-all text-sm font-semibold">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12 animate-fade-in">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-[#4a4a4a] mb-4">像素绘画</h1>
+            <p class="text-gray-500">点阵艺术，复古像素风由你创造 👾</p>
+        </header>
+
+        <section class="grid lg:grid-cols-5 gap-8 mb-12">
+            <!-- 配置区 -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="cute-card p-6 md:p-8 bg-white/70 backdrop-blur-sm border border-white/50 shadow-xl shadow-pink-100/50 rounded-[2rem]">
+                    <h3 class="text-lg font-bold text-[#4a4a4a] mb-6 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-pink-400 rounded-full"></span>
+                        画笔设置
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-400 mb-2 px-1">笔触颜色</label>
+                            <input type="color" id="colorPicker" value="#ec4899" class="w-full h-12 rounded-xl cursor-pointer border-2 border-pink-50 bg-white p-1">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-400 mb-2 px-1">画布网格</label>
+                            <select id="gridSize" class="w-full px-4 py-3 border-2 border-pink-50 rounded-xl focus:border-pink-300 outline-none transition-all font-bold text-pink-500 bg-white">
+                                <option value="16">16 x 16 (极简)</option>
+                                <option value="32" selected>32 x 32 (标准)</option>
+                                <option value="64">64 x 64 (细腻)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-4">
+                    <button id="downloadBtn" class="cute-button px-6 py-4 bg-gradient-to-r from-pink-400 to-rose-400 text-white rounded-2xl font-bold shadow-lg shadow-pink-200 hover:scale-105 transition-all flex items-center justify-center gap-2">
+                        <span>🚀</span> 导出 PNG
+                    </button>
+                    <button id="clearBtn" class="px-6 py-4 bg-white text-gray-400 rounded-2xl font-bold border-2 border-gray-100 hover:bg-gray-50 transition-all">清空画布</button>
+                </div>
+            </div>
+
+            <!-- 画布预览 -->
+            <div class="lg:col-span-3">
+                <div class="cute-card p-4 md:p-8 bg-white/70 backdrop-blur-sm border border-white/50 shadow-xl shadow-pink-100/50 rounded-[2rem] flex flex-col items-center justify-center">
+                    <div id="gridContainer" class="bg-white border-4 border-pink-50 shadow-inner grid overflow-hidden leading-[0]">
+                        <!-- 格子动态生成 -->
+                    </div>
+                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-6">CANVAS AREA</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 说明区 -->
+        <div class="grid md:grid-cols-2 gap-8 mb-12 animate-fade-in">
+            <section class="space-y-6">
+                <h2 class="text-2xl font-bold text-[#4a4a4a] flex items-center gap-3">
+                    <span class="w-10 h-10 bg-white rounded-2xl flex items-center justify-center shadow-sm">🎯</span>
+                    专属指南及提示
+                </h2>
+                <div class="bg-white/60 backdrop-blur-sm rounded-[2rem] p-8 border border-white shadow-xl shadow-pink-100/20">
+                    <ul class="space-y-4">
+                        <li class="flex gap-4">
+                            <span class="flex-shrink-0 w-6 h-6 bg-pink-100 text-pink-500 rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                            <p class="text-[#6b7280] text-sm leading-relaxed">按下鼠标或触摸并移动即可连续绘画。</p>
+                        </li>
+                        <li class="flex gap-4">
+                            <span class="flex-shrink-0 w-6 h-6 bg-pink-100 text-pink-500 rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                            <p class="text-[#6b7280] text-sm leading-relaxed">导出的图片将自动放大，确保像素边缘清晰无锯齿。</p>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- 加载遮罩 -->
+    <div id="loader-overlay" class="fixed inset-0 bg-pink-50/80 backdrop-blur-sm z-[100] flex items-center justify-center hidden">
+        <div class="cute-loader-candy"></div>
+    </div>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const gridContainer = document.getElementById('gridContainer');
+        const gridSizeSelect = document.getElementById('gridSize');
+        const colorPicker = document.getElementById('colorPicker');
+        const clearBtn = document.getElementById('clearBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const loader = document.getElementById('loader-overlay');
+
+        let isDrawing = false;
+
+        function initGrid() {
+            const size = parseInt(gridSizeSelect.value);
+            gridContainer.innerHTML = '';
+            gridContainer.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+            
+            const cellSize = Math.min(600 / size, 20);
+            gridContainer.style.width = `${cellSize * size}px`;
+            gridContainer.style.height = `${cellSize * size}px`;
+
+            for (let i = 0; i < size * size; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'border-[0.5px] border-gray-100/30 inline-block w-full h-full bg-white';
+                cell.onmousedown = () => { isDrawing = true; cell.style.backgroundColor = colorPicker.value; cell.style.borderColor = 'transparent'; };
+                cell.onmouseenter = () => { if (isDrawing) { cell.style.backgroundColor = colorPicker.value; cell.style.borderColor = 'transparent'; } };
+                gridContainer.appendChild(cell);
+            }
+        }
+
+        window.onmouseup = () => isDrawing = false;
+
+        gridSizeSelect.onchange = initGrid;
+        
+        clearBtn.onclick = initGrid;
+
+        downloadBtn.onclick = () => {
+            const size = parseInt(gridSizeSelect.value);
+            const canvas = document.createElement('canvas');
+            const upscale = 400 / size; // 导出尺寸
+            canvas.width = size * upscale;
+            canvas.height = size * upscale;
+            const ctx = canvas.getContext('2d');
+            
+            const cells = gridContainer.children;
+            for (let i = 0; i < cells.length; i++) {
+                const r = Math.floor(i / size);
+                const c = i % size;
+                ctx.fillStyle = cells[i].style.backgroundColor || '#ffffff';
+                ctx.fillRect(c * upscale, r * upscale, upscale, upscale);
+            }
+            
+            Utils.downloadFile(canvas.toDataURL('image/png'), `pixel_art_${Date.now()}.png`, 'image/png');
+            Utils.toast('像素画已导出', 'success');
+        };
+
+        // 初始化
+        window.onload = initGrid;
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

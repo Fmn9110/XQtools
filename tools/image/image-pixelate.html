@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>像素化艺术 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fffafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 transition-transform hover:rotate-0">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-4 md:py-8 px-4 max-w-4xl text-center">
+        <header class="mb-12">
+            <h1 class="text-4xl font-extrabold mb-4 animate-item gradient-text">8-Bit 像素实验室</h1>
+            <p class="text-gray-500 animate-item" style="animation-delay: 0.1s">变身像素艺术，找回复古的低保真快乐。游戏感拉满！🎮</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 animate-item" style="animation-delay: 0.2s">
+            <div id="upload-stage">
+                <div id="drop-zone" class="w-full border-4 border-dashed border-pink-100 rounded-3xl p-8 md:p-16 hover:border-pink-300 transition-all cursor-pointer bg-white group">
+                    <input type="file" id="fileInput" accept="image/*" class="hidden">
+                    <div class="text-7xl mb-6 group-hover:scale-110 transition-transform">🎮</div>
+                    <p class="text-xl font-bold text-gray-700">提交需要像素化的样本</p>
+                    <p class="text-pink-400 mt-2 text-sm italic">自定义颗粒感，重塑怀旧美学</p>
+                </div>
+            </div>
+
+            <div id="editor-stage" class="hidden animate-fade-in flex flex-col items-center gap-10">
+                <div class="w-full bg-gray-50 rounded-[2.5rem] p-4 flex justify-center items-center overflow-hidden border border-pink-50 min-h-[300px] shadow-inner">
+                    <canvas id="canvas" class="max-w-full max-h-[450px] shadow-sm rounded-2xl"></canvas>
+                </div>
+
+                <div class="w-full max-w-md space-y-8 bg-white p-8 rounded-[2.5rem] shadow-sm border border-pink-50">
+                    <div class="space-y-6">
+                        <div class="flex justify-between items-center px-1">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">像素颗粒感</label>
+                            <span id="label" class="font-black text-pink-500 font-mono text-xl">20%</span>
+                        </div>
+                        <input type="range" id="range" min="1" max="50" value="20" class="w-full h-2 bg-pink-100 rounded-lg appearance-none cursor-pointer accent-pink-500">
+                    </div>
+
+                    <div class="flex flex-col gap-4">
+                        <button id="saveBtn" class="w-full py-5 bg-pink-500 text-white rounded-full font-black shadow-lg shadow-pink-100 hover:bg-pink-600 transition-all theme-download-btn">保存像素杰作</button>
+                        <button id="resetBtn" class="w-full py-3 text-gray-400 font-bold hover:text-pink-500 transition-all theme-secondary-btn rounded-full border border-gray-100 uppercase text-[10px] font-black italic">更换实验样本</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.3s">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center justify-center">
+                <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">💡</span>
+                像素法则
+            </h2>
+            <div class="bg-white rounded-3xl p-8 shadow-sm border border-pink-50 relative overflow-hidden text-left">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-full blur-3xl -mr-10 -mt-10 opacity-50"></div>
+                <div class="grid md:grid-cols-2 gap-8 relative z-10 text-xs text-gray-500 font-medium italic leading-relaxed">
+                    <p>1. <b>低保真魅力：</b>像素化程度越高（%越大），画面越抽象。这是一种极简主义的艺术表达方式。</p>
+                    <p>2. <b>平滑渲染：</b>实验室通过禁用浏览器自带的插值抗锯齿算法，获得更纯粹、锐利的像素色块边缘。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-10 text-center text-gray-400 text-xs border-t border-pink-50 mt-12 bg-white/50">
+        © 2026 小Q工具箱 · 像素实验室 💖
+    </footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadStage = document.getElementById('upload-stage');
+        const editorStage = document.getElementById('editor-stage');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const range = document.getElementById('range');
+        const label = document.getElementById('label');
+        const saveBtn = document.getElementById('saveBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        let originalImg = null;
+
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.getElementById('drop-zone').onclick = () => fileInput.click();
+
+        fileInput.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            originalImg = new Image();
+            originalImg.src = await Utils.readFileAsDataURL(file);
+            originalImg.onload = () => {
+                uploadStage.classList.add('hidden');
+                editorStage.classList.remove('hidden');
+                draw();
+            };
+        };
+
+        range.oninput = () => { label.textContent = range.value + '%'; draw(); };
+
+        function draw() {
+            const percent = parseInt(range.value);
+            const scale = Math.max(0.01, (60 - percent) / 100);
+            canvas.width = originalImg.width; canvas.height = originalImg.height;
+            const tw = Math.ceil(originalImg.width * scale), th = Math.ceil(originalImg.height * scale);
+            const temp = document.createElement('canvas');
+            temp.width = tw; temp.height = th;
+            const tCtx = temp.getContext('2d');
+            tCtx.drawImage(originalImg, 0, 0, tw, th);
+            ctx.imageSmoothingEnabled = false;
+            ctx.drawImage(temp, 0, 0, tw, th, 0, 0, canvas.width, canvas.height);
+        }
+
+        saveBtn.onclick = () => {
+            Utils.downloadFile(canvas.toDataURL('image/png'), `q_pixel_${Date.now()}.png`, 'image/png');
+            Utils.toast('已保存像素杰作', 'success');
+        };
+
+        resetBtn.onclick = () => { fileInput.value = ''; uploadStage.classList.remove('hidden'); editorStage.classList.add('hidden'); };
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

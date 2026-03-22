@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>价格计算器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50"><div class="container mx-auto flex justify-between items-center"><div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'"><div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div><span class="text-2xl font-bold gradient-text">小Q工具箱</span></div><a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a></div></nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">🧮 价格计算器</h1>
+            <p class="text-gray-500">比较单价、计算折扣、满减优惠，找到最划算的选择</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="mb-6">
+                <h3 class="font-bold text-gray-700 mb-3">📊 单价对比</h3>
+                <div class="space-y-2" id="items">
+                    <div class="grid grid-cols-3 gap-2"><input type="text" placeholder="商品A" class="item-name p-2 bg-gray-50 rounded-lg border text-sm outline-none"><input type="number" placeholder="价格" class="item-price p-2 bg-gray-50 rounded-lg border text-sm outline-none"><input type="number" placeholder="数量/重量" class="item-qty p-2 bg-gray-50 rounded-lg border text-sm outline-none"></div>
+                    <div class="grid grid-cols-3 gap-2"><input type="text" placeholder="商品B" class="item-name p-2 bg-gray-50 rounded-lg border text-sm outline-none"><input type="number" placeholder="价格" class="item-price p-2 bg-gray-50 rounded-lg border text-sm outline-none"><input type="number" placeholder="数量/重量" class="item-qty p-2 bg-gray-50 rounded-lg border text-sm outline-none"></div>
+                </div>
+                <button onclick="comparePrice()" class="mt-3 w-full py-3 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl">🏷️ 比价</button>
+                <div id="compareResult" class="hidden mt-3 text-center bg-green-50 rounded-xl p-4 font-bold text-green-600"></div>
+            </div>
+            <hr class="my-6">
+            <div class="mb-6">
+                <h3 class="font-bold text-gray-700 mb-3">💰 折扣计算</h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="text-xs text-gray-400">原价</label><input type="number" id="origPrice" placeholder="100" class="w-full p-2 bg-gray-50 rounded-lg border text-sm outline-none"></div>
+                    <div><label class="text-xs text-gray-400">折扣(%)</label><input type="number" id="discount" placeholder="80" class="w-full p-2 bg-gray-50 rounded-lg border text-sm outline-none"></div>
+                </div>
+                <button onclick="calcDiscount()" class="mt-3 w-full py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl">🎉 算折扣</button>
+                <div id="discountResult" class="hidden mt-3 text-center bg-orange-50 rounded-xl p-4"></div>
+            </div>
+            <hr class="my-6">
+            <div>
+                <h3 class="font-bold text-gray-700 mb-3">🎁 满减计算</h3>
+                <div class="grid grid-cols-3 gap-3">
+                    <div><label class="text-xs text-gray-400">商品总价</label><input type="number" id="totalPrice" placeholder="280" class="w-full p-2 bg-gray-50 rounded-lg border text-sm outline-none"></div>
+                    <div><label class="text-xs text-gray-400">满</label><input type="number" id="fullAmount" placeholder="200" class="w-full p-2 bg-gray-50 rounded-lg border text-sm outline-none"></div>
+                    <div><label class="text-xs text-gray-400">减</label><input type="number" id="reduceAmount" placeholder="30" class="w-full p-2 bg-gray-50 rounded-lg border text-sm outline-none"></div>
+                </div>
+                <button onclick="calcFullReduce()" class="mt-3 w-full py-3 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-xl">🔢 算满减</button>
+                <div id="fullReduceResult" class="hidden mt-3 text-center bg-purple-50 rounded-xl p-4"></div>
+            </div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>单价对比：输入价格和数量，比较哪个更划算。</li><li>折扣计算：输入原价和折扣百分比。</li><li>满减计算：计算满减后的实际价格。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">满减可以叠加吗？</div><div class="text-gray-500 text-sm">本工具按满减规则自动计算可叠加次数。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        function comparePrice() {
+            const names = document.querySelectorAll('.item-name');
+            const prices = document.querySelectorAll('.item-price');
+            const qtys = document.querySelectorAll('.item-qty');
+            let results = [];
+            for (let i = 0; i < names.length; i++) {
+                const name = names[i].value || `商品${i+1}`;
+                const price = parseFloat(prices[i].value);
+                const qty = parseFloat(qtys[i].value);
+                if (price && qty) results.push({ name, unitPrice: price / qty });
+            }
+            if (results.length < 2) { alert('请至少填写2个商品'); return; }
+            results.sort((a, b) => a.unitPrice - b.unitPrice);
+            document.getElementById('compareResult').innerHTML = `🏆 <strong>${results[0].name}</strong> 最划算！单价 ¥${results[0].unitPrice.toFixed(2)}/单位<br><span class="text-sm text-gray-500">${results.map(r => `${r.name}: ¥${r.unitPrice.toFixed(2)}`).join(' | ')}</span>`;
+            document.getElementById('compareResult').classList.remove('hidden');
+        }
+
+        function calcDiscount() {
+            const orig = parseFloat(document.getElementById('origPrice').value);
+            const disc = parseFloat(document.getElementById('discount').value);
+            if (!orig || !disc) { alert('请填写完整'); return; }
+            const final2 = orig * disc / 100;
+            const saved = orig - final2;
+            document.getElementById('discountResult').innerHTML = `<p class="text-xl font-bold text-orange-500">到手价 ¥${final2.toFixed(2)}</p><p class="text-sm text-gray-500">节省 ¥${saved.toFixed(2)} (${(100-disc).toFixed(0)}% off)</p>`;
+            document.getElementById('discountResult').classList.remove('hidden');
+        }
+
+        function calcFullReduce() {
+            const total = parseFloat(document.getElementById('totalPrice').value);
+            const full = parseFloat(document.getElementById('fullAmount').value);
+            const reduce = parseFloat(document.getElementById('reduceAmount').value);
+            if (!total || !full || !reduce) { alert('请填写完整'); return; }
+            const times = Math.floor(total / full);
+            const saved = times * reduce;
+            const final2 = total - saved;
+            const effectiveDisc = (final2 / total * 100).toFixed(1);
+            document.getElementById('fullReduceResult').innerHTML = `<p class="text-xl font-bold text-purple-500">到手价 ¥${final2.toFixed(2)}</p><p class="text-sm text-gray-500">满减${times}次，节省 ¥${saved.toFixed(2)}，相当于${effectiveDisc}折</p>`;
+            document.getElementById('fullReduceResult').classList.remove('hidden');
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

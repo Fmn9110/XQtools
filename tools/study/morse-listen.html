@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>摩斯电码听力 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">摩斯密码听力训练</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">将文字译为神秘频率，体验无线电通讯的魅力。</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white shadow-2xl animate-item" style="animation-delay: 0.2s">
+            <div class="relative group mb-8">
+                <p class="text-[10px] font-black text-pink-400 uppercase tracking-widest absolute -top-5 left-4">Payload Text 待译文本</p>
+                <input type="text" id="text" placeholder="输入英文文本或数字.." class="w-full p-6 bg-slate-50 rounded-[2.5rem] border-2 border-slate-50 outline-none focus:border-pink-200 transition-all text-center text-2xl font-black text-pink-500 shadow-inner" value="SOS">
+            </div>
+            
+            <button id="playBtn" onclick="convert()" class="w-full py-5 bg-pink-400 text-white font-black rounded-3xl shadow-lg hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-xl mb-10 group flex items-center justify-center gap-3">
+                <span id="playIcon">🔊</span> <span id="btnText">立即转换并播放 (Play)</span>
+            </button>
+
+            <div class="p-10 bg-pink-50/20 rounded-[3.5rem] border-2 border-dashed border-pink-100 mb-10 relative overflow-hidden group">
+                <div id="playingWave" class="absolute inset-0 bg-pink-400/5 opacity-0 transition-opacity"></div>
+                <p id="morse" class="font-mono text-3xl md:text-5xl tracking-[0.4em] text-slate-700 break-words min-h-[1.5em] leading-loose select-none">... --- ...</p>
+            </div>
+
+            <div class="space-y-6">
+                <p class="text-[10px] font-black text-pink-400 uppercase tracking-widest text-left pl-4">Morse Code Reference 参照表</p>
+                <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-9 lg:grid-cols-12 gap-3 text-[10px] font-black" id="ref">
+                    <!-- Ref data -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const CODE = {
+            A:'.-', B:'-...', C:'-.-.', D:'-..', E:'.', F:'..-.', G:'--.', H:'....', I:'..', J:'.---', 
+            K:'-.-', L:'.-..', M:'--', N:'-.', O:'---', P:'.--.', Q:'--.-', R:'.-.', S:'...', T:'-', 
+            U:'..-', V:'...-', W:'.--', X:'-..-', Y:'-.--', Z:'--..', 
+            0:'-----', 1:'.----', 2:'..---', 3:'...--', 4:'....-', 5:'.....', 6:'-....', 7:'--...', 8:'---..', 9:'----.'
+        };
+        
+        document.getElementById('ref').innerHTML = Object.entries(CODE).map(([k, v]) => `
+            <div class="p-3 bg-pink-50/50 rounded-2xl border border-pink-50 flex flex-col items-center gap-1.5 group hover:bg-white hover:shadow-md hover:scale-110 transition-all cursor-default">
+                <span class="text-slate-700 text-sm">${k}</span>
+                <span class="text-pink-400 font-mono text-xs">${v}</span>
+            </div>
+        `).join('');
+
+        let isPlaying = false;
+
+        function convert(){
+            if(isPlaying) return;
+            const text = document.getElementById('text').value.toUpperCase().trim();
+            if(!text) { Utils.toast('请输入一些文字哦 📡', 'warning'); return; }
+            
+            const morseParts = text.split('').map(c => CODE[c] || '/');
+            const morseString = morseParts.join(' ');
+            document.getElementById('morse').textContent = morseString;
+            
+            playMorse(morseString);
+            Utils.toast('正在播放信号... 📻');
+        }
+
+        async function playMorse(morse){
+            let ctx = window._audioCtx;
+            if(!ctx){
+                ctx = new (window.AudioContext || window.webkitAudioContext)();
+                window._audioCtx = ctx;
+            }
+            if(ctx.state === 'suspended') await ctx.resume();
+
+            isPlaying = true;
+            const btnText = document.getElementById('btnText');
+            const playIcon = document.getElementById('playIcon');
+            const wave = document.getElementById('playingWave');
+            
+            btnText.textContent = "SIGNAL BROADCASTING...";
+            playIcon.textContent = "📡";
+            wave.classList.add('opacity-100', 'animate-pulse');
+
+            const dot = 0.12, dash = 0.35, gap = 0.08, letterGap = 0.3, wordGap = 0.7;
+            let time = ctx.currentTime + 0.1;
+            
+            for(const ch of morse){
+                if(ch === '.' || ch === '-'){
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.frequency.value = 650; // A pleasant tone
+                    
+                    gain.gain.setValueAtTime(0, time);
+                    gain.gain.linearRampToValueAtTime(0.1, time + 0.01);
+                    
+                    const duration = ch === '.' ? dot : dash;
+                    gain.gain.setValueAtTime(0.1, time + duration - 0.01);
+                    gain.gain.linearRampToValueAtTime(0, time + duration);
+                    
+                    osc.start(time);
+                    osc.stop(time + duration);
+                    time += duration + gap;
+                } else if(ch === ' ') {
+                    time += letterGap;
+                } else if(ch === '/') {
+                    time += wordGap;
+                }
+            }
+
+            // Reset UI after playback
+            const totalDuration = (time - ctx.currentTime) * 1000;
+            setTimeout(() => {
+                isPlaying = false;
+                btnText.textContent = "立即转换并播放 (Play)";
+                playIcon.textContent = "🔊";
+                wave.classList.remove('opacity-100', 'animate-pulse');
+            }, totalDuration);
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            if(window._audioCtx && window._audioCtx.state === 'suspended') window._audioCtx.resume();
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

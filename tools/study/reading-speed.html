@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>阅读速度测试 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">万字阅读速度评测中心</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s italic">精准量化你的阅读吞吐率，助你掌握属于自己的知识获取节奏。🚀</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-14 mb-12 bg-white shadow-2xl animate-item" style="animation-delay: 0.2s">
+            <div class="w-full mb-10 text-left relative group">
+                <label class="block text-[10px] font-black text-pink-300 mb-3 uppercase tracking-[0.2em] pl-4">Reading Material 待阅文本粘贴处</label>
+                <textarea id="textIn" class="w-full h-72 md:h-96 p-8 md:p-12 bg-slate-50 border-2 border-slate-50 rounded-[3rem] outline-none focus:border-pink-100 focus:bg-white transition-all text-lg font-medium shadow-inner resize-none text-slate-700 leading-relaxed font-serif" placeholder="在此粘贴一段文字，准备好后点击“开始阅读”按钮吧..."></textarea>
+                <button onclick="document.getElementById('textIn').value=''" class="absolute right-8 top-12 text-[10px] font-black text-gray-300 hover:text-rose-400 transition-colors uppercase tracking-widest opacity-0 group-hover:opacity-100">Clear</button>
+            </div>
+            
+            <div class="w-full flex flex-col sm:flex-row gap-6 mb-12">
+                 <button id="startBtn" onclick="start()" class="flex-1 py-6 bg-pink-400 text-white font-black rounded-[2rem] shadow-xl hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-xl flex items-center justify-center gap-3">
+                    🚀 <span id="startText">开始阅读 (START)</span>
+                 </button>
+                 <button id="doneBtn" onclick="done()" class="hidden flex-1 py-6 bg-emerald-400 text-white font-black rounded-[2rem] shadow-xl hover:bg-emerald-500 transition-all transform hover:-translate-y-1 active:scale-95 text-xl flex items-center justify-center gap-3">
+                    ✅ <span>我读完了 (DONE)</span>
+                 </button>
+            </div>
+
+            <!-- Enhanced Result Dashboard -->
+            <div id="res" class="hidden w-full p-10 md:p-16 bg-pink-50/10 rounded-[4rem] border-2 border-dashed border-pink-50 text-center animate-fade-in relative overflow-hidden group">
+                 <div class="absolute -right-8 -top-8 text-8xl opacity-5 transition-transform group-hover:rotate-12">📊</div>
+                 <p class="text-[10px] text-pink-300 font-black uppercase tracking-[0.4em] mb-6">Efficiency Analytics</p>
+                 
+                 <div class="flex flex-col items-center">
+                    <div class="flex items-baseline gap-2">
+                        <span id="wpm" class="text-7xl md:text-9xl font-black text-slate-800 tracking-tighter">0</span>
+                        <span class="text-lg md:text-2xl font-black text-pink-400 uppercase tracking-widest">字/分钟</span>
+                    </div>
+                    
+                    <div class="mt-8 px-8 py-3 bg-white/60 backdrop-blur-sm rounded-full border border-pink-100 shadow-sm inline-flex items-center gap-3">
+                        <span id="gradeIcon" class="text-xl">🐢</span>
+                        <p id="grade" class="text-sm font-black text-slate-700 tracking-tight">---</p>
+                    </div>
+
+                    <div class="mt-10 grid grid-cols-2 gap-8 w-full max-w-md">
+                        <div class="p-4 bg-white/40 rounded-2xl">
+                             <p class="text-[9px] text-gray-400 font-black uppercase tracking-widest mb-1">Total Words</p>
+                             <p id="wordCount" class="text-lg font-black text-slate-600">-</p>
+                        </div>
+                        <div class="p-4 bg-white/40 rounded-2xl">
+                             <p class="text-[9px] text-gray-400 font-black uppercase tracking-widest mb-1">Time Elapsed</p>
+                             <p id="timeElapsed" class="text-lg font-black text-slate-600">-</p>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+        </section>
+        
+        <footer class="text-gray-300 text-[10px] uppercase font-black tracking-[0.5em] pb-12 animate-item" style="animation-delay: 0.3s">
+            Cognitive Productivity & Literacy Analytics
+        </footer>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let startTime = 0;
+        let timerInterval;
+
+        function start() {
+            const text = document.getElementById('textIn').value.trim();
+            if(!text) {
+                Utils.toast('请先粘贴一段文字哦 📝', 'warning');
+                return;
+            }
+            startTime = Date.now();
+            document.getElementById('startBtn').classList.add('hidden');
+            document.getElementById('doneBtn').classList.remove('hidden');
+            document.getElementById('textIn').readOnly = true;
+            document.getElementById('textIn').classList.add('opacity-50', 'bg-slate-100');
+            document.getElementById('res').classList.add('hidden');
+            Utils.toast('测试已开始，请保持专注阅读 ✨', 'info');
+        }
+
+        function done() {
+            const now = Date.now();
+            const timeMs = now - startTime;
+            const timeMin = timeMs / 1000 / 60;
+            const words = document.getElementById('textIn').value.trim().replace(/\s+/g, '').length;
+            const wpm = Math.round(words / timeMin);
+
+            document.getElementById('wordCount').innerText = words + ' 字';
+            document.getElementById('timeElapsed').innerText = (timeMs / 1000).toFixed(1) + ' s';
+            
+            animateValue('wpm', 0, wpm, 1000);
+            
+            // Grading logic
+            const gradeEl = document.getElementById('grade');
+            const iconEl = document.getElementById('gradeIcon');
+            let grade = "";
+            let icon = "";
+
+            if(wpm < 200) { grade = "普通阅读速度 (加油哦！)"; icon = "🐢"; }
+            else if(wpm < 500) { grade = "优秀阅读效率 (相当不错)"; icon = "🐎"; }
+            else if(wpm < 800) { grade = "高速阅读达人 (非常罕见)"; icon = "🚀"; }
+            else { grade = "量子波动阅读 (人类极限)"; icon = "✨"; }
+            
+            gradeEl.innerText = grade;
+            iconEl.innerText = icon;
+            
+            document.getElementById('res').classList.remove('hidden');
+            document.getElementById('doneBtn').classList.add('hidden');
+            document.getElementById('startBtn').classList.remove('hidden');
+            document.getElementById('startText').innerText = "重新开始阅读 (RESTART)";
+            document.getElementById('textIn').readOnly = false;
+            document.getElementById('textIn').classList.remove('opacity-50', 'bg-slate-100');
+            
+            Utils.toast('阅读效率评估完成 ✨', 'success');
+        }
+
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            const range = end - start;
+            const minTimer = 50;
+            let stepTime = Math.abs(Math.floor(duration / range));
+            stepTime = Math.max(stepTime, minTimer);
+            const startTime = new Date().getTime();
+            const endTime = startTime + duration;
+            let timer;
+
+            function run() {
+                const now = new Date().getTime();
+                const remaining = Math.max((endTime - now) / duration, 0);
+                const value = Math.round(end - (remaining * range));
+                obj.innerHTML = value;
+                if (value == end) {
+                    clearInterval(timer);
+                }
+            }
+            timer = setInterval(run, stepTime);
+            run();
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

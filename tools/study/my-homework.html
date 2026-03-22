@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>作业进度管理 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">作业管理中心</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">井井有条，让每一份作业都准时交付。</p>
+        </header>
+
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 mt-10">
+            <div class="cute-card p-6 bg-white shadow-xl animate-item flex flex-col items-center justify-center border border-pink-50" style="animation-delay: 0.2s">
+                <p class="text-[10px] font-black text-pink-300 uppercase tracking-widest mb-2">Total Tasks</p>
+                <p id="totalCount" class="text-4xl font-black text-slate-700">0</p>
+            </div>
+            <div class="cute-card p-6 bg-white shadow-xl animate-item flex flex-col items-center justify-center border border-pink-50" style="animation-delay: 0.3s">
+                <p class="text-[10px] font-black text-pink-300 uppercase tracking-widest mb-2">Completion Rate</p>
+                <p id="progressPerc" class="text-4xl font-black text-pink-500">0%</p>
+            </div>
+            <div class="cute-card p-6 bg-white shadow-xl animate-item flex flex-col items-center justify-center border border-pink-50" style="animation-delay: 0.4s">
+                <p class="text-[10px] font-black text-pink-300 uppercase tracking-widest mb-2">Overdue</p>
+                <p id="overdueCount" class="text-4xl font-black text-rose-500">0</p>
+            </div>
+        </div>
+
+        <section class="cute-card p-6 md:p-10 mb-8 bg-white shadow-2xl animate-item" style="animation-delay: 0.5s">
+            <!-- Add Form -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-6">
+                <div class="md:col-span-3">
+                    <input type="text" id="hwSubject" placeholder="科目 (eg. 数学)" class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-50 outline-none focus:border-pink-200 text-sm font-bold shadow-inner">
+                </div>
+                <div class="md:col-span-6">
+                    <input type="text" id="hwTask" placeholder="具体内容 (eg. 课后习题 P42)" class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-50 outline-none focus:border-pink-200 text-sm font-medium shadow-inner">
+                </div>
+                <div class="md:col-span-3">
+                    <input type="date" id="hwDue" class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-50 outline-none focus:border-pink-200 text-sm font-bold shadow-inner text-gray-500">
+                </div>
+            </div>
+            <button onclick="addHW()" class="w-full py-5 bg-pink-400 text-white font-black rounded-3xl shadow-lg hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-lg mb-10 flex items-center justify-center gap-3">
+                ✨ <span>记录并添加 (ADD)</span>
+            </button>
+
+            <!-- Progress Bar -->
+            <div class="bg-pink-50/20 p-8 rounded-[3rem] border-2 border-dashed border-pink-100 mb-10 group">
+                <div class="flex justify-between items-center mb-4 px-2">
+                    <span class="text-[10px] font-black text-pink-400 uppercase tracking-widest">Master Progress 画布进度</span>
+                    <span class="text-lg font-black text-pink-500" id="progressVal">0%</span>
+                </div>
+                <div class="w-full bg-white rounded-full h-4 p-1 shadow-inner border border-pink-50">
+                    <div id="progressBar" class="bg-gradient-to-r from-pink-300 to-rose-400 h-full rounded-full transition-all duration-1000 w-0"></div>
+                </div>
+            </div>
+
+            <!-- List Controls -->
+            <div class="flex justify-between items-center mb-6 px-4">
+                <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest">Ongoing Tasks 任务清单</h3>
+                <button onclick="clearDone()" class="text-[10px] font-black text-pink-400 hover:text-pink-600 transition-colors uppercase tracking-widest bg-pink-50 px-3 py-1.5 rounded-xl border border-pink-100">Clear All Completed 清理已完成</button>
+            </div>
+
+            <div class="space-y-4" id="hwList">
+                <!-- Items injected here -->
+            </div>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let hws = JSON.parse(localStorage.getItem('qHomeWork') || '[]');
+        
+        function save() { 
+            localStorage.setItem('qHomeWork', JSON.stringify(hws)); 
+        }
+
+        function addHW() {
+            const subject = document.getElementById('hwSubject').value.trim();
+            const task = document.getElementById('hwTask').value.trim();
+            const due = document.getElementById('hwDue').value;
+            
+            if(!subject || !task) {
+                Utils.toast('请填写完整信息哦 📝', 'warning');
+                return;
+            }
+            
+            hws.unshift({
+                subject,
+                task,
+                due,
+                done: false,
+                id: Date.now()
+            });
+            
+            save();
+            render();
+            
+            document.getElementById('hwSubject').value = '';
+            document.getElementById('hwTask').value = '';
+            Utils.toast('新任务已记录 🍫');
+        }
+
+        function toggleHW(id) {
+            const h = hws.find(h => h.id === id);
+            if(h) h.done = !h.done;
+            save();
+            render();
+            Utils.toast(h.done ? '太棒了！又完成了一项 ✨' : '任务已重置 🔄');
+        }
+
+        function removeHW(id) {
+            if(confirm('确定要删除这项任务吗？')) {
+                hws = hws.filter(h => h.id !== id);
+                save();
+                render();
+                Utils.toast('任务已移除 🗑️');
+            }
+        }
+
+        function clearDone() {
+            const initialCount = hws.length;
+            hws = hws.filter(h => !h.done);
+            if(hws.length < initialCount) {
+                save();
+                render();
+                Utils.toast('已清理所有完成项 🧹');
+            }
+        }
+
+        function render() {
+            const list = document.getElementById('hwList');
+            const total = hws.length;
+            const done = hws.filter(h => h.done).length;
+            const now = new Date().toISOString().slice(0, 10);
+            const overdue = hws.filter(h => h.due && h.due < now && !h.done).length;
+            
+            const pct = total ? Math.round(done / total * 100) : 0;
+            
+            // Stats Updates
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('progressPerc').textContent = pct + '%';
+            document.getElementById('overdueCount').textContent = overdue;
+            document.getElementById('progressVal').textContent = pct + '%';
+            document.getElementById('progressBar').style.width = pct + '%';
+            
+            if(hws.length === 0) {
+                list.innerHTML = `
+                <div class="p-16 text-center text-gray-300 flex flex-col items-center animate-fade-in">
+                    <div class="text-5xl mb-4 opacity-30">🧘</div>
+                    <p class="italic text-sm">暂无任务，享受片刻宁静吧 ✨</p>
+                </div>`;
+                return;
+            }
+
+            list.innerHTML = hws.map((h, index) => {
+                const isOverdue = h.due && h.due < now && !h.done;
+                const delay = (index * 0.05).toFixed(2);
+                
+                return `
+                <div class="group p-6 ${h.done ? 'bg-pink-50/40 opacity-70' : 'bg-white'} border border-pink-50 rounded-[2rem] flex items-center gap-5 transition-all hover:bg-pink-50/20 shadow-sm animate-fade-in" style="animation-delay: ${delay}s">
+                    <button onclick="toggleHW(${h.id})" class="w-10 h-10 rounded-2xl flex items-center justify-center text-2xl transition-all ${h.done ? 'bg-pink-400 text-white shadow-lg' : 'bg-slate-50 text-slate-200 border border-slate-100 hover:border-pink-200 hover:text-pink-300'}">
+                        ${h.done ? '✅' : '⭕'}
+                    </button>
+                    
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-3 mb-1">
+                            <span class="px-2.5 py-1 bg-pink-100/50 text-pink-500 text-[10px] font-black rounded-xl uppercase tracking-wider">${h.subject}</span>
+                            <h4 class="${h.done ? 'line-through text-gray-400' : 'text-slate-700 font-bold'} text-base truncate">${h.task}</h4>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            ${h.due ? `
+                                <p class="text-[10px] flex items-center gap-1.5 ${isOverdue ? 'text-rose-500 font-black' : 'text-gray-400'}">
+                                    ${isOverdue ? '⚠️ 逾期' : '📅'} Deadline: ${h.due}
+                                </p>
+                            ` : ''}
+                            ${h.done ? '<span class="text-[10px] text-pink-400 font-black flex items-center gap-1">✨ Completed</span>' : ''}
+                        </div>
+                    </div>
+                    
+                    <button onclick="removeHW(${h.id})" class="w-10 h-10 rounded-2xl bg-slate-50 flex items-center justify-center text-gray-300 opacity-0 group-hover:opacity-100 hover:bg-rose-100 hover:text-rose-500 transition-all shadow-sm">
+                        🗑️
+                    </button>
+                </div>`;
+            }).join('');
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    render();
+                }, 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>矩阵计算 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">2×2 矩阵基础运算</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">直观演示线性代数基础运算，轻松掌握矩阵奥秘。</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white shadow-2xl animate-item flex flex-col items-center" style="animation-delay: 0.2s">
+            <div class="flex flex-col md:flex-row items-center gap-8 mb-12 w-full justify-center">
+                <!-- Matrix A -->
+                <div class="relative group">
+                    <p class="text-[10px] font-black text-pink-300 uppercase tracking-widest absolute -top-6 left-1/2 -translate-x-1/2">Matrix A</p>
+                    <div class="grid grid-cols-2 gap-3 p-6 bg-pink-50/20 rounded-[2rem] border-2 border-pink-50 shadow-inner group-hover:border-pink-200 transition-all">
+                        <input type="number" id="a1" value="1" class="w-14 h-14 text-center rounded-xl bg-white shadow-sm border border-pink-50 font-black text-slate-700 focus:ring-2 focus:ring-pink-100 transition-all outline-none">
+                        <input type="number" id="a2" value="2" class="w-14 h-14 text-center rounded-xl bg-white shadow-sm border border-pink-50 font-black text-slate-700 focus:ring-2 focus:ring-pink-100 transition-all outline-none">
+                        <input type="number" id="a3" value="3" class="w-14 h-14 text-center rounded-xl bg-white shadow-sm border border-pink-50 font-black text-slate-700 focus:ring-2 focus:ring-pink-100 transition-all outline-none">
+                        <input type="number" id="a4" value="4" class="w-14 h-14 text-center rounded-xl bg-white shadow-sm border border-pink-50 font-black text-slate-700 focus:ring-2 focus:ring-pink-100 transition-all outline-none">
+                    </div>
+                </div>
+
+                <!-- Operator Selector -->
+                <div class="flex flex-row md:flex-col gap-2 bg-pink-50/50 p-2 rounded-2xl border border-pink-100">
+                    <button id="op-add" onclick="setOp('+')" class="w-10 h-10 flex items-center justify-center rounded-xl font-black bg-pink-400 text-white shadow-md transition-all">＋</button>
+                    <button id="op-sub" onclick="setOp('-')" class="w-10 h-10 flex items-center justify-center rounded-xl font-black bg-white text-pink-300 hover:text-pink-400 transition-all">－</button>
+                    <button id="op-mul" onclick="setOp('×')" class="w-10 h-10 flex items-center justify-center rounded-xl font-black bg-white text-pink-300 hover:text-pink-400 transition-all">×</button>
+                </div>
+
+                <!-- Matrix B -->
+                <div class="relative group">
+                    <p class="text-[10px] font-black text-pink-300 uppercase tracking-widest absolute -top-6 left-1/2 -translate-x-1/2">Matrix B</p>
+                    <div class="grid grid-cols-2 gap-3 p-6 bg-pink-50/20 rounded-[2rem] border-2 border-pink-50 shadow-inner group-hover:border-pink-200 transition-all">
+                        <input type="number" id="b1" value="5" class="w-14 h-14 text-center rounded-xl bg-white shadow-sm border border-pink-50 font-black text-slate-700 focus:ring-2 focus:ring-pink-100 transition-all outline-none">
+                        <input type="number" id="b2" value="6" class="w-14 h-14 text-center rounded-xl bg-white shadow-sm border border-pink-50 font-black text-slate-700 focus:ring-2 focus:ring-pink-100 transition-all outline-none">
+                        <input type="number" id="b3" value="7" class="w-14 h-14 text-center rounded-xl bg-white shadow-sm border border-pink-50 font-black text-slate-700 focus:ring-2 focus:ring-pink-100 transition-all outline-none">
+                        <input type="number" id="b4" value="8" class="w-14 h-14 text-center rounded-xl bg-white shadow-sm border border-pink-50 font-black text-slate-700 focus:ring-2 focus:ring-pink-100 transition-all outline-none">
+                    </div>
+                </div>
+            </div>
+            
+            <button onclick="calc()" class="w-full py-5 bg-pink-400 text-white font-black rounded-[2rem] shadow-lg hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-lg mb-10 max-w-sm">
+                🚀 开始计算 (Calculate)
+            </button>
+
+            <div id="res" class="hidden animate-fade-in relative group max-w-sm w-full">
+                <p class="text-[10px] font-black text-pink-400 uppercase tracking-widest mb-4">Calculation Result 计算结果</p>
+                <div class="grid grid-cols-2 gap-3 p-10 bg-gradient-to-br from-pink-400 to-rose-400 rounded-[2.5rem] shadow-xl text-3xl font-black text-white ring-8 ring-pink-50">
+                    <!-- Result cells injected here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let currentOp = '+';
+
+        function setOp(op) {
+            currentOp = op;
+            const ops = { '+': 'op-add', '-': 'op-sub', '×': 'op-mul' };
+            Object.values(ops).forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.remove('bg-pink-400', 'text-white', 'shadow-md');
+                el.classList.add('bg-white', 'text-pink-300');
+            });
+            const activeEl = document.getElementById(ops[op]);
+            activeEl.classList.remove('bg-white', 'text-pink-300');
+            activeEl.classList.add('bg-pink-400', 'text-white', 'shadow-md');
+        }
+
+        function calc() {
+            const v = id => parseFloat(document.getElementById(id).value) || 0;
+            const a = [v('a1'), v('a2'), v('a3'), v('a4')];
+            const b = [v('b1'), v('b2'), v('b3'), v('b4')];
+            let r = [0, 0, 0, 0];
+
+            if (currentOp === '+') {
+                r = [a[0] + b[0], a[1] + b[1], a[2] + b[2], a[3] + b[3]];
+            } else if (currentOp === '-') {
+                r = [a[0] - b[0], a[1] - b[1], a[2] - b[2], a[3] - b[3]];
+            } else if (currentOp === '×') {
+                r = [
+                    a[0] * b[0] + a[1] * b[2],
+                    a[0] * b[1] + a[1] * b[3],
+                    a[2] * b[0] + a[3] * b[2],
+                    a[2] * b[1] + a[3] * b[3]
+                ];
+            }
+            
+            document.getElementById('res').classList.remove('hidden');
+            const resGrid = document.querySelector('#res div');
+            resGrid.innerHTML = r.map(val => `<div class="w-16 h-16 flex items-center justify-center animate-fade-in">${val.toString().includes('.') ? val.toFixed(2) : val}</div>`).join('');
+            
+            Utils.toast('计算成功！✨', 'success');
+            document.getElementById('res').scrollIntoView({behavior: 'smooth', block: 'center'});
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

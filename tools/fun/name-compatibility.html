@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>姓名契合度 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        .score-display {
+            font-family: 'Outfit', sans-serif;
+            font-size: 5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #f43f5e, #ec4899);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 4px 8px rgba(244, 63, 94, 0.2));
+        }
+        @keyframes heart-pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+        .heart-pulse { animation: heart-pulse 2s ease-in-out infinite; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-3xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">💞 姓名 <span class="gradient-text">契合度计</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">探索名字背后的缘分公式。纯属娱乐，真心无价。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white flex flex-col items-center animate-item" style="animation-delay: 0.2s">
+            
+            <div class="grid grid-cols-1 md:grid-cols-11 items-center gap-6 w-full mb-10 relative">
+                <div class="md:col-span-5 relative group">
+                    <label class="block text-[10px] font-black text-gray-300 uppercase tracking-widest mb-2 text-center md:text-left">Person One / 第一人</label>
+                    <input type="text" id="name1" placeholder="输入姓名" 
+                        class="w-full text-center p-5 bg-rose-50/20 rounded-3xl border-2 border-transparent focus:border-rose-200 outline-none text-xl font-bold text-rose-600 transition-all shadow-inner">
+                </div>
+                
+                <div class="md:col-span-1 flex justify-center py-2">
+                    <div class="text-4xl text-rose-400 heart-pulse drop-shadow-sm">❤️</div>
+                </div>
+
+                <div class="md:col-span-5 relative group">
+                    <label class="block text-[10px] font-black text-gray-300 uppercase tracking-widest mb-2 text-center md:text-right">Person Two / 第二人</label>
+                    <input type="text" id="name2" placeholder="输入姓名" 
+                        class="w-full text-center p-5 bg-rose-50/20 rounded-3xl border-2 border-transparent focus:border-rose-200 outline-none text-xl font-bold text-rose-600 transition-all shadow-inner">
+                </div>
+            </div>
+
+            <button onclick="calculate()" id="calcBtn" class="w-full max-w-sm py-5 bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-black rounded-[2rem] shadow-xl shadow-rose-100 transition-all active:scale-95 text-xl mb-12">
+                ✨ 计算缘分数值
+            </button>
+
+            <!-- Result Box -->
+            <div id="resultBox" class="hidden w-full text-center animate-item">
+                <div class="bg-gradient-to-br from-rose-50/50 to-pink-50/50 rounded-[3rem] p-10 md:p-16 border-2 border-rose-100 shadow-inner group relative overflow-hidden mb-10">
+                    <div class="absolute -top-10 -right-10 text-9xl text-rose-500/10 opacity-30 group-hover:rotate-12 transition-transform">💌</div>
+                    
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] mb-4">Compatibility Level / 契合指数</p>
+                    <div class="flex justify-center items-baseline gap-1 mb-6">
+                        <span class="score-display" id="scoreNumber">0</span>
+                        <span class="text-2xl font-black text-rose-400">%</span>
+                    </div>
+
+                    <div class="w-full h-3 bg-white/60 rounded-full mb-10 overflow-hidden p-0.5 border border-white max-w-xs mx-auto">
+                        <div class="h-full bg-gradient-to-r from-rose-300 to-pink-500 rounded-full transition-all duration-1000" id="scoreBar" style="width: 0%;"></div>
+                    </div>
+
+                    <div class="bg-white/60 backdrop-blur-md rounded-3xl p-8 border border-white shadow-sm text-center max-w-md mx-auto">
+                        <h3 class="text-2xl font-black text-gray-800 mb-2" id="scoreTitle"></h3>
+                        <p class="text-gray-500 font-bold leading-relaxed text-sm md:text-base" id="scoreDesc"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">💖</span>
+                <p>姓名契合度计算采用的是基于字符编码的独特算法，它能确保同一对名字产生稳定的、具有娱乐性的数值。但请记住，真正的契合不在于名字的组合，而在于相处时的温润、理解时的默契以及风雨同舟的勇气。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        function getStringHash(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                hash |= 0;
+            }
+            return Math.abs(hash);
+        }
+
+        function getDesc(score) {
+            if (score >= 90) return { title: "天作之合 🦄", desc: "你们的缘分深不可测，简直是灵魂伴侣的教科书级模版。" };
+            if (score >= 80) return { title: "心有灵犀 💖", desc: "频率高度一致，这种不需要言说的默契弥足珍贵。" };
+            if (score >= 60) return { title: "相敬如宾 ✨", desc: "温润如水的关系，虽然平凡但有着最坚韧的纽带。" };
+            if (score >= 40) return { title: "欢喜冤家 ⚡", desc: "在斗嘴中增进感情，平淡生活里的一抹亮色。" };
+            return { title: "独立星球 🌧️", desc: "也许你们是两种截然不同的烟火，相处需要多带一份包容。" };
+        }
+
+        function calculate() {
+            let n1 = document.getElementById('name1').value.trim();
+            let n2 = document.getElementById('name2').value.trim();
+
+            if(!n1 || !n2) {
+                Utils.toast('别害羞，请输入两个名字哦', 'info');
+                return;
+            }
+
+            const btn = document.getElementById('calcBtn');
+            const resultBox = document.getElementById('resultBox');
+            const scoreBar = document.getElementById('scoreBar');
+            const scoreNumberValue = document.getElementById('scoreNumber');
+
+            btn.disabled = true;
+            btn.textContent = '❤️ 正在测算缘分...';
+            resultBox.classList.add('hidden');
+            scoreBar.style.width = '0%';
+
+            setTimeout(() => {
+                const arr = [n1, n2].sort();
+                const combined = arr.join('Love');
+                const hash = getStringHash(combined);
+                
+                let rawScore = (hash % 60) + 40; // Bias towards positive results for better UX
+                if(rawScore > 100) rawScore = 99;
+
+                const d = getDesc(rawScore);
+                document.getElementById('scoreTitle').innerText = d.title;
+                document.getElementById('scoreDesc').innerText = d.desc;
+                
+                resultBox.classList.remove('hidden');
+                btn.disabled = false;
+                btn.textContent = '✨ 重新计算缘分';
+
+                // Animate numbers
+                let curr = 0;
+                const updateInt = setInterval(() => {
+                    if(curr >= rawScore) {
+                        clearInterval(updateInt);
+                        scoreNumberValue.innerText = rawScore;
+                    } else {
+                        curr += Math.ceil((rawScore - curr) / 5) || 1;
+                        scoreNumberValue.innerText = curr;
+                    }
+                }, 30);
+
+                setTimeout(() => {
+                    scoreBar.style.width = rawScore + '%';
+                }, 50);
+
+                Utils.toast('测算报告已送达 ✨', 'success');
+            }, 1000);
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

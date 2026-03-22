@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>脑筋急转弯 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🧩 烧脑 <span class="gradient-text">脑筋急转弯</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">打破常规思维。点击查看答案，让你的大脑转个弯。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white flex flex-col items-center animate-item shadow-2xl" style="animation-delay: 0.2s">
+            
+            <div class="w-full bg-gradient-to-br from-amber-50 to-orange-50 rounded-[3rem] p-10 mb-10 border-2 border-amber-100 min-h-[220px] flex flex-col items-center justify-center relative overflow-hidden group shadow-inner">
+                <div class="absolute -top-6 -left-6 text-8xl text-amber-200/20 rotate-12 transition-transform group-hover:rotate-0">?</div>
+                
+                <p class="text-2xl md:text-3xl font-black text-gray-800 mb-8 text-center leading-relaxed relative z-10" id="riddle">
+                    点击下方按钮开始挑战
+                </p>
+                
+                <div id="answerArea" class="hidden opacity-0 transform translate-y-4 transition-all duration-500 relative z-10">
+                    <div class="bg-white/80 backdrop-blur-sm rounded-2xl px-10 py-5 border-2 border-emerald-100 shadow-xl">
+                        <p class="text-emerald-600 font-black text-xl">💡 <span id="answer"></span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 w-full max-w-md">
+                <button onclick="showAnswer()" class="flex-1 py-5 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-2xl shadow-xl shadow-amber-100 transition-all active:scale-95 text-lg" id="ansBtn">
+                    🤔 查看答案
+                </button>
+                <button onclick="nextRiddle()" class="flex-1 py-5 bg-sky-500 hover:bg-sky-600 text-white font-black rounded-2xl shadow-xl shadow-sky-100 transition-all active:scale-95 text-lg">
+                    下一题 ➡️
+                </button>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>脑筋急转弯的乐趣不在于正确答案，而在于那一瞬间的“豁然开朗”。它能锻炼我们的多向思维，帮我们跳出逻辑陷阱。如果在聚会上感到冷场，不妨拿出一个来考考大家吧！💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const riddles = [
+            {q:'什么东西越洗越脏？',a:'水'},
+            {q:'什么东西天气越热它爬得越高？',a:'温度计'},
+            {q:'一只公鸡加一只母鸡，猜三个字？',a:'两只鸡'},
+            {q:'什么字全世界通用？',a:'阿拉伯数字'},
+            {q:'什么东西不问不答？',a:'门铃'},
+            {q:'哪种动物最没有方向感？',a:'麋鹿（迷路）'},
+            {q:'什么水永远取之不尽？',a:'泪水'},
+            {q:'有一样东西，你只能用左手拿它，右手拿不了，那是什么？',a:'你的右手'},
+            {q:'什么东西比乌鸦更讨厌？',a:'乌鸦嘴'},
+            {q:'什么样的路不能走？',a:'电路'},
+            {q:'什么海里没有水？',a:'辞海'},
+            {q:'火车从北京开到上海需要6小时，行驶3小时后，火车在哪里？',a:'在铁轨上'},
+            {q:'什么东西剪断了不需要刀？',a:'关系'},
+            {q:'什么门永远关不上？',a:'球门'},
+            {q:'孔子和老子有什么区别？',a:'一个有孔，一个不年轻'},
+        ];
+
+        let idx = 0;
+        function shuffle(){for(let i=riddles.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[riddles[i],riddles[j]]=[riddles[j],riddles[i]];}}
+        shuffle();
+
+        const riddleEl = document.getElementById('riddle');
+        const answerEl = document.getElementById('answer');
+        const answerArea = document.getElementById('answerArea');
+
+        function nextRiddle() {
+            riddleEl.style.opacity = '0';
+            riddleEl.style.transform = 'translateY(10px)';
+            answerArea.classList.add('hidden');
+            answerArea.classList.remove('opacity-100', 'translate-y-0');
+            answerArea.classList.add('opacity-0', 'translate-y-4');
+
+            setTimeout(() => {
+                const r = riddles[idx % riddles.length];
+                riddleEl.innerText = r.q;
+                answerEl.innerText = r.a;
+                riddleEl.style.opacity = '1';
+                riddleEl.style.transform = 'translateY(0)';
+                riddleEl.style.transition = 'all 0.4s ease-out';
+                idx++;
+                Utils.toast('新挑战已就绪 ✨', 'info');
+            }, 300);
+        }
+
+        function showAnswer() {
+            answerArea.classList.remove('hidden');
+            setTimeout(() => {
+                answerArea.classList.remove('opacity-0', 'translate-y-4');
+                answerArea.classList.add('opacity-100', 'translate-y-0');
+            }, 10);
+            Utils.toast('真相只有一个！💡', 'success');
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+            nextRiddle();
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy  -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

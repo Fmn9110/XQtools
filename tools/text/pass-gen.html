@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>随机密码生成 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #ec4899;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(236, 72, 153, 0.3);
+            border: 3px solid white;
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen pb-20 md:pb-0">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-xl">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4">强密码生成器</h1>
+            <p class="text-gray-500 italic">生成高度安全的随机密码，防范暴力破解。🔐</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 bg-white shadow-xl mb-8">
+            <div class="relative group mb-8">
+                <div id="passDisplay" class="w-full py-10 px-6 bg-pink-50/20 border-2 border-pink-50 rounded-[2.5rem] text-2xl md:text-3xl font-mono font-bold text-pink-600 break-all flex items-center justify-center min-h-[140px] shadow-inner text-center">
+                    生成中...
+                </div>
+                <button onclick="copyPassword()" class="absolute right-4 bottom-4 bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-pink-100 text-pink-400 hover:text-pink-600 shadow-sm transition-all">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                </button>
+            </div>
+            
+            <div class="space-y-6 text-left mb-10">
+                <div class="bg-pink-50/10 p-6 rounded-3xl border border-pink-50/50">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-sm font-bold text-pink-400 uppercase tracking-widest">密码长度</span>
+                        <span id="lenVal" class="text-xl font-black text-pink-600">16</span>
+                    </div>
+                    <input type="range" id="length" min="6" max="64" value="16" class="w-full h-2 bg-pink-100 rounded-lg appearance-none cursor-pointer accent-pink-500">
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <label class="flex items-center justify-between p-4 bg-white border border-pink-50 rounded-2xl cursor-pointer hover:bg-pink-50/10 transition-colors">
+                        <span class="text-xs font-bold text-gray-500 uppercase tracking-tighter">大写字母 (A-Z)</span>
+                        <input type="checkbox" id="upper" checked class="w-5 h-5 accent-pink-500 rounded border-pink-200">
+                    </label>
+                    <label class="flex items-center justify-between p-4 bg-white border border-pink-50 rounded-2xl cursor-pointer hover:bg-pink-50/10 transition-colors">
+                        <span class="text-xs font-bold text-gray-500 uppercase tracking-tighter">小写字母 (a-z)</span>
+                        <input type="checkbox" id="lower" checked class="w-5 h-5 accent-pink-500 rounded border-pink-200">
+                    </label>
+                    <label class="flex items-center justify-between p-4 bg-white border border-pink-50 rounded-2xl cursor-pointer hover:bg-pink-50/10 transition-colors">
+                        <span class="text-xs font-bold text-gray-500 uppercase tracking-tighter">数字 (0-9)</span>
+                        <input type="checkbox" id="numbers" checked class="w-5 h-5 accent-pink-500 rounded border-pink-200">
+                    </label>
+                    <label class="flex items-center justify-between p-4 bg-white border border-pink-50 rounded-2xl cursor-pointer hover:bg-pink-50/10 transition-colors">
+                        <span class="text-xs font-bold text-gray-500 uppercase tracking-tighter">特殊符号 (!@#)</span>
+                        <input type="checkbox" id="symbols" checked class="w-5 h-5 accent-pink-500 rounded border-pink-200">
+                    </label>
+                </div>
+            </div>
+
+            <button id="genBtn" class="theme-download-btn w-full py-5 text-lg shadow-xl shadow-pink-100">生成新密码</button>
+        </section>
+
+        <div class="text-center group cursor-help">
+            <p class="text-[10px] text-pink-200 uppercase tracking-[0.2em] font-bold group-hover:text-pink-400 transition-colors">Random Values Generated by window.crypto</p>
+        </div>
+    </main>
+
+
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const lenRange = document.getElementById('length');
+        const lenVal = document.getElementById('lenVal');
+        const display = document.getElementById('passDisplay');
+        const genBtn = document.getElementById('genBtn');
+
+        lenRange.oninput = () => { 
+            lenVal.innerText = lenRange.value; 
+            generate();
+        };
+
+        const generate = () => {
+            const charset = {
+                lower: 'abcdefghijklmnopqrstuvwxyz',
+                upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+                numbers: '0123456789',
+                symbols: '!@#$%^&*()_+-=[]{}|;:,.<>?'
+            };
+
+            let chars = '';
+            if (document.getElementById('upper').checked) chars += charset.upper;
+            if (document.getElementById('lower').checked) chars += charset.lower;
+            if (document.getElementById('numbers').checked) chars += charset.numbers;
+            if (document.getElementById('symbols').checked) chars += charset.symbols;
+
+            if (!chars) {
+                display.innerText = '请选择字符类';
+                display.classList.add('text-pink-300');
+                return;
+            }
+            display.classList.remove('text-pink-300');
+
+            let pass = '';
+            const len = parseInt(lenRange.value);
+            const array = new Uint32Array(len);
+            window.crypto.getRandomValues(array);
+
+            for (let i = 0; i < len; i++) {
+                pass += chars.charAt(array[i] % chars.length);
+            }
+
+            display.innerText = pass;
+        };
+
+        genBtn.onclick = () => {
+            generate();
+            Utils.toast('已生成新密码', 'success');
+        };
+
+        function copyPassword() {
+            const val = display.innerText;
+            if (val === '生成中...' || val === '请选择字符类') return;
+            navigator.clipboard.writeText(val).then(() => {
+                Utils.toast('密码已复制到剪贴板', 'success');
+            });
+        }
+
+        // Auto generate on load and option changes
+        window.onload = generate;
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            cb.onchange = generate;
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

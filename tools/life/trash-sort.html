@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>垃圾分类查询 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50"><div class="container mx-auto flex justify-between items-center"><div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'"><div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div><span class="text-2xl font-bold gradient-text">小Q工具箱</span></div><a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a></div></nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">♻️ 垃圾分类查询</h1>
+            <p class="text-gray-500">不知道怎么分类？搜一下就知道</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="mb-6">
+                <input type="text" id="search" placeholder="🔍 输入垃圾名称搜索，如：电池、剩菜..." class="w-full p-4 bg-gray-50 rounded-xl border outline-none text-lg" oninput="filter()">
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                <div class="bg-green-100 rounded-xl p-4 text-center cursor-pointer hover:ring-2 hover:ring-green-400" onclick="setCat('湿垃圾')"><p class="text-3xl mb-1">🟢</p><p class="font-bold text-green-700">湿垃圾</p><p class="text-xs text-gray-500">厨余垃圾</p></div>
+                <div class="bg-gray-100 rounded-xl p-4 text-center cursor-pointer hover:ring-2 hover:ring-gray-400" onclick="setCat('干垃圾')"><p class="text-3xl mb-1">⚫</p><p class="font-bold text-gray-700">干垃圾</p><p class="text-xs text-gray-500">其他垃圾</p></div>
+                <div class="bg-blue-100 rounded-xl p-4 text-center cursor-pointer hover:ring-2 hover:ring-blue-400" onclick="setCat('可回收')"><p class="text-3xl mb-1">🔵</p><p class="font-bold text-blue-700">可回收</p><p class="text-xs text-gray-500">废纸、塑料等</p></div>
+                <div class="bg-red-100 rounded-xl p-4 text-center cursor-pointer hover:ring-2 hover:ring-red-400" onclick="setCat('有害垃圾')"><p class="text-3xl mb-1">🔴</p><p class="font-bold text-red-700">有害垃圾</p><p class="text-xs text-gray-500">电池、药品等</p></div>
+            </div>
+            <div class="space-y-2 max-h-96 overflow-y-auto" id="list"></div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>搜索垃圾名称查看分类。</li><li>点击分类按钮筛选查看。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">各地分类一样吗？</div><div class="text-gray-500 text-sm">本工具参考上海标准。各地可能略有不同，请以当地规定为准。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const items = [
+            // 湿垃圾(厨余)
+            {name:'剩菜剩饭',cat:'湿垃圾'},{name:'果皮果核',cat:'湿垃圾'},{name:'蛋壳',cat:'湿垃圾'},{name:'茶叶渣',cat:'湿垃圾'},{name:'菜根菜叶',cat:'湿垃圾'},
+            {name:'鱼骨头',cat:'湿垃圾'},{name:'花卉绿植',cat:'湿垃圾'},{name:'中药药渣',cat:'湿垃圾'},{name:'过期食品(去包装)',cat:'湿垃圾'},{name:'宠物粮食',cat:'湿垃圾'},
+            // 干垃圾(其他)
+            {name:'餐巾纸',cat:'干垃圾'},{name:'污染塑料袋',cat:'干垃圾'},{name:'烟蒂',cat:'干垃圾'},{name:'一次性杯子',cat:'干垃圾'},{name:'大骨头',cat:'干垃圾'},
+            {name:'椰子壳',cat:'干垃圾'},{name:'陶瓷碎片',cat:'干垃圾'},{name:'竹筷子',cat:'干垃圾'},{name:'猫砂',cat:'干垃圾'},{name:'尘土',cat:'干垃圾'},
+            {name:'创口贴',cat:'干垃圾'},{name:'头发',cat:'干垃圾'},{name:'旧毛巾',cat:'干垃圾'},
+            // 可回收
+            {name:'废纸箱',cat:'可回收'},{name:'旧报纸',cat:'可回收'},{name:'塑料瓶',cat:'可回收'},{name:'易拉罐',cat:'可回收'},{name:'旧衣服',cat:'可回收'},
+            {name:'玻璃瓶',cat:'可回收'},{name:'金属罐',cat:'可回收'},{name:'旧书本',cat:'可回收'},{name:'旧电器',cat:'可回收'},{name:'充电线',cat:'可回收'},
+            {name:'泡沫塑料',cat:'可回收'},{name:'牛奶盒(清洗后)',cat:'可回收'},
+            // 有害垃圾
+            {name:'电池(干电池)',cat:'有害垃圾'},{name:'过期药品',cat:'有害垃圾'},{name:'水银温度计',cat:'有害垃圾'},{name:'荧光灯管',cat:'有害垃圾'},{name:'油漆桶',cat:'有害垃圾'},
+            {name:'指甲油',cat:'有害垃圾'},{name:'杀虫剂罐',cat:'有害垃圾'},{name:'废墨盒',cat:'有害垃圾'},{name:'纽扣电池',cat:'有害垃圾'},
+        ];
+
+        const catColors = {'湿垃圾':'bg-green-50 text-green-700','干垃圾':'bg-gray-100 text-gray-700','可回收':'bg-blue-50 text-blue-700','有害垃圾':'bg-red-50 text-red-700'};
+        const catDots = {'湿垃圾':'🟢','干垃圾':'⚫','可回收':'🔵','有害垃圾':'🔴'};
+        let activeCat = '';
+
+        function setCat(cat) { activeCat = activeCat === cat ? '' : cat; filter(); }
+
+        function filter() {
+            const q = document.getElementById('search').value.trim().toLowerCase();
+            const filtered = items.filter(i => {
+                const matchCat = !activeCat || i.cat === activeCat;
+                const matchQ = !q || i.name.includes(q);
+                return matchCat && matchQ;
+            });
+            let html = '';
+            filtered.forEach(i => {
+                html += `<div class="flex items-center gap-3 p-3 ${catColors[i.cat]} rounded-xl">
+                    <span>${catDots[i.cat]}</span>
+                    <span class="font-bold flex-1">${i.name}</span>
+                    <span class="text-xs px-2 py-1 bg-white/80 rounded-lg">${i.cat}</span>
+                </div>`;
+            });
+            document.getElementById('list').innerHTML = html || '<p class="text-center text-gray-400 py-6">没有找到匹配的垃圾类型 🤔</p>';
+        }
+        filter();
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

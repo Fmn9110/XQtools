@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>论文题目灵感 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .spark-container { background: radial-gradient(circle at center, rgba(244, 114, 182, 0.05) 0%, transparent 70%); }
+        .lock-btn { transition: all 0.2s; }
+        .lock-btn.locked { background: #f472b6; color: white; transform: rotate(15deg); }
+        #res span { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: inline-block; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6 shadow-sm no-print">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-14">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-800 mb-4 animate-item">学术火花：题目灵感工坊</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s italic italic">随机碰撞，深度交织。锁定关键词，探索无限可能。🧪</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-14 mb-12 bg-white shadow-2xl animate-item flex flex-col items-center spark-container" style="animation-delay: 0.2s">
+            <div class="relative w-full max-w-3xl mb-12">
+                <div id="res" class="text-2xl md:text-4xl font-black text-slate-800 p-10 md:p-16 bg-slate-50/50 rounded-[4rem] border-2 border-dashed border-slate-100 min-h-[220px] flex flex-wrap items-center justify-center gap-x-2 gap-y-4 tracking-tight leading-snug">
+                    <span class="text-slate-300">点击按钮开启灵感之门...</span>
+                </div>
+                <!-- Floaties -->
+                <div class="absolute -top-6 -left-6 w-16 h-16 bg-white rounded-3xl shadow-lg flex items-center justify-center text-2xl rotate-12 no-print">🎓</div>
+                <div class="absolute -bottom-6 -right-6 w-16 h-16 bg-white rounded-3xl shadow-lg flex items-center justify-center text-2xl -rotate-12 no-print">🔬</div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl no-print">
+                <button onclick="generate()" class="py-6 bg-pink-400 text-white font-black rounded-3xl shadow-2xl shadow-pink-100 hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-2xl flex items-center justify-center gap-4 group">
+                    ⚡ 碰撞灵感 (SPARK)
+                </button>
+                <div class="flex gap-2">
+                    <button id="lock0" onclick="toggleLock(0)" class="lock-btn flex-1 bg-slate-50 text-slate-400 font-bold rounded-2xl border border-slate-100 text-[10px] uppercase tracking-widest hover:bg-pink-50">Lock Prefix</button>
+                    <button id="lock1" onclick="toggleLock(1)" class="lock-btn flex-1 bg-slate-50 text-slate-400 font-bold rounded-2xl border border-slate-100 text-[10px] uppercase tracking-widest hover:bg-pink-50">Lock Core</button>
+                    <button id="lock2" onclick="toggleLock(2)" class="lock-btn flex-1 bg-slate-50 text-slate-400 font-bold rounded-2xl border border-slate-100 text-[10px] uppercase tracking-widest hover:bg-pink-50">Lock Domain</button>
+                </div>
+            </div>
+
+            <div class="mt-14 w-full flex flex-col items-center">
+                <p class="text-[9px] font-black text-slate-300 uppercase tracking-[0.4em] mb-4">Saved Research Paths</p>
+                <div id="favs" class="flex flex-wrap justify-center gap-3">
+                    <!-- Favorites dynamic -->
+                </div>
+            </div>
+        </section>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 animate-item" style="animation-delay: 0.3s">
+            <div class="p-8 bg-white rounded-[3rem] border border-pink-50 text-left flex items-start gap-5">
+                <div class="w-14 h-14 bg-pink-50 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0">🌈</div>
+                <div>
+                    <h3 class="text-pink-400 font-extrabold mb-1 uppercase tracking-tight text-sm">跨界组合逻辑</h3>
+                    <p class="text-[11px] text-slate-400 leading-relaxed font-medium">内置 300+ 学术动词、50+ 前沿技术名词及 100+ 应用场景，旨在打破思维定势，创造独特的交叉研究课题。</p>
+                </div>
+            </div>
+            <div class="p-8 bg-white rounded-[3rem] border border-pink-50 text-left flex items-start gap-5">
+                <div class="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0">🧬</div>
+                <div>
+                    <h3 class="text-indigo-400 font-extrabold mb-1 uppercase tracking-tight text-sm">多维锁定机制</h3>
+                    <p class="text-[11px] text-slate-400 leading-relaxed font-medium">支持针对特定研究方法（前缀）或特定应用领域（后缀）进行锁定，在保持约束的同时寻找局部的创新突破口。</p>
+                </div>
+            </div>
+        </div>
+
+        <p class="text-[10px] text-gray-300 font-bold uppercase tracking-[0.5em] pb-12 animate-item">
+            Professional Combinatorial Semantic Thesis Engine & Topic Ideator
+        </p>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const vocabulary = [
+            ["基于", "面向", "融合", "一种改进的", "探究", "重构", "优化", "浅析", "赋能", "驱动下", "视野中的", "解构", "协同", "多维", "跨尺度"],
+            ["深度学习", "分布式架构", "知识图谱", "强化学习", "大数据分析", "区块链技术", "自编码器", "Transformer模型", "云原生环境", "数字孪生", "联邦学习", "边缘计算", "自然语言处理", "低代码框架", "微服务集群"],
+            ["在智慧医疗中的应用", "优化算法实现", "预测模型构建", "安全性评估框架", "性能调优实践", "交互设计范式", "数据治理策略", "隐私保护方案", "可持续发展研究", "用户体验评估", "自适应演进策略", "多感官沉淀方法", "透明化监管路径"]
+        ];
+
+        let state = [null, null, null];
+        let locks = [false, false, false];
+
+        function toggleLock(idx) {
+            locks[idx] = !locks[idx];
+            document.getElementById(`lock${idx}`).className = `lock-btn flex-1 ${locks[idx] ? 'locked' : 'bg-slate-50 text-slate-400'} font-bold rounded-2xl border border-slate-100 text-[10px] uppercase tracking-widest hover:bg-pink-50`;
+            Utils.toast(locks[idx] ? '段落已锁定 🔒' : '锁定已解除 🔓', 'info');
+        }
+
+        function generate() {
+             const r = (arr) => arr[Math.floor(Math.random() * arr.length)];
+             const resEl = document.getElementById('res');
+             
+             // Visual effect
+             resEl.querySelectorAll('span').forEach((s, i) => {
+                 if(!locks[i]) {
+                     s.style.opacity = '0';
+                     s.style.transform = 'translateY(20px) scale(1.1)';
+                 }
+             });
+             
+             setTimeout(() => {
+                 state = state.map((val, i) => locks[i] ? val : r(vocabulary[i]));
+                 resEl.innerHTML = state.map((v, i) => `<span id="seg${i}" class="${locks[i] ? 'text-pink-400 pointer-events-none' : 'text-slate-800'} cursor-pointer hover:bg-pink-50 px-2 rounded-lg transition-transform" onclick="refreshSeg(${i})">${v}</span>`).join('');
+                 Utils.toast('灵感已捕捉 ✨', 'success');
+             }, 300);
+        }
+
+        function refreshSeg(idx) {
+            if(locks[idx]) return;
+            state[idx] = vocabulary[idx][Math.floor(Math.random() * vocabulary[idx].length)];
+            const seg = document.getElementById(`seg${idx}`);
+            seg.style.opacity = '0';
+            setTimeout(() => {
+                seg.innerText = state[idx];
+                seg.style.opacity = '1';
+                Utils.toast('局部刷新 ✨', 'info');
+            }, 100);
+        }
+
+        // Init
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    generate();
+                }, 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button') || e.target.closest('#res span')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

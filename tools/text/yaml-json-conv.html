@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>YAML与JSON互转 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-pink: #ffafbd;
+            --secondary-pink: #ffc3a0;
+            --accent-pink: #ff8a9d;
+        }
+        body {
+            background: linear-gradient(135deg, #fff5f6 0%, #fff0f3 100%);
+            min-height: 100vh;
+        }
+        .cute-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 2px solid #fff;
+            border-radius: 2rem;
+            box-shadow: 0 10px 30px rgba(255, 175, 189, 0.1);
+        }
+        .pink-gradient-btn {
+            background: linear-gradient(90deg, var(--primary-pink), var(--accent-pink));
+            transition: all 0.3s ease;
+        }
+        .pink-gradient-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 138, 157, 0.3);
+        }
+        textarea {
+            transition: all 0.3s ease;
+            border: 2px solid #fff0f3 !important;
+        }
+        textarea:focus {
+            border-color: var(--primary-pink) !important;
+            background: #fff !important;
+            box-shadow: 0 0 0 4px rgba(255, 175, 189, 0.1);
+        }
+        .mobile-tab-bar {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .mobile-tab-bar {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: rgba(255, 255, 255, 0.9);
+                backdrop-filter: blur(10px);
+                border-top: 1px solid rgba(255, 175, 189, 0.2);
+                padding: 0.75rem;
+                z-index: 100;
+            }
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="pb-20 md:pb-0">
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-md border-b border-pink-100 flex justify-between items-center">
+        <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-[#ffafbd] to-[#ff8a9d] rounded-xl flex items-center justify-center text-white text-xl shadow-lg font-bold">
+                <i class="fas fa-file-code"></i>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#ff8a9d] to-[#ffafbd]">小Q工具箱</span>
+        </div>
+        <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-semibold text-sm transition-colors flex items-center">
+            <i class="fas fa-th-list mr-1"></i> 返回列表
+        </a>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-5xl">
+        <header class="mb-10 text-center">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-3">YAML ↔️ JSON</h1>
+            <p class="text-gray-500 italic">在 YAML 与 JSON 之间轻松转换 📄</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center px-2">
+                        <label class="text-sm font-bold text-pink-400 uppercase tracking-wider">
+                            <i class="fas fa-file-alt mr-1"></i> YAML 配置
+                        </label>
+                        <button onclick="clearArea('yaml')" class="text-xs text-gray-400 hover:text-pink-400 transition-colors">
+                            <i class="fas fa-eraser mr-1"></i> 清空
+                        </button>
+                    </div>
+                    <textarea id="yaml" class="w-full h-64 md:h-96 p-5 bg-pink-50/30 rounded-2xl text-sm font-mono outline-none resize-none" placeholder="name: Lee&#10;age: 18..."></textarea>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center px-2">
+                        <label class="text-sm font-bold text-pink-400 uppercase tracking-wider">
+                            <i class="fas fa-code mr-1"></i> JSON 数据
+                        </label>
+                        <button onclick="clearArea('json')" class="text-xs text-gray-400 hover:text-pink-400 transition-colors">
+                            <i class="fas fa-eraser mr-1"></i> 清空
+                        </button>
+                    </div>
+                    <textarea id="json" class="w-full h-64 md:h-96 p-5 bg-pink-50/30 rounded-2xl text-sm font-mono outline-none resize-none" placeholder='{"name":"Lee","age":18}...'></textarea>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-4 justify-center">
+                <button onclick="toJS()" class="pink-gradient-btn text-white px-10 py-4 rounded-2xl font-bold shadow-lg flex items-center justify-center">
+                    <i class="fas fa-long-arrow-alt-right mr-2"></i> YAML ➡️ JSON
+                </button>
+                <button onclick="toYAML()" class="bg-white text-pink-400 border-2 border-pink-100 hover:border-pink-200 px-10 py-4 rounded-2xl font-bold transition-all flex items-center justify-center">
+                    <i class="fas fa-long-arrow-alt-left mr-2"></i> JSON ➡️ YAML
+                </button>
+            </div>
+        </section>
+
+        <div class="cute-card p-6 md:p-8 bg-white/50 backdrop-blur-sm border-dashed border-2 border-pink-100">
+            <h3 class="text-lg font-bold text-pink-400 mb-3 flex items-center">
+                <i class="fas fa-info-circle mr-2"></i> 工具说明
+            </h3>
+            <ul class="text-gray-500 text-sm space-y-2">
+                <li class="flex items-start">
+                    <span class="text-pink-300 mr-2">•</span>
+                    JSON 是目前 Web 开发中最常用的数据交换格式。
+                </li>
+                <li class="flex items-start">
+                    <span class="text-pink-300 mr-2">•</span>
+                    YAML 以其卓越的可读性常被用于配置文件（如 Docker, Kubernetes）。
+                </li>
+                <li class="flex items-start">
+                    <span class="text-pink-300 mr-2">•</span>
+                    本工具支持双向转换，只需填入一侧内容并点击对应按钮即可。
+                </li>
+            </ul>
+        </div>
+    </main>
+
+
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const yamlArea = document.getElementById('yaml');
+        const jsonArea = document.getElementById('json');
+
+        function clearArea(id) {
+            document.getElementById(id).value = '';
+            Utils.toast('已清空', 'info');
+        }
+
+        function toJS() {
+            const val = yamlArea.value.trim();
+            if (!val) {
+                Utils.toast('请输入 YAML 内容', 'warning');
+                return;
+            }
+            try {
+                const obj = jsyaml.load(val);
+                jsonArea.value = JSON.stringify(obj, null, 4);
+                Utils.toast('转换成功', 'success');
+            } catch(e) {
+                Utils.toast('YAML 格式错误: ' + e.message, 'error');
+            }
+        }
+
+        function toYAML() {
+            const val = jsonArea.value.trim();
+            if (!val) {
+                Utils.toast('请输入 JSON 内容', 'warning');
+                return;
+            }
+             try {
+                 const obj = JSON.parse(val);
+                 yamlArea.value = jsyaml.dump(obj);
+                 Utils.toast('转换成功', 'success');
+             } catch(e) {
+                 Utils.toast('JSON 格式错误: ' + e.message, 'error');
+             }
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>幸运色与数字 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        .number-display {
+            font-family: 'Outfit', sans-serif;
+            font-size: 8rem;
+            font-weight: 900;
+            line-height: 1;
+            color: rgba(255,255,255,0.7);
+            position: absolute;
+            bottom: -10px;
+            right: 20px;
+            pointer-events: none;
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🌈 今日 <span class="gradient-text">幸运色/数字</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">发现属于你的色彩能量。让每一个数字都为你带来好运。✨</p>
+        </header>
+
+        <section class="max-w-md mx-auto mb-12 px-4 animate-item" style="animation-delay: 0.2s">
+            <div class="bg-white rounded-[2.5rem] overflow-hidden shadow-2xl shadow-pink-100 border-4 border-white transition-all transform hover:scale-[1.02]" id="luckyCard">
+                <div id="colorDisplay" class="h-48 md:h-56 w-full transition-colors duration-1000 relative">
+                    <div id="numberDisplay" class="number-display">7</div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
+                </div>
+                
+                <div class="p-8 text-left relative bg-white">
+                    <div class="flex justify-between items-end mb-6">
+                        <div>
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">LUCKY COLOR / 幸运色</p>
+                            <h2 class="text-3xl font-black text-gray-800" id="colorName">樱花粉</h2>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">HEX CODE / 编码</p>
+                            <p class="text-lg font-black text-pink-400 font-mono" id="hexCode">#FBCFE8</p>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-6 border-t border-gray-100">
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">LUCKY NUMBER MEANING / 数字寓意</p>
+                        <p class="text-gray-600 font-bold" id="numberDesc">宜行动，代表灵性与智慧</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12">
+                <button onclick="generateLucky()" id="genBtn" class="w-full py-5 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-2xl shadow-lg shadow-pink-200 transition-all active:scale-95 text-xl flex justify-center items-center gap-2">
+                    🎲 抽取我的专属幸运
+                </button>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.4s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">🎨</span>
+                    色彩能量
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50 leading-relaxed text-gray-600 text-sm">
+                    <p>颜色不只是视觉体验，也是情绪的调节器。今天的幸运色建议你可以应用在穿搭、壁纸或者是办公桌的小装饰上。让它为你带来一整天的正向心理暗示。🌈</p>
+                </div>
+            </section>
+            <section class="animate-item" style="animation-delay: 0.5s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">✨</span>
+                    数字与生活
+                </h2>
+                <div class="bg-white p-6 rounded-2xl border border-pink-50 shadow-sm leading-relaxed text-gray-500 text-sm">
+                    <p>每一个数字在心理暗示中都有其独特的定位。虽然这只是随机生成的结果，但你可以尝试在细微的决定中参考它。祝你在每一个微小的选择里，都能收获意想不到的温情。💖</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const colors = [
+            { name: "樱花粉", hex: "#fbcfe8" },
+            { name: "薄荷绿", hex: "#86efac" },
+            { name: "雾霾蓝", hex: "#93c5fd" },
+            { name: "暖阳黄", hex: "#fde047" },
+            { name: "丁香紫", hex: "#d8b4fe" },
+            { name: "珊瑚橘", hex: "#fdba74" },
+            { name: "孔雀蓝", hex: "#5eead4" },
+            { name: "玫瑰红", hex: "#fda4af" },
+            { name: "青草绿", hex: "#bef264" },
+            { name: "星空靛", hex: "#818cf8" }
+        ];
+
+        const numberMeanings = {
+            0: "代表无限潜力与重新开始",
+            1: "代表独立、开创与第一名",
+            2: "代表和谐、合作与灵魂伴侣",
+            3: "代表创意、表达与欢乐",
+            4: "代表稳定、秩序与踏实",
+            5: "代表自由、冒险与变化",
+            6: "代表爱、家庭与责任",
+            7: "代表灵性、智慧与好运",
+            8: "代表财富、权力与丰盛",
+            9: "代表圆满、大爱与巅峰"
+        };
+
+        function generateLucky() {
+            const card = document.getElementById('luckyCard');
+            const btn = document.getElementById('genBtn');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="animate-spin text-2xl">⚡</span> 加载幸运中...';
+            
+            // Subtle pop animation
+            card.style.transform = 'scale(0.95)';
+            
+            setTimeout(() => {
+                const colorObj = colors[Math.floor(Math.random() * colors.length)];
+                const num = Math.floor(Math.random() * 10);
+                
+                document.getElementById('colorDisplay').style.backgroundColor = colorObj.hex;
+                document.getElementById('numberDisplay').innerText = num;
+                document.getElementById('colorName').innerText = colorObj.name;
+                document.getElementById('hexCode').innerText = colorObj.hex.toUpperCase();
+                document.getElementById('hexCode').style.color = colorObj.hex;
+                document.getElementById('numberDesc').innerText = numberMeanings[num];
+                
+                card.style.transform = 'scale(1)';
+                btn.disabled = false;
+                btn.innerHTML = '🎲 抽取我的专属幸运';
+                
+                Utils.toast('今日幸运已揭晓 ✨', 'success');
+            }, 600);
+        }
+
+        // Initial setup
+        document.addEventListener('DOMContentLoaded', generateLucky);
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

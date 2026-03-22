@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>随机笑话生成器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">😂 随机 <span class="gradient-text">笑话生成</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">心情的调节阀。点击一下，让多巴胺瞬间爆发。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white text-center animate-item" style="animation-delay: 0.2s">
+            <div class="bg-gradient-to-br from-yellow-50/50 to-orange-50/50 rounded-[3rem] p-10 md:p-20 mb-10 min-h-[250px] flex flex-col items-center justify-center border-2 border-yellow-100 shadow-inner group relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 text-9xl text-yellow-500/10 opacity-30 group-hover:rotate-12 transition-transform">😆</div>
+                
+                <p class="text-lg md:text-xl lg:text-2xl text-gray-700 leading-relaxed font-bold tracking-tight relative z-10 transition-all duration-300 whitespace-pre-wrap" id="jokeText">
+                    准备好大笑了吗？
+                </p>
+                <div class="h-1 w-12 bg-yellow-200 rounded-full mt-10 opacity-50 relative z-10"></div>
+            </div>
+            
+            <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
+                <button onclick="nextJoke()" class="w-full max-w-sm py-5 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-white font-black rounded-2xl shadow-lg shadow-amber-100 transition-all active:scale-95 text-xl">
+                    😆 再来一个！
+                </button>
+            </div>
+            
+            <p class="text-[10px] font-black text-gray-300 uppercase tracking-[0.4em] mt-10">Click to fetch a new laugh / 点击获取新笑料</p>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-3 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🍭</span>
+                <p>笑话是生活的润滑剂。无论今天是晴是雨，保持幽默感就是最强大的超能力。我们收集了各种互联网冷笑话，希望能戳中你的萌点。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const jokes = [
+            '程序员：老婆，帮我买10个包子。如果看到卖西瓜的，买1个。\n妻子回来后带了1个包子。\n程序员：为什么只买1个？\n妻子：因为我看到卖西瓜的了！',
+            '小明：爸爸，为什么大家都说你长得像五月天？\n爸爸：因为我没有月亮的天空，光秃秃的。',
+            '一只蜗牛爬上了苹果树，毛毛虫问：你干什么？\n蜗牛：我要吃苹果。\n毛毛虫：苹果还没熟呢。\n蜗牛：等我爬上去，它就熟了。',
+            '数学老师：小明，√4等于多少？\n小明：±2。\n老师：你为什么犹豫？\n小明：因为我不是在犹豫，是在画那个加减号。',
+            '我问AI：什么东西上面有毛，下面也有毛，晚上就来个毛对毛？\nAI思考了3秒钟回答：眼睛。',
+            '面试官：你最大的优点是什么？\n我：我很诚实。\n面试官：我觉得诚实算不上优点。\n我：你怎么看我我根本不在乎。',
+            '同事问我：你觉得996的核心问题是什么？\n我说：核心问题是我数学不好。\n同事：为什么？\n我：因为996=24小时嘛。',
+            '如果你觉得自己一无是处，别灰心，至少你的判断力还是蛮准的。（开玩笑的，你最棒！）',
+            '生活就是，不管你有多惨，这周一还是要来的。',
+            '所谓成熟，就是你发现那种虽然不爽但还是要把事儿办了的无奈。'
+        ];
+
+        let idx = 0;
+        let shuffled = [];
+
+        function nextJoke() {
+            if (shuffled.length === 0) {
+                shuffled = [...jokes].sort(() => Math.random() - 0.5);
+            }
+            
+            const textEl = document.getElementById('jokeText');
+            textEl.style.opacity = '0';
+            textEl.style.transform = 'translateY(10px)';
+            
+            setTimeout(() => {
+                textEl.innerText = shuffled[idx % shuffled.length];
+                textEl.style.opacity = '1';
+                textEl.style.transform = 'translateY(0)';
+                idx++;
+                
+                if(idx % 3 === 0) Utils.toast('Laughter loading...', 'info');
+            }, 200);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            nextJoke();
+        });
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>XML与JSON互转 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-5xl">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 tracking-tight">XML ↔️ JSON</h1>
+            <p class="text-gray-500 italic">在传统的 XML 格式与 modern 的 JSON 格式之间快速转换。🧱</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 bg-white shadow-xl mb-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                <div class="relative group">
+                    <label class="block text-[10px] font-bold text-pink-300 uppercase tracking-widest mb-3 ml-2">XML 源码</label>
+                    <textarea id="xml" class="w-full h-80 p-8 bg-pink-50/10 border-2 border-pink-50 rounded-[2.5rem] text-sm font-mono outline-none focus:border-pink-200 transition-all resize-none shadow-inner" placeholder="<root><name>Lee</name></root>..."></textarea>
+                    <button onclick="clearArea('xml')" class="absolute right-6 top-12 text-pink-200 hover:text-pink-400 p-2 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                </div>
+                <div class="relative group">
+                    <label class="block text-[10px] font-bold text-pink-300 uppercase tracking-widest mb-3 ml-2">JSON 数据</label>
+                    <textarea id="json" class="w-full h-80 p-8 bg-pink-50/10 border-2 border-pink-50 rounded-[2.5rem] text-sm font-mono outline-none focus:border-pink-200 transition-all resize-none shadow-inner" placeholder='{"root":{"name":"Lee"}}...'></textarea>
+                    <button onclick="clearArea('json')" class="absolute right-6 top-12 text-pink-200 hover:text-pink-400 p-2 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <p class="text-[10px] md:text-xs text-pink-300 italic mb-8 uppercase tracking-widest font-bold text-center">
+                 注：XML 转 JSON 使用基础解析逻辑。
+            </p>
+
+            <div class="flex flex-col md:flex-row gap-4 justify-center">
+                 <button onclick="toJS()" class="theme-download-btn px-12 py-4 text-base font-bold shadow-lg shadow-pink-100 flex-1">✨ XML ➡️ JSON</button>
+                 <button onclick="toXML()" class="theme-secondary-btn border-2 px-12 py-4 text-base font-bold flex-1">🔄 JSON ➡️ XML</button>
+            </div>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const xmlArea = document.getElementById('xml');
+        const jsonArea = document.getElementById('json');
+
+        function toJS() {
+            const val = xmlArea.value;
+            if(!val) { Utils.toast('请输入 XML 内容', 'warning'); return; }
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(val, "text/xml");
+            
+            function xmlToJson(xml) {
+                let obj = {};
+                if (xml.nodeType === 1) { // element
+                    if (xml.attributes.length > 0) {
+                        obj["@attributes"] = {};
+                        for (let j = 0; j < xml.attributes.length; j++) {
+                            const attribute = xml.attributes.item(j);
+                            obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
+                        }
+                    }
+                } else if (xml.nodeType === 3) { // text
+                    obj = xml.nodeValue;
+                }
+
+                if (xml.hasChildNodes()) {
+                    for (let i = 0; i < xml.childNodes.length; i++) {
+                        const item = xml.childNodes.item(i);
+                        const nodeName = item.nodeName;
+                        if (typeof(obj[nodeName]) === "undefined") {
+                            obj[nodeName] = xmlToJson(item);
+                        } else {
+                            if (typeof(obj[nodeName].push) === "undefined") {
+                                const old = obj[nodeName];
+                                obj[nodeName] = [];
+                                obj[nodeName].push(old);
+                            }
+                            obj[nodeName].push(xmlToJson(item));
+                        }
+                    }
+                }
+                return obj;
+            }
+
+            try {
+                const result = xmlToJson(xmlDoc);
+                jsonArea.value = JSON.stringify(result, null, 4);
+                Utils.toast('转换完成', 'success');
+            } catch (e) {
+                Utils.toast('解析失败', 'error');
+            }
+        }
+
+        function toXML() {
+             const val = jsonArea.value;
+             if(!val) { Utils.toast('请输入 JSON 内容', 'warning'); return; }
+             try {
+                 const obj = JSON.parse(val);
+                 function jsonToXml(o, tab = '') {
+                    let xml = '';
+                    for (let key in o) {
+                        if (o.hasOwnProperty(key)) {
+                            if (typeof o[key] === 'object' && o[key] !== null) {
+                                xml += `${tab}<${key}>\n${jsonToXml(o[key], tab + '  ')}${tab}</${key}>\n`;
+                            } else {
+                                xml += `${tab}<${key}>${o[key]}</${key}>\n`;
+                            }
+                        }
+                    }
+                    return xml;
+                 }
+                 xmlArea.value = jsonToXml(obj);
+                 Utils.toast('转换完成', 'success');
+             } catch(e) {
+                 Utils.toast('JSON 格式错误', 'error');
+             }
+        }
+
+        function clearArea(id) {
+            document.getElementById(id).value = '';
+            Utils.toast('已清空', 'info');
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

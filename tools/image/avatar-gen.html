@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>趣味头像生成 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        #avatar-canvas {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border-radius: 2rem;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            background: white;
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fffafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 transition-transform hover:rotate-0">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-4 md:py-8 px-4 max-w-6xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold mb-4 animate-item gradient-text">趣味头像生成</h1>
+            <p class="text-gray-500 animate-item" style="animation-delay: 0.1s">一键生成独特的几何艺术头像，发现属于你的独特符号。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-8 mb-12 flex flex-col md:flex-row gap-8 md:gap-12 items-center md:items-start animate-item" style="animation-delay: 0.2s">
+            <div class="flex-1 w-full flex flex-col items-center">
+                <div class="relative group">
+                    <canvas id="avatar-canvas" width="400" height="400"></canvas>
+                    <div class="absolute -bottom-4 -right-4 w-12 h-12 bg-pink-400 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg rotate-12 group-hover:rotate-0 transition-transform">🎨</div>
+                </div>
+            </div>
+
+            <div class="w-full md:w-80 space-y-6">
+                <div class="bg-pink-50/30 p-6 md:p-8 rounded-3xl space-y-6">
+                    <h3 class="font-bold text-gray-800 flex items-center">
+                        <span class="w-1.5 h-6 bg-pink-400 rounded-full mr-3"></span>
+                        生成选项
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <button id="generateBtn" class="cute-button w-full theme-download-btn px-6 py-4 rounded-full font-bold flex items-center justify-center gap-2">
+                            <span>🎰</span> 随机生成
+                        </button>
+                        
+                        <div class="grid grid-cols-1 gap-3">
+                            <button id="downloadBtn" class="w-full theme-secondary-btn py-3 rounded-full text-sm font-bold shadow-sm">下载高清大图</button>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-pink-100/50">
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">种子标识</label>
+                        <div id="seed-display" class="font-mono text-sm text-pink-300 bg-white/50 p-3 rounded-xl break-all">#000000</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    
+        <div class="grid md:grid-cols-2 gap-8 mb-12 animate-item" style="animation-delay: 0.3s">
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">🎯</span>
+                    专属指南及提示
+                </h2>
+                <div class="bg-white rounded-3xl p-8 shadow-sm border border-pink-50 relative overflow-hidden h-full">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-full blur-3xl -mr-10 -mt-10 opacity-50"></div>
+                    <ul class="space-y-4 text-gray-600 list-decimal list-inside text-sm leading-relaxed relative z-10 font-medium">
+                        <li>每次点击“随机生成”都会基于不同的随机色彩和形状组合挑战。</li>
+                        <li>背景颜色均匀搭配，适合作为社交媒体或开发中的占位头像。</li>
+                        <li>所有内容均在您的浏览器本地生成，不上传任何数据。</li>
+                    </ul>
+                </div>
+            </section>
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">💬</span>
+                    常见答疑
+                </h2>
+                <div class="space-y-4 h-full">
+                    <div class="bg-white p-5 rounded-2xl border border-pink-50 shadow-sm hover:border-pink-200 transition-colors">
+                        <div class="font-bold text-gray-700 mb-2 flex items-center">
+                            <span class="w-1.5 h-1.5 rounded-full bg-pink-400 mr-2"></span>
+                            为什么每次生成都不一样？
+                        </div>
+                        <div class="text-gray-500 text-sm leading-relaxed pl-3.5">
+                            我们内置了多种配色方案和形状算法，通过随机组合实现近乎无限的可能。
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-10 text-center text-gray-400 text-xs border-t border-pink-50 mt-12 bg-white/50">
+        © 2026 小Q工具箱 · 纯前端离线实验室 · 保护隐私 💖
+    </footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const canvas = document.getElementById('avatar-canvas');
+        const ctx = canvas.getContext('2d');
+        const generateBtn = document.getElementById('generateBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const seedDisplay = document.getElementById('seed-display');
+
+        const bgColors = ['#FFD1DC', '#FFB7B2', '#E2F0CB', '#B5EAD7', '#C7CEEA', '#FDFD96', '#E0BBE4', '#957DAD'];
+        const skinColors = ['#FFDFD3', '#FEC8D8', '#f1c27d', '#e0ac69', '#d2996c', '#8d5524', '#ffccb6'];
+        const hairColors = ['#4A4A4A', '#2C2C2C', '#FADA5E', '#A52A2A', '#D2B48C', '#FF69B4', '#87CEEB', '#98FF98'];
+        const clothColors = ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7', '#C7CEEA', '#FFF'];
+
+        function randomPick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+        function randomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+            drawAvatar();
+        });
+
+        function drawAvatar() {
+            const seed = Math.random().toString(36).substring(7).toUpperCase();
+            seedDisplay.textContent = '#' + seed;
+
+            ctx.clearRect(0, 0, 400, 400);
+            
+            // 1. Background
+            ctx.fillStyle = randomPick(bgColors);
+            ctx.fillRect(0, 0, 400, 400);
+
+            const skinColor = randomPick(skinColors);
+
+            // 2. Body / Clothes
+            ctx.fillStyle = randomPick(clothColors);
+            ctx.beginPath();
+            ctx.arc(200, 360, 120, Math.PI, 0); // shoulders
+            ctx.lineTo(320, 400);
+            ctx.lineTo(80, 400);
+            ctx.fill();
+
+            // 3. Neck
+            ctx.fillStyle = skinColor;
+            ctx.fillRect(170, 270, 60, 60);
+
+            // 4. Face Base
+            ctx.beginPath();
+            ctx.arc(200, 200, 95, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 5. Hair (Back)
+            const hairColor = randomPick(hairColors);
+            ctx.fillStyle = hairColor;
+            const hairType = randomInt(1, 4);
+            
+            if (hairType === 2) { // Long hair back
+                ctx.beginPath();
+                ctx.arc(200, 180, 110, Math.PI, Math.PI * 2);
+                ctx.rect(90, 180, 220, 180);
+                ctx.fill();
+            }
+
+            // 6. Blush
+            ctx.fillStyle = 'rgba(255, 105, 180, 0.25)';
+            ctx.beginPath(); ctx.arc(145, 230, 15, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(255, 230, 15, 0, Math.PI * 2); ctx.fill();
+
+            // 7. Eyes
+            ctx.fillStyle = '#333';
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 5;
+            ctx.lineCap = 'round';
+            const eyeType = randomInt(1, 4);
+            if (eyeType === 1) { // Dots
+                ctx.beginPath(); ctx.arc(155, 205, 8, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(245, 205, 8, 0, Math.PI * 2); ctx.fill();
+            } else if (eyeType === 2) { // Closed happy
+                ctx.beginPath(); ctx.arc(155, 210, 10, Math.PI, 0); ctx.stroke();
+                ctx.beginPath(); ctx.arc(245, 210, 10, Math.PI, 0); ctx.stroke();
+            } else if (eyeType === 3) { // Glasses
+                ctx.beginPath(); ctx.arc(155, 205, 20, 0, Math.PI*2); ctx.stroke();
+                ctx.beginPath(); ctx.arc(245, 205, 20, 0, Math.PI*2); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(175, 205); ctx.lineTo(225, 205); ctx.stroke();
+            } else { // Wink
+                ctx.beginPath(); ctx.arc(155, 205, 8, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.moveTo(235, 205); ctx.lineTo(255, 205); ctx.stroke();
+            }
+
+            // 8. Mouth
+            const mouthType = randomInt(1, 3);
+            if (mouthType === 1) { // Smile line
+                ctx.beginPath(); ctx.arc(200, 235, 15, 0, Math.PI); ctx.stroke();
+            } else if (mouthType === 2) { // Neutral/Cat
+                ctx.beginPath(); ctx.arc(192, 235, 8, Math.PI, 0, true); ctx.stroke();
+                ctx.beginPath(); ctx.arc(208, 235, 8, Math.PI, 0, true); ctx.stroke();
+            } else { // Open smile
+                ctx.fillStyle = '#ff6b6b'; 
+                ctx.beginPath(); ctx.arc(200, 235, 15, 0, Math.PI); ctx.fill(); ctx.stroke();
+            }
+
+            // 9. Hair (Front)
+            ctx.fillStyle = hairColor;
+            ctx.beginPath();
+            if (hairType === 1) { // Short / Boy
+                ctx.arc(200, 180, 100, Math.PI, Math.PI * 2);
+                ctx.moveTo(100, 180);
+                ctx.lineTo(150, 150);
+                ctx.lineTo(200, 160);
+                ctx.lineTo(250, 130);
+                ctx.lineTo(300, 180);
+                ctx.fill();
+            } else if (hairType === 3) { // Messy
+                ctx.moveTo(90, 180);
+                for(let i=0; i<6; i++) {
+                    ctx.lineTo(90 + i*36 + 18, 80 + Math.random()*50);
+                    ctx.lineTo(90 + (i+1)*36, 170);
+                }
+                ctx.fill();
+            } else if (hairType === 4) { // Afro / Curly
+                for(let i=0; i<12; i++) {
+                    ctx.beginPath();
+                    ctx.arc(130 + Math.random()*140, 100 + Math.random()*60, 40, 0, Math.PI*2);
+                    ctx.fill();
+                }
+            } else { // Bangs for Long hair (type 2)
+                ctx.arc(200, 170, 100, Math.PI, Math.PI * 2);
+                ctx.moveTo(100, 170);
+                ctx.lineTo(300, 170);
+                ctx.lineTo(200, 140);
+                ctx.fill();
+            }
+        }
+
+        generateBtn.onclick = drawAvatar;
+        
+        downloadBtn.onclick = () => {
+            Utils.downloadFile(canvas.toDataURL('image/png'), 'avatar_' + Date.now() + '.png', 'image/png');
+            Utils.toast('保存成功！', 'success');
+        };
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

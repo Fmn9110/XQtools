@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>读书摘录卡片 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">读书笔记摘录卡片生成</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">输入摘录，生成精美卡片。留住阅读时的感动</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 mb-12 bg-white text-center animate-item" style="animation-delay: 0.2s">
+            <textarea id="quote" rows="3" placeholder="输入书中那句触动你的话..." class="w-full p-4 bg-gray-50 rounded-2xl border border-pink-50 outline-none resize-none mb-4 focus:border-pink-300 focus:bg-white transition-all"></textarea>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+                <input type="text" id="bookName" placeholder="来自哪本书？" class="p-3 md:p-4 bg-gray-50 rounded-2xl border border-pink-50 outline-none focus:border-pink-300">
+                <input type="text" id="authorName" placeholder="作者是谁？" class="p-3 md:p-4 bg-gray-50 rounded-2xl border border-pink-50 outline-none focus:border-pink-300">
+            </div>
+            
+            <div class="mb-6">
+                <p class="text-xs text-gray-400 mb-3 font-bold">选择卡片配色风格</p>
+                <div class="flex gap-3 flex-wrap justify-center">
+                    <button onclick="setTheme('#ffb7c5','#ff8da1')" class="w-10 h-10 rounded-full bg-gradient-to-r from-pink-200 to-pink-400 shadow-sm hover:scale-110 transition-transform border-4 border-white"></button>
+                    <button onclick="setTheme('#667eea','#764ba2')" class="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-400 to-purple-500 shadow-sm hover:scale-110 transition-transform border-4 border-white"></button>
+                    <button onclick="setTheme('#4facfe','#00f2fe')" class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400 shadow-sm hover:scale-110 transition-transform border-4 border-white"></button>
+                    <button onclick="setTheme('#43e97b','#38f9d7')" class="w-10 h-10 rounded-full bg-gradient-to-r from-green-400 to-teal-300 shadow-sm hover:scale-110 transition-transform border-4 border-white"></button>
+                    <button onclick="setTheme('#2c3e50','#3498db')" class="w-10 h-10 rounded-full bg-gradient-to-r from-gray-700 to-blue-500 shadow-sm hover:scale-110 transition-transform border-4 border-white"></button>
+                </div>
+            </div>
+
+            <button onclick="render()" class="cute-button w-full py-4 bg-pink-400 hover:bg-pink-500 text-white font-bold rounded-2xl mb-6 shadow-lg">🎨 即刻生成美图</button>
+            
+            <div class="overflow-x-auto mb-6 bg-gray-50 rounded-2xl p-4">
+                <canvas id="canvas" width="600" height="400" class="mx-auto rounded-xl shadow-2xl border border-white max-w-full"></canvas>
+            </div>
+
+            <button onclick="dl()" class="cute-button w-full py-4 bg-green-400 hover:bg-green-500 text-white font-bold rounded-2xl theme-download-btn shadow-lg">📥 保存精美卡片</button>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let c1 = '#ffb7c5', c2 = '#ff8da1';
+        function setTheme(a, b) { c1 = a; c2 = b; render(); }
+        function render() {
+            const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
+            const grad = ctx.createLinearGradient(0, 0, 600, 400);
+            grad.addColorStop(0, c1); grad.addColorStop(1, c2);
+            ctx.fillStyle = grad; ctx.fillRect(0, 0, 600, 400);
+            
+            // 装饰：大引号
+            ctx.globalAlpha = 0.15;
+            ctx.fillStyle = '#fff';
+            ctx.font = '120px serif';
+            ctx.fillText('“', 30, 120);
+            ctx.fillText('”', 480, 380);
+            ctx.globalAlpha = 1;
+            
+            // 摘录内容
+            const quoteText = document.getElementById('quote').value || '在这里输入你的读书摘录，分享那份宁静...';
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'center';
+            ctx.font = 'bold 24px sans-serif';
+            
+            const lines = wrapText(ctx, quoteText, 440);
+            let y = 180 - (lines.length - 1) * 20;
+            
+            lines.forEach(line => {
+                ctx.shadowColor = 'rgba(0,0,0,0.1)';
+                ctx.shadowBlur = 4;
+                ctx.fillText(line, 300, y);
+                y += 40;
+            });
+            
+            // 重置阴影
+            ctx.shadowBlur = 0;
+            
+            // 书名和作者
+            const book = document.getElementById('bookName').value;
+            const author = document.getElementById('authorName').value;
+            if(book || author) {
+                ctx.font = 'italic 18px sans-serif';
+                ctx.globalAlpha = 0.8;
+                const info = `—— 《${book || '未知书名'}》 ${author || ''}`;
+                ctx.fillText(info, 300, y + 20);
+            }
+            ctx.globalAlpha = 1;
+        }
+
+        function wrapText(ctx, text, maxW) {
+            const lines = [];
+            let line = '';
+            for (const ch of text) {
+                if (ctx.measureText(line + ch).width > maxW) {
+                    lines.push(line);
+                    line = ch;
+                } else {
+                    line += ch;
+                }
+            }
+            if (line) lines.push(line);
+            return lines.slice(0, 6);
+        }
+
+        function dl() {
+            const a = document.createElement('a');
+            a.download = `小Q摘录-${Date.now()}.png`;
+            a.href = document.getElementById('canvas').toDataURL('image/png');
+            a.click();
+            Utils.toast('图片已保存', 'success');
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+
+        render();
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

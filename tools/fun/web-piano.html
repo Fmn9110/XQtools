@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>网页钢琴 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        .piano-key {
+            transition: all 0.1s;
+            user-select: none;
+        }
+        .white-key:active, .white-key.active {
+            background: #fdf2f8 !important;
+            transform: translateY(2px);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .black-key:active, .black-key.active {
+            background: #1e1b4b !important;
+            transform: translateY(2px);
+        }
+        .piano-ctn {
+            overflow-x: auto;
+            padding-bottom: 2rem;
+        }
+        .piano-ctn::-webkit-scrollbar {
+            height: 6px;
+        }
+        .piano-ctn::-webkit-scrollbar-thumb {
+            background: #fbcfe8;
+            border-radius: 10px;
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🎹 妙音 <span class="gradient-text">网页钢琴</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">琴键律动，指间流年。支持键盘映射（A-K），开启你的音乐创作之旅。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item shadow-2xl" style="animation-delay: 0.2s">
+            
+            <div class="piano-ctn">
+                <div class="relative flex justify-center mx-auto" id="piano" style="height:240px">
+                    <!-- piano keys injected here -->
+                </div>
+            </div>
+
+            <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
+                <div class="p-4 bg-gray-50 rounded-2xl border border-pink-50 text-center">
+                    <span class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">C Key / 剁</span>
+                    <span class="font-black text-pink-400 text-lg">A</span>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-2xl border border-pink-50 text-center">
+                    <span class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">D Key / 芮</span>
+                    <span class="font-black text-pink-400 text-lg">S</span>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-2xl border border-pink-50 text-center">
+                    <span class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">E Key / 咪</span>
+                    <span class="font-black text-pink-400 text-lg">D</span>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-2xl border border-pink-50 text-center">
+                    <span class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">F Key / 发</span>
+                    <span class="font-black text-pink-400 text-lg">F</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>音乐是跨越语言的唯一桥梁。通过浏览器的 Web Audio API，我们能模拟出纯净的钢琴音色。无论你是在寻找灵感，还是想随手弹奏一段旋律，这里都是属于你的音乐角。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const notes=[
+            {key:'A',note:'C4',freq:261.63,black:false},
+            {key:'W',note:'C#4',freq:277.18,black:true},
+            {key:'S',note:'D4',freq:293.66,black:false},
+            {key:'E',note:'D#4',freq:311.13,black:true},
+            {key:'D',note:'E4',freq:329.63,black:false},
+            {key:'F',note:'F4',freq:349.23,black:false},
+            {key:'T',note:'F#4',freq:369.99,black:true},
+            {key:'G',note:'G4',freq:392.00,black:false},
+            {key:'Y',note:'G#4',freq:415.30,black:true},
+            {key:'H',note:'A4',freq:440.00,black:false},
+            {key:'U',note:'A#4',freq:466.16,black:true},
+            {key:'J',note:'B4',freq:493.88,black:false},
+            {key:'K',note:'C5',freq:523.25,black:false},
+        ];
+
+        let audioCtx=null;
+
+        function playNote(freq, el){
+            if(!audioCtx) audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            
+            gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.2);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 1.2);
+            
+            if(el){
+                el.classList.add('active');
+                setTimeout(() => el.classList.remove('active'), 150);
+            }
+        }
+
+        const piano = document.getElementById('piano');
+        let whiteIdx = 0;
+        const whiteWidth = 60;
+        const blackWidth = 40;
+
+        notes.forEach((n, i) => {
+            const btn = document.createElement('button');
+            btn.dataset.key = n.key;
+            
+            if(n.black){
+                btn.className = 'black-key piano-key absolute rounded-b-xl shadow-2xl z-10';
+                btn.style.cssText = `width:${blackWidth}px;height:140px;background:#312e81;top:0;left:${whiteIdx*whiteWidth - blackWidth/2}px`;
+            }else{
+                btn.className = 'white-key piano-key relative rounded-b-3xl shadow-lg border border-gray-100 flex items-end justify-center pb-4';
+                btn.style.cssText = `width:${whiteWidth}px;height:240px;background:#fff;`;
+                btn.innerHTML = `<span class="text-[10px] font-black text-pink-300 pointer-events-none">${n.key}</span>`;
+                whiteIdx++;
+            }
+            
+            const trigger = (e) => {
+                e.preventDefault();
+                playNote(n.freq, btn);
+            };
+            
+            btn.addEventListener('mousedown', trigger);
+            btn.addEventListener('touchstart', trigger);
+            piano.appendChild(btn);
+        });
+
+        piano.style.width = (whiteIdx * whiteWidth) + 'px';
+
+        document.addEventListener('keydown', e => {
+            if(e.repeat) return;
+            const key = e.key.toUpperCase();
+            const note = notes.find(n => n.key === key);
+            if(note){
+                const el = piano.querySelector(`[data-key="${key}"]`);
+                playNote(note.freq, el);
+            }
+        });
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('.piano-key')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy  -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

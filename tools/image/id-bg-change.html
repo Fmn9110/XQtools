@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>证件照换底 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fffafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 transition-transform hover:rotate-0">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-4 md:py-8 px-4 max-w-6xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold mb-4 animate-item gradient-text">智能证件换盒</h1>
+            <p class="text-gray-500 animate-item" style="animation-delay: 0.1s">精准像素识别，一键切换红蓝白等标准专业背景。🏢</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 animate-item" style="animation-delay: 0.2s">
+            <div id="upload-stage" class="text-center">
+                <div id="drop-zone" class="w-full border-4 border-dashed border-pink-100 rounded-3xl p-8 md:p-16 hover:border-pink-300 transition-all cursor-pointer bg-white group">
+                    <input type="file" id="fileInput" accept="image/*" class="hidden">
+                    <div class="text-7xl mb-6 group-hover:scale-110 transition-transform">👤</div>
+                    <p class="text-xl font-bold text-gray-700">上传待处理照片</p>
+                    <p class="text-pink-400 mt-2 text-sm italic">全离线处理，确保您的身份隐私</p>
+                </div>
+            </div>
+
+            <div id="editor-stage" class="hidden flex flex-col lg:flex-row gap-8 lg:gap-12 animate-fade-in items-start">
+                <!-- Workspace -->
+                <div class="flex-1 w-full bg-pink-50/20 p-6 md:p-10 rounded-[2.5rem] border border-pink-50 flex flex-col items-center min-h-[400px]">
+                    <div class="bg-white/50 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-pink-100 animate-pulse">
+                        <p class="text-[10px] text-pink-500 font-black italic tracking-widest uppercase">👆 点选或拖过画布以吸取背景颜色</p>
+                    </div>
+                    
+                    <div id="canvas-wrapper" class="relative shadow-2xl bg-white border-4 border-white cursor-crosshair overflow-hidden inline-block transition-transform duration-500" style="background-image: radial-gradient(#f0f0f0 1.5px, transparent 1.5px); background-size: 15px 15px;">
+                        <canvas id="bg-layer" class="absolute inset-0 block w-full h-full"></canvas>
+                        <canvas id="image-layer" class="relative block z-10"></canvas>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="w-full lg:w-96 space-y-8 bg-white p-8 rounded-[2rem] shadow-sm border border-pink-50">
+                    <div class="space-y-6">
+                        <h3 class="font-black text-gray-800 italic uppercase flex items-center gap-2">
+                             <span class="w-2 h-6 bg-pink-400 rounded-full"></span>
+                             标准背景色
+                        </h3>
+                        <div class="flex flex-wrap gap-4">
+                            <button class="bg-btn group relative" data-color="#438EDB">
+                                <div class="w-12 h-12 rounded-2xl shadow-sm border-2 border-white group-hover:scale-110 transition-all" style="background-color: #438EDB"></div>
+                                <span class="text-[8px] absolute -bottom-5 left-1/2 -translate-x-1/2 font-black text-gray-400">蓝</span>
+                            </button>
+                            <button class="bg-btn group relative" data-color="#FF0000">
+                                <div class="w-12 h-12 rounded-2xl shadow-sm border-2 border-white group-hover:scale-110 transition-all" style="background-color: #FF0000"></div>
+                                <span class="text-[8px] absolute -bottom-5 left-1/2 -translate-x-1/2 font-black text-gray-400">红</span>
+                            </button>
+                            <button class="bg-btn group relative" data-color="#FFFFFF">
+                                <div class="w-12 h-12 rounded-2xl shadow-sm border-2 border-white group-hover:scale-110 transition-all" style="background-color: #FFFFFF"></div>
+                                <span class="text-[8px] absolute -bottom-5 left-1/2 -translate-x-1/2 font-black text-gray-400">白</span>
+                            </button>
+                            <div class="relative group">
+                                <input type="color" id="custom-color" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" value="#00ff00">
+                                <div class="w-12 h-12 rounded-2xl border-2 border-white shadow-sm bg-[linear-gradient(45deg,#ff99cc,#99ccff)] group-hover:rotate-12 transition-all"></div>
+                                <span class="text-[8px] absolute -bottom-5 left-1/2 -translate-x-1/2 font-black text-gray-400">自定义</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6 pt-8 border-t border-pink-50">
+                        <div class="flex justify-between items-center px-1">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">去背容差 (Tolerance)</label>
+                            <span id="tol-val" class="font-black text-pink-500 font-mono">30</span>
+                        </div>
+                        <input type="range" id="tolerance" min="0" max="150" value="30" class="w-full h-2 bg-pink-100 rounded-lg appearance-none cursor-pointer accent-pink-500">
+                        <p class="text-[10px] text-gray-400 italic leading-relaxed">如果抠图过于生硬，尝试加容差；如果误伤发丝，请调小容差。</p>
+                    </div>
+
+                    <div class="pt-6 flex flex-col gap-4">
+                        <button id="downloadBtn" class="w-full py-5 bg-pink-500 text-white rounded-full font-black shadow-lg shadow-pink-100 hover:bg-pink-600 transition-all theme-download-btn">下载换底照</button>
+                        <div class="flex gap-2">
+                            <button id="resetBtn" class="flex-1 py-3 text-gray-400 font-bold hover:text-pink-500 text-xs border border-gray-100 rounded-2xl theme-secondary-btn">撤销操作</button>
+                            <button onclick="location.reload()" class="flex-1 py-3 text-gray-400 font-bold hover:text-pink-500 text-xs border border-gray-100 rounded-2xl">更换照片</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.3s">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">💡</span>
+                换底必看
+            </h2>
+             <div class="bg-white rounded-3xl p-8 shadow-sm border border-pink-50 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-full blur-3xl -mr-10 -mt-10 opacity-50"></div>
+                <div class="grid md:grid-cols-3 gap-6 relative z-10 text-xs text-gray-500 font-medium italic">
+                    <p>1. 本工具采用的是颜色洪泛算法，上传背景单一且光影均匀的照片，抠图效果最为理想。</p>
+                    <p>2. 点击导出下载的照片默认为 100% 原始画质，满足各类政务、入职及学籍上传要求。</p>
+                    <p>3. 遇到多颜色复杂背景？建议调小容差分多次点击背景区域进行渐进式消除。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-10 text-center text-gray-400 text-xs border-t border-pink-50 mt-12 bg-white/50">
+        © 2026 小Q工具箱 · 专业证件照实验室 💖
+    </footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadStage = document.getElementById('upload-stage');
+        const editorStage = document.getElementById('editor-stage');
+        const imgLayer = document.getElementById('image-layer');
+        const bgLayer = document.getElementById('bg-layer');
+        const ctxImg = imgLayer.getContext('2d', { willReadFrequently: true });
+        const ctxBg = bgLayer.getContext('2d');
+        const canvasWrapper = document.getElementById('canvas-wrapper');
+        const toleranceInput = document.getElementById('tolerance');
+        const tolVal = document.getElementById('tol-val');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const bgBtns = document.querySelectorAll('.bg-btn');
+        const customColor = document.getElementById('custom-color');
+
+        let img = null, originalImageData = null, currentImageData = null, selectedBgColor = '#438EDB';
+
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.getElementById('drop-zone').onclick = () => fileInput.click();
+        fileInput.onchange = async (e) => {
+            if(!e.target.files[0]) return;
+            const dataUrl = await Utils.readFileAsDataURL(e.target.files[0]);
+            img = new Image();
+            img.onload = () => {
+                uploadStage.classList.add('hidden');
+                editorStage.classList.remove('hidden');
+                initCanvas();
+                Utils.toast('已进入实验室模式', 'success');
+            };
+            img.src = dataUrl;
+        };
+
+        function initCanvas() {
+            imgLayer.width = img.width; imgLayer.height = img.height;
+            bgLayer.width = img.width; bgLayer.height = img.height;
+            canvasWrapper.style.width = img.width + 'px';
+            canvasWrapper.style.height = img.height + 'px';
+            
+            const ratio = Math.min((window.innerWidth > 1024 ? 600 : 350) / img.width, 500 / img.height);
+            if(ratio < 1) {
+                canvasWrapper.style.transform = `scale(${ratio})`;
+                canvasWrapper.style.transformOrigin = 'top center';
+            }
+            ctxImg.drawImage(img, 0, 0);
+            originalImageData = ctxImg.getImageData(0, 0, img.width, img.height);
+            currentImageData = new ImageData(new Uint8ClampedArray(originalImageData.data), img.width, img.height);
+            updateBgLayer();
+        }
+
+        function updateBgLayer() {
+            ctxBg.fillStyle = selectedBgColor;
+            ctxBg.fillRect(0, 0, bgLayer.width, bgLayer.height);
+        }
+
+        bgBtns.forEach(btn => btn.onclick = () => {
+            selectedBgColor = btn.dataset.color;
+            updateBgLayer();
+        });
+        customColor.oninput = (e) => {
+            selectedBgColor = e.target.value;
+            updateBgLayer();
+        };
+
+        toleranceInput.oninput = () => tolVal.textContent = toleranceInput.value;
+        resetBtn.onclick = () => {
+            currentImageData = new ImageData(new Uint8ClampedArray(originalImageData.data), img.width, img.height);
+            ctxImg.putImageData(currentImageData, 0, 0);
+            Utils.toast('已重置画面', 'info');
+        };
+
+        imgLayer.onmousedown = (e) => {
+            const rect = imgLayer.getBoundingClientRect();
+            const scaleX = imgLayer.width / rect.width, scaleY = imgLayer.height / rect.height;
+            const x = Math.floor((e.clientX - rect.left) * scaleX), y = Math.floor((e.clientY - rect.top) * scaleY);
+            floodFill(x, y, parseInt(toleranceInput.value));
+        };
+
+        function floodFill(startX, startY, tolerance) {
+            const width = imgLayer.width, height = imgLayer.height, data = currentImageData.data;
+            const startIndex = (startY * width + startX) * 4;
+            const targetR = data[startIndex], targetG = data[startIndex+1], targetB = data[startIndex+2], targetA = data[startIndex+3];
+            if(targetA === 0) return;
+            const stack = [[startX, startY]];
+            const visited = new Uint8Array(width * height);
+            while(stack.length > 0) {
+                const [x, y] = stack.pop();
+                const v = y * width + x;
+                if(visited[v]) continue; visited[v] = 1;
+                const i = v * 4;
+                const dist = Math.sqrt(Math.pow(data[i]-targetR,2)+Math.pow(data[i+1]-targetG,2)+Math.pow(data[i+2]-targetB,2));
+                if(data[i+3] > 0 && dist <= tolerance) {
+                    data[i+3] = 0;
+                    if(x > 0) stack.push([x-1, y]); if(x < width - 1) stack.push([x+1, y]);
+                    if(y > 0) stack.push([x, y-1]); if(y < height - 1) stack.push([x, y+1]);
+                }
+            }
+            ctxImg.putImageData(currentImageData, 0, 0);
+        }
+
+        downloadBtn.onclick = () => {
+            const out = document.createElement('canvas');
+            out.width = imgLayer.width; out.height = imgLayer.height;
+            const octx = out.getContext('2d');
+            octx.drawImage(bgLayer, 0, 0);
+            octx.drawImage(imgLayer, 0, 0);
+            Utils.downloadFile(out.toDataURL('image/jpeg', 1.0), `q_idphoto_${Date.now()}.jpg`, 'image/jpeg');
+            Utils.toast('下载已完成', 'success');
+        };
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

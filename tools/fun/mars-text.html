@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>火星文转换 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">👽 火星文 <span class="gradient-text">转换器</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">致敬回不去的QQ空间时代。给文字穿上个性的外衣。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            <div class="relative mb-8 group">
+                <textarea id="input" rows="4" placeholder="输入中文内容..." 
+                    class="w-full p-6 bg-pink-50/30 rounded-[2.5rem] border-2 border-transparent focus:border-pink-200 outline-none resize-none font-bold text-gray-700 transition-all shadow-inner" 
+                    oninput="convert()"></textarea>
+                <label class="block text-[10px] font-black text-pink-300 uppercase tracking-widest mt-3">Normal Text / 普通文字</label>
+            </div>
+
+            <div class="relative group">
+                <div class="bg-gradient-to-br from-pink-50/50 to-purple-50/50 rounded-[2.5rem] p-8 min-h-[120px] text-pink-500 font-black text-xl break-all shadow-inner border-2 border-pink-100 transition-all" id="output">
+                    等伱輸兦...
+                </div>
+                <label class="block text-[10px] font-black text-pink-200 uppercase tracking-widest mt-3">Martian Language / 鐏屬鐏暒妏</label>
+            </div>
+
+            <div class="mt-10 flex justify-center">
+                <button onclick="copyResult()" class="w-full max-w-sm py-4 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-2xl shadow-lg shadow-pink-100 transition-all active:scale-95 flex items-center justify-center gap-2">
+                    📋 复制并分享
+                </button>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">📟</span>
+                <p>火星文，曾是那个非主流时代的文化符号。它不仅是一种独特的表达形式，更承载了我们对互联网最初的那份敏感与不羁。现在，让我们用现代的设计，重温那份跨次元的个性格。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const map={'的':'哋','是':'昰','不':'卟','了':'孒','在':'洅','人':'亾','有':'侑','我':'莪','他':'怹','这':'哋','中':'ф','大':'汏','来':'唻','上':'仩','个':'個','到':'菿','说':'説','们':'們','为':'潙','子':'孖','和':'啝','你':'伱','地':'哋','出':'絀','会':'浍','时':'溡','要':'崾','就':'僦','好':'恏','看':'看','天':'兲','年':'哖','去':'厾','能':'能','对':'対','小':'尐','多':'哆','然':'嘫','当':'噹','没':'莈','可':'岢','又':'叒','么':'庅','开':'閞','让':'讓','心':'杺','学':'學','起':'起','想':'想','都':'嘟','把':'紦','还':'還','用':'甪','点':'點','行':'行','方':'汸','什':'什','经':'經','别':'莂','话':'話','那':'嗱','被':'被','从':'從'};
+        const deco=['꧁','꧂','✿','❀','♬','☆','★','◆','◇','❤','♡','✦','✧','༺','༻','※'];
+
+        function convert(){
+            const text=document.getElementById('input').value;
+            if(!text) {
+                document.getElementById('output').textContent = '等伱輸兦...';
+                return;
+            }
+            let result='';
+            for(const ch of text){
+                result+=map[ch]||ch;
+            }
+            // 随机插入装饰符号
+            const decorated=result.split('').map((c,i)=>i>0&&i%5===0?c+deco[Math.floor(Math.random()*deco.length)]:c).join('');
+            document.getElementById('output').textContent=decorated;
+        }
+
+        function copyResult() {
+            const text = document.getElementById('output').textContent;
+            if(text === '等伱輸兦...') return;
+            navigator.clipboard.writeText(text).then(() => {
+                Utils.toast('火星文已复制 ✨', 'success');
+            });
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

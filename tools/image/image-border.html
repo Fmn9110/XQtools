@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>图片镶边 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fffafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 transition-transform hover:rotate-0">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-4 md:py-8 px-4 max-w-6xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold mb-4 animate-item gradient-text">光影画框实验室</h1>
+            <p class="text-gray-500 animate-item" style="animation-delay: 0.1s">为回忆镀金，为瞬间加冕。定制属于您的艺术边缘。🖼️</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 animate-item" style="animation-delay: 0.2s">
+            <div id="upload-stage" class="text-center">
+                <div id="drop-zone" class="w-full border-4 border-dashed border-pink-100 rounded-3xl p-8 md:p-16 hover:border-pink-300 transition-all cursor-pointer bg-white group">
+                    <input type="file" id="fileInput" accept="image/*" class="hidden">
+                    <div class="text-7xl mb-6 group-hover:scale-110 transition-transform">🖼️</div>
+                    <p class="text-xl font-bold text-gray-700">上传您的精选照片</p>
+                    <p class="text-pink-400 mt-2 text-sm italic">支持圆角、阴影与自定义色域边框</p>
+                </div>
+            </div>
+
+            <div id="editor-stage" class="hidden animate-fade-in flex flex-col items-center">
+                <div class="w-full bg-pink-50/20 p-6 md:p-10 rounded-[2.5rem] border border-pink-50 mb-10 flex justify-center overflow-hidden">
+                    <div id="preview-container" class="transition-all duration-300 shadow-2xl overflow-hidden bg-white inline-block">
+                        <img id="preview" class="max-w-full max-h-[450px] block object-contain transition-all duration-300">
+                    </div>
+                </div>
+
+                <div class="w-full bg-white p-8 md:p-10 rounded-[2.5rem] shadow-sm border border-pink-50 grid md:grid-cols-3 gap-10">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">边框宽度</h4>
+                            <span id="label-size" class="text-pink-500 font-black font-mono">10</span>
+                        </div>
+                        <input type="range" id="size" min="0" max="200" value="10" class="w-full h-2 bg-pink-100 rounded-lg appearance-none cursor-pointer accent-pink-500">
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">圆角弧度</h4>
+                            <span id="label-radius" class="text-pink-500 font-black font-mono">0</span>
+                        </div>
+                        <input type="range" id="radius" min="0" max="200" value="0" class="w-full h-2 bg-pink-100 rounded-lg appearance-none cursor-pointer accent-pink-500">
+                    </div>
+
+                    <div class="space-y-4">
+                         <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1 mb-4">画框调色</h4>
+                         <div class="flex items-center gap-4">
+                            <input type="color" id="color" value="#ffffff" class="w-14 h-14 border-4 border-white shadow-sm rounded-2xl cursor-pointer">
+                            <span id="label-hex" class="text-xs font-black text-pink-400 font-mono uppercase">#FFFFFF</span>
+                         </div>
+                    </div>
+
+                    <div class="md:col-span-3 pt-6 border-t border-pink-50 flex flex-col sm:flex-row gap-4">
+                         <button id="saveBtn" class="flex-1 py-5 bg-pink-500 text-white rounded-full font-black shadow-lg shadow-pink-100 hover:bg-pink-600 transition-all theme-download-btn">完成艺术封存</button>
+                         <button id="resetBtn" class="py-5 px-10 text-gray-400 font-bold hover:text-pink-500 text-xs border border-gray-100 rounded-full theme-secondary-btn">更换底图</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.3s">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">💡</span>
+                美学提示
+            </h2>
+            <div class="bg-white rounded-3xl p-8 shadow-sm border border-pink-50 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-full blur-3xl -mr-10 -mt-10 opacity-50"></div>
+                <div class="grid md:grid-cols-2 gap-8 relative z-10 text-xs text-gray-500 font-medium italic leading-relaxed">
+                    <p>1. 宽边框（50px+）能产生强烈的影展质感，适合风景及极简摄影作品。</p>
+                    <p>2. 合理的圆角处理（20px+）与轻微的背景阴影相配合，能大幅提升 UI 截图的细腻感。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-10 text-center text-gray-400 text-xs border-t border-pink-50 mt-12 bg-white/50">
+        © 2026 小Q工具箱 · 画框实验室 💖
+    </footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadStage = document.getElementById('upload-stage');
+        const editorStage = document.getElementById('editor-stage');
+        const preview = document.getElementById('preview');
+        const previewContainer = document.getElementById('preview-container');
+        const sizeInput = document.getElementById('size');
+        const radiusInput = document.getElementById('radius');
+        const colorInput = document.getElementById('color');
+        const saveBtn = document.getElementById('saveBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        let originalImg = null;
+
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.getElementById('drop-zone').onclick = () => fileInput.click();
+
+        fileInput.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const url = await Utils.readFileAsDataURL(file);
+            originalImg = new Image();
+            originalImg.src = url;
+            originalImg.onload = () => {
+                uploadStage.classList.add('hidden');
+                editorStage.classList.remove('hidden');
+                preview.src = url;
+                update();
+            };
+        };
+
+        [sizeInput, radiusInput, colorInput].forEach(el => el.oninput = update);
+        window.onresize = update;
+
+        function update() {
+            if (!originalImg) return;
+            document.getElementById('label-size').textContent = sizeInput.value;
+            document.getElementById('label-radius').textContent = radiusInput.value;
+            document.getElementById('label-hex').textContent = colorInput.value.toUpperCase();
+
+            const displayWidth = preview.clientWidth || preview.offsetWidth;
+            const scale = displayWidth / originalImg.width;
+            
+            const pSize = (parseInt(sizeInput.value) * scale) + 'px';
+            const pRadius = (parseInt(radiusInput.value) * scale) + 'px';
+            
+            previewContainer.style.padding = pSize;
+            previewContainer.style.backgroundColor = colorInput.value;
+            previewContainer.style.borderRadius = pRadius;
+            
+            const innerRadius = Math.max(0, parseInt(radiusInput.value) - parseInt(sizeInput.value));
+            preview.style.borderRadius = (innerRadius * scale) + 'px';
+        }
+
+        saveBtn.onclick = () => {
+            const borderSize = parseInt(sizeInput.value);
+            const radius = parseInt(radiusInput.value);
+            const canvas = document.createElement('canvas');
+            canvas.width = originalImg.width + borderSize * 2;
+            canvas.height = originalImg.height + borderSize * 2;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = colorInput.value;
+            if (ctx.roundRect) {
+                ctx.beginPath(); ctx.roundRect(0, 0, canvas.width, canvas.height, radius); ctx.fill();
+            } else {
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            const innerRadius = Math.max(0, radius - borderSize);
+            ctx.save();
+            if (ctx.roundRect) {
+                ctx.beginPath(); ctx.roundRect(borderSize, borderSize, originalImg.width, originalImg.height, innerRadius); ctx.clip();
+            }
+            ctx.drawImage(originalImg, borderSize, borderSize);
+            ctx.restore();
+            
+            Utils.downloadFile(canvas.toDataURL('image/png'), `q_border_${Date.now()}.png`, 'image/png');
+            Utils.toast('画框已生成', 'success');
+        };
+
+        resetBtn.onclick = () => {
+            fileInput.value = '';
+            uploadStage.classList.remove('hidden');
+            editorStage.classList.add('hidden');
+        };
+    </script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

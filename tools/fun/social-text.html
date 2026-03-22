@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>社交文案生成 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">📱 灵感 <span class="gradient-text">文案工坊</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">拯救社交恐惧症。一键匹配最契合当下的磁场。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white flex flex-col items-center animate-item shadow-2xl" style="animation-delay: 0.2s">
+            
+            <div class="w-full max-w-md mb-10 space-y-4">
+                <div class="relative group">
+                    <label class="block text-[10px] font-black text-gray-300 uppercase tracking-widest mb-2 pl-4">Scene / 生活场景</label>
+                    <select id="scene" class="w-full p-5 bg-pink-50/20 rounded-2xl border-none outline-none font-bold text-gray-600 shadow-inner appearance-none cursor-pointer">
+                        <option>美食</option><option>旅行</option><option>自拍</option><option>加班</option><option>下雨</option><option>周末</option>
+                    </select>
+                </div>
+                <div class="relative group">
+                    <label class="block text-[10px] font-black text-gray-300 uppercase tracking-widest mb-2 pl-4">Platform / 发布平台</label>
+                    <select id="platform" class="w-full p-5 bg-indigo-50/20 rounded-2xl border-none outline-none font-bold text-gray-600 shadow-inner appearance-none cursor-pointer">
+                        <option>朋友圈</option><option>小红书</option><option>微博</option>
+                    </select>
+                </div>
+                
+                <button onclick="gen()" class="w-full py-5 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-2xl shadow-xl shadow-pink-100 transition-all active:scale-95 text-xl flex items-center justify-center gap-2">
+                    ✨ 激活创意火花
+                </button>
+            </div>
+
+            <div class="w-full bg-gray-50/50 rounded-[3rem] p-8 md:p-12 border-2 border-pink-50/50 shadow-inner group relative">
+                <div class="absolute top-6 left-6 text-4xl text-pink-200 opacity-20">"</div>
+                <div class="text-gray-700 leading-[1.8] font-medium min-h-[100px] text-lg md:text-xl whitespace-pre-line" id="output">
+                    在这里看到你的灵感瞬间...
+                </div>
+                <button onclick="copyRes()" class="absolute bottom-6 right-6 p-4 bg-white border border-pink-100 rounded-2xl text-pink-400 hover:bg-pink-50 transition-all shadow-md group-hover:scale-110 active:scale-90">
+                    📋
+                </button>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>文字是生活碎片的粘合剂。无论是在小红书播种，还是在微博流浪，一段恰到好处的文案总能让平凡的瞬间闪闪发光。如果感到文案荒，就来这里寻找那个属于你的共鸣吧。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const data={
+            '美食_朋友圈':['今日份的快乐，是味蕾给的 🍰','人生苦短，先吃甜点 🧁','卡路里是什么？能吃吗？','此刻，与美食撞了个满怀 ❤️'],
+            '美食_小红书':['姐妹们！这家店绝了！！必须码住！🔥\n味道：⭐⭐⭐⭐⭐\n环境：⭐⭐⭐⭐\n价格：人均80左右\n📍坐标在评论区\n#美食探店 #必吃清单','天呐！太好吃了吧！！😭😭\n口感绵密 入口即化\n拍照也超出片的！\n#美食分享 #探店打卡'],
+            '美食_微博':['干了这碗 #快乐水# ！今天的我也是一个快乐的干饭人🍚','【今日美食打卡】这顿饭，值得发一条微博。'],
+            '旅行_朋友圈':['远方很远，步履不停 🌄','世界那么大，我来看看了 ✈️','收藏了整个夏天的风景 🌊','走走停停，每一步都算数'],
+            '旅行_小红书':['📍这个地方也太美了吧！！\n游玩时间：建议2-3小时\n门票：💰免费/XX元\n交通：🚗自驾最方便\n拍照攻略看图2-5 📸\n#旅行攻略 #周末去哪玩','✨出片率100%的宝藏目的地✨\n随手一拍就是大片！\n#旅行vlog #旅行日记'],
+            '旅行_微博':['生活不止眼前的苟且，还有诗和远方。——这次我选了远方 🌅','去了一个被风吹过的地方 🍃 #旅途中#'],
+            '自拍_朋友圈':['今天也是可爱的一天 ✌️','假装在巴黎的第N天 🗼','拍了100张选了这一张','照骗本骗 😘'],
+            '自拍_小红书':['📸今日妆容分享✨\n底妆：XXX\n眼影：XXX\n口红：XXX\n发型教程看主页～\n#每日妆容 #穿搭日记','氛围感拍照📷一学就会！\n技巧：45度角+侧光\n#拍照技巧 #自拍'],
+            '自拍_微博':['今日份的本人 📷 请查收','偷偷告诉你们一个秘密：这张照片磨了30分钟的皮 🤫'],
+            '加班_朋友圈':['夜深了，我还在…… 🌙','今天的我：又累又卷 💻','打工人打工魂 💪','公司不倒我不跑'],
+            '加班_小红书':['🌙加班夜的自救指南：\n1. 一杯奶茶续命 🧋\n2. 戴上耳机隔绝世界 🎧\n3. 倒计时下班 ⏰\n#打工人日常 #加班','办公室深夜的灯，照亮的是打工人的梦想和黑眼圈😭\n#职场生存'],
+            '加班_微博':['#打工人语录# 你见过凌晨两点的办公室吗？我见过。','下班了！！！终于下班了！！！ #加班日常#'],
+            '下雨_朋友圈':['下雨天，适合想念 🌧️','又是一个适合赖床的天气','雨天配咖啡，完美 ☕','听雨声，等晴天 🌈'],
+            '下雨_小红书':['🌧️下雨天拍照太绝了！\n雨中的城市有种电影感✨\n手机模式调成人像\n找个有倒影的地方\n#雨天拍照 #城市随拍','☔雨天宅家清单：\n✅追剧 ✅奶茶 ✅零食\n✅窝在沙发上一整天\n#宅家日常'],
+            '下雨_微博':['下雨了，没带伞。但没关系，我本来就想淋一场雨 🌧️','雨天的空气有种干净的味道 #下雨天#'],
+            '周末_朋友圈':['周末快乐！今天属于自己 🎉','宅家一天，也是一种享受 🛋️','终于等到你，还好我没放弃（对周末说的）','睡到自然醒的感觉太棒了'],
+            '周末_小红书':['✨周末一日vlog✨\n9:00 睡到自然醒\n10:00 早午餐\n14:00 逛街/看展\n18:00 约饭\n20:00 电影之夜🎬\n#周末日常 #vlog','周末也要精致地过！☀️\n今天的安排：断舍离+大扫除+煲剧\n#生活记录'],
+            '周末_微博':['#周末愉快# 今天的计划就是没有计划！','终于到周末了！你们都打算干什么呀？我先躺为敬 🛌'],
+        };
+
+        function pick(a){return a[Math.floor(Math.random()*a.length)];}
+
+        function gen(){
+            const scene=document.getElementById('scene').value;
+            const platform=document.getElementById('platform').value;
+            const key=scene+'_'+platform;
+            const texts=data[key];
+            const out = document.getElementById('output');
+            
+            out.style.opacity = '0';
+            setTimeout(() => {
+                out.textContent=pick(texts);
+                out.style.opacity = '1';
+                out.style.transition = 'opacity 0.4s ease';
+                Utils.toast('灵感已降临 ✨', 'success');
+            }, 300);
+        }
+
+        function copyRes() {
+            const txt = document.getElementById('output').textContent;
+            if(txt.includes('在这里')) return;
+            navigator.clipboard.writeText(txt).then(() => {
+                Utils.toast('文案已复制 ✨', 'success');
+            });
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy  -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

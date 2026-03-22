@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>速算练习生成 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .problem-display { font-variant-numeric: tabular-nums; text-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .tier-btn { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .tier-btn.active { background: #f472b6; color: white; transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(244, 114, 182, 0.4); }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6 shadow-sm no-print">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-14">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-800 mb-4 animate-item">心算实验室：随机试题生成</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s italic italic">毫秒级大脑同步，自定义题型挑战。🎲</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-14 mb-12 bg-white shadow-2xl animate-item flex flex-col items-center" style="animation-delay: 0.2s">
+            <div class="flex flex-wrap justify-center gap-3 mb-10 w-full" id="tiers">
+                <!-- Tiers Injected -->
+            </div>
+
+            <div id="qBox" class="problem-display text-5xl md:text-7xl font-black text-slate-800 mb-12 py-16 px-10 bg-slate-50/50 rounded-[4rem] border border-slate-100 w-full max-w-lg tracking-tighter shadow-inner relative overflow-hidden">
+                <div class="absolute top-4 left-1/2 -translate-x-1/2 text-[9px] font-black text-slate-300 uppercase tracking-[0.4em]">Active Problem Sector</div>
+                ?
+            </div>
+            
+            <div class="w-full max-w-md">
+                <button onclick="gen()" class="w-full py-6 bg-pink-400 text-white font-black rounded-3xl shadow-2xl shadow-pink-100 hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-2xl flex items-center justify-center gap-4 mb-8">
+                    🎲 快速出题 (GENERATE)
+                </button>
+                
+                <div class="p-6 bg-indigo-50/30 rounded-[2rem] border border-indigo-50/80 flex flex-col items-center">
+                    <p class="text-[9px] font-black text-indigo-300 uppercase tracking-[0.3em] mb-4">Precision Statistics</p>
+                    <div class="flex items-center gap-10">
+                        <div class="text-center">
+                            <span class="block text-2xl font-black text-indigo-500 tabular-nums" id="count">0</span>
+                            <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Solved</span>
+                        </div>
+                        <div class="h-10 w-px bg-indigo-100"></div>
+                        <div class="text-center">
+                            <span class="block text-2xl font-black text-indigo-500 tabular-nums" id="timer">0.0s</span>
+                            <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Avg Speed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 animate-item" style="animation-delay: 0.3s">
+            <div class="p-8 bg-white rounded-[3rem] border border-pink-50 text-left flex items-start gap-5">
+                <div class="w-14 h-14 bg-pink-50 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0">🚀</div>
+                <div>
+                    <h3 class="text-pink-400 font-extrabold mb-1 uppercase tracking-tight text-sm">闪取算法</h3>
+                    <p class="text-[11px] text-slate-400 leading-relaxed font-medium">题目生成经过逻辑优化，确保除法整除、减法非负，为您提供无障碍练习流。</p>
+                </div>
+            </div>
+            <div class="p-8 bg-white rounded-[3rem] border border-pink-50 text-left flex items-start gap-5">
+                <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0">🧠</div>
+                <div>
+                    <h3 class="text-blue-400 font-extrabold mb-1 uppercase tracking-tight text-sm">全域训练</h3>
+                    <p class="text-[11px] text-slate-400 leading-relaxed font-medium">涵盖加、减、乘、除四大基础维度，从10以内到1000位数的梯度跨越。</p>
+                </div>
+            </div>
+        </div>
+
+        <p class="text-[10px] text-gray-300 font-bold uppercase tracking-[0.5em] pb-12">Universal Mental Arithmetic & Logic Sequence Generator</p>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const tiers = [
+            { id: 't1', label: '基础 (10以内)', range: 10, ops: ['+', '-'] },
+            { id: 't2', label: '进阶 (100以内)', range: 100, ops: ['+', '-', '×', '÷'] },
+            { id: 't3', label: '大师 (1000以内)', range: 1000, ops: ['+', '-', '×', '÷'] },
+            { id: 't4', label: '极速乘除', range: 20, ops: ['×', '÷'] }
+        ];
+
+        let activeTier = 't2';
+        let solved = 0;
+        let startTime = null;
+        let totalTime = 0;
+
+        function renderTiers() {
+            document.getElementById('tiers').innerHTML = tiers.map(t => `
+                <button onclick="activeTier='${t.id}';renderTiers();gen()" 
+                    class="tier-btn px-6 py-2.5 rounded-2xl font-black text-xs ${activeTier === t.id ? 'active' : 'bg-slate-50 text-slate-400 hover:bg-pink-50 hover:text-pink-400 border border-slate-100'}">
+                    ${t.label}
+                </button>
+            `).join('');
+        }
+
+        function gen() {
+            const t = tiers.find(x => x.id === activeTier);
+            const op = t.ops[Math.floor(Math.random() * t.ops.length)];
+            const range = t.range;
+            
+            let problem = '';
+            if (op === '÷') {
+                const divisor = Math.floor(Math.random() * (range/5)) + 1;
+                const result = Math.floor(Math.random() * 12) + 1;
+                problem = `${divisor * result} ÷ ${divisor} = ?`;
+            } else if (op === '×') {
+                const x = Math.floor(Math.random() * (range/2));
+                const y = Math.floor(Math.random() * 12);
+                problem = `${x} × ${y} = ?`;
+            } else if (op === '-') {
+                const a = Math.floor(Math.random() * range);
+                const b = Math.floor(Math.random() * a);
+                problem = `${a} - ${b} = ?`;
+            } else {
+                const a = Math.floor(Math.random() * range);
+                const b = Math.floor(Math.random() * range);
+                problem = `${a} + ${b} = ?`;
+            }
+            
+            document.getElementById('qBox').innerHTML = problem;
+            
+            // Stats
+            if(startTime) {
+                totalTime += (Date.now() - startTime);
+                solved++;
+                document.getElementById('count').textContent = solved;
+                document.getElementById('timer').textContent = (totalTime / (solved * 1000)).toFixed(1) + 's';
+            }
+            startTime = Date.now();
+            
+            Utils.toast('新试题已成功部署 ✨', 'success');
+        }
+
+        // Init phase
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    renderTiers();
+                    gen();
+                }, 500);
+            }
+        });
+
+        // Click aesthetics
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

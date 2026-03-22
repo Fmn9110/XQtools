@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>本地知识库 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">个人本地知识库</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">构建专属百科全书，支持分类检索与快速记录。</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 mb-12 bg-white shadow-2xl animate-item" style="animation-delay: 0.2s">
+            <div class="relative group mb-8">
+                <input type="text" id="search" placeholder="🔍 搜索知识条目标题或内容..." class="w-full p-4 pl-12 bg-gray-50 rounded-2xl border border-pink-50 outline-none focus:border-pink-200 transition-all font-bold text-sm shadow-inner text-slate-600" oninput="render()">
+            </div>
+
+            <div class="space-y-4 mb-8 p-6 bg-pink-50/10 rounded-3xl border-2 border-dashed border-pink-50">
+                <p class="text-[10px] font-black text-pink-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-pink-400 animate-pulse"></span> Add New Entry 新增条目
+                </p>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <input type="text" id="title" placeholder="知识标题" class="p-4 bg-white rounded-2xl border border-pink-50 outline-none focus:border-pink-200 transition-all text-sm font-bold shadow-sm text-slate-600">
+                    <div class="relative">
+                        <select id="cat" class="w-full p-4 bg-white rounded-2xl border border-pink-50 outline-none focus:border-pink-200 transition-all text-sm font-bold shadow-sm appearance-none cursor-pointer text-slate-600">
+                            <option value="📂 通用 (General)">📂 通用 (General)</option>
+                            <option value="💻 编程 (Dev)">💻 编程 (Dev)</option>
+                            <option value="📐 数学 (Math)">📐 数学 (Math)</option>
+                            <option value="🏮 语文 (Chinese)">🏮 语文 (Chinese)</option>
+                            <option value="🇬🇧 英语 (English)">🇬🇧 英语 (English)</option>
+                            <option value="🏷️ 其他 (Others)">🏷️ 其他 (Others)</option>
+                        </select>
+                        <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-pink-300">▼</div>
+                    </div>
+                </div>
+                <textarea id="content" rows="3" placeholder="在这里输入详细的知识点内容..." class="w-full p-4 bg-white rounded-2xl border border-pink-50 outline-none focus:border-pink-200 transition-all text-sm resize-none shadow-sm text-slate-600 font-medium"></textarea>
+                <button onclick="add()" class="w-full py-4 bg-pink-400 text-white font-black rounded-2xl shadow-lg hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95">
+                    ✨ 存入库中
+                </button>
+            </div>
+
+            <div class="space-y-4" id="list">
+                <!-- Items generated here -->
+            </div>
+            
+            <div class="mt-8 flex justify-between items-center text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] border-t border-pink-50 pt-6">
+                <span id="count">0 ENTRIES</span>
+                <button onclick="exportWiki()" class="text-pink-300 hover:text-pink-400 font-bold transition-colors">EXPORT ARCHIVE 🚀</button>
+            </div>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let items = JSON.parse(localStorage.getItem('qLocalWiki') || '[]');
+
+        function save(){ localStorage.setItem('qLocalWiki', JSON.stringify(items)); }
+
+        function add(){
+            const t = document.getElementById('title').value.trim();
+            const c = document.getElementById('content').value.trim();
+            const cat = document.getElementById('cat').value;
+            if(!t){ Utils.toast('别忘了填写标题哦 🍭', 'warning'); return; }
+            items.unshift({title: t, content: c, cat, id: Date.now(), date: new Date().toLocaleDateString()});
+            save(); 
+            render();
+            document.getElementById('title').value = '';
+            document.getElementById('content').value = '';
+            Utils.toast('条目已录入知识库 ✨');
+        }
+
+        function del(id){
+            if(!confirm('确定要从知识库中移除该条目吗？')) return;
+            items = items.filter(i => i.id !== id);
+            save(); 
+            render();
+            Utils.toast('已成功移除 🗑️');
+        }
+
+        function render(){
+            const q = document.getElementById('search').value.toLowerCase();
+            const filtered = q ? items.filter(i => i.title.toLowerCase().includes(q) || i.content.toLowerCase().includes(q)) : items;
+            const container = document.getElementById('list');
+            
+            if (filtered.length === 0) {
+                container.innerHTML = '<p class="text-sm text-gray-300 py-10 text-center">空空如也，快去记录你的第一条知识吧 🍬</p>';
+                document.getElementById('count').textContent = `0 ENTRIES`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(i => `
+                <div class="p-6 bg-pink-50/20 rounded-2xl border border-pink-50/50 group animate-fade-in hover:bg-white hover:shadow-xl transition-all">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex flex-col gap-1 overflow-hidden">
+                            <span class="font-black text-slate-700 text-lg group-hover:text-pink-500 transition-colors truncate">${i.title}</span>
+                            <span class="text-[10px] text-gray-300 font-black uppercase tracking-widest">${i.date}</span>
+                        </div>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <span class="px-3 py-1 bg-pink-400/10 text-pink-500 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap">${i.cat}</span>
+                            <span class="px-3 py-1 bg-pink-400/10 text-pink-500 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap">${i.cat}</span>
+                            <button onclick="del(${i.id})" class="text-pink-100 hover:text-pink-400 transition-colors p-2 text-xl">🗑️</button>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-500 font-medium leading-relaxed whitespace-pre-line">${i.content}</p>
+                </div>
+            `).join('');
+            document.getElementById('count').textContent = `${items.length} ENTRIES`;
+        }
+
+        function exportWiki() {
+            if(items.length === 0) { Utils.toast('没有内容可以导出哦', 'warning'); return; }
+            const blob = new Blob([JSON.stringify(items, null, 2)], {type: 'application/json'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'q-wiki-archive-' + new Date().toLocaleDateString() + '.json';
+            a.click();
+            Utils.toast('档案已导出 💾');
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    render();
+                }, 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

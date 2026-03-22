@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>长文本转图 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 0.75rem; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen pb-20 md:pb-0">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-5xl">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4">长文本转图</h1>
+            <p class="text-gray-500 italic">将长篇文字生成高清长图，防止被社交平台折叠。📝</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 bg-white shadow-xl mb-12">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <div class="text-left space-y-8">
+                    <div class="relative group">
+                        <label class="block text-[10px] font-bold text-pink-300 uppercase tracking-widest mb-3 ml-2">长文本内容</label>
+                        <textarea id="textInput" class="w-full h-80 p-6 bg-pink-50/10 border-2 border-pink-50 rounded-3xl text-sm outline-none focus:border-pink-200 transition-all resize-none shadow-inner" placeholder="在此输入长文内容...">在小Q工具箱，每个字符都拥有生命。
+将文字转化为图片，分享更有力量。</textarea>
+                        <button onclick="clearText()" class="absolute right-6 top-10 text-pink-200 hover:text-pink-400 p-2 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-6 p-6 bg-pink-50/20 rounded-[2rem] border border-pink-50">
+                        <div>
+                            <label class="block text-[10px] font-bold text-pink-400 mb-3 ml-1 uppercase tracking-tighter">背景颜色</label>
+                            <input type="color" id="bgColor" value="#ffffff" class="w-full h-12 rounded-xl cursor-pointer bg-transparent border-none">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-pink-400 mb-3 ml-1 uppercase tracking-tighter">文字颜色</label>
+                            <input type="color" id="textColor" value="#333333" class="w-full h-12 rounded-xl cursor-pointer bg-transparent border-none">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-center">
+                    <label class="block text-[10px] font-bold text-pink-300 mb-4 self-start uppercase tracking-widest ml-2">实时预览</label>
+                    <div class="w-full bg-pink-50/10 rounded-[2.5rem] overflow-hidden border-2 border-pink-50 shadow-inner p-4 flex justify-center min-h-[400px]">
+                        <canvas id="canvas" class="max-w-full h-auto rounded-lg shadow-sm"></canvas>
+                    </div>
+                    <button id="downloadBtn" class="theme-download-btn px-12 py-4 rounded-2xl font-bold shadow-lg shadow-pink-100 mt-8 w-full text-lg">
+                        ✨ 保存为全高清图片
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const input = document.getElementById('textInput');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const bgColor = document.getElementById('bgColor');
+        const textColor = document.getElementById('textColor');
+
+        function draw() {
+            const text = input.value || '请输入内容';
+            const width = 800;
+            const padding = 80;
+            const fontSize = 32;
+            const lineHeight = 48;
+            
+            ctx.font = `${fontSize}px "Outfit", "PingFang SC", "Microsoft YaHei", sans-serif`;
+            
+            // Wrap text
+            const wrapText = (ctx, text, maxWidth) => {
+                const words = text.split('\n');
+                let lines = [];
+                words.forEach(paragraph => {
+                    let chars = Array.from(paragraph);
+                    let line = '';
+                    for (let n = 0; n < chars.length; n++) {
+                        let testLine = line + chars[n];
+                        let metrics = ctx.measureText(testLine);
+                        if (metrics.width > maxWidth && n > 0) {
+                            lines.push(line);
+                            line = chars[n];
+                        } else {
+                            line = testLine;
+                        }
+                    }
+                    lines.push(line);
+                });
+                return lines;
+            };
+
+            const lines = wrapText(ctx, text, width - padding * 2);
+            const height = lines.length * lineHeight + padding * 2 + 100;
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            // BG
+            ctx.fillStyle = bgColor.value;
+            ctx.fillRect(0, 0, width, height);
+            
+            // Text
+            ctx.fillStyle = textColor.value;
+            ctx.font = `${fontSize}px "Outfit", "PingFang SC", "Microsoft YaHei", sans-serif`;
+            ctx.textBaseline = 'top';
+            
+            lines.forEach((line, i) => {
+                ctx.fillText(line, padding, padding + i * lineHeight);
+            });
+
+            // Watermark
+            ctx.fillStyle = 'rgba(0,0,0,0.08)';
+            ctx.font = '22px "Outfit", sans-serif';
+            ctx.fillText('Generated by 小Q工具箱', width - 280, height - 50);
+        }
+
+        input.oninput = draw;
+        bgColor.oninput = draw;
+        textColor.oninput = draw;
+        
+        document.getElementById('downloadBtn').onclick = () => {
+             const data = canvas.toDataURL('image/png');
+             const link = document.createElement('a');
+             link.download = `q-text-image-${Date.now()}.png`;
+             link.href = data;
+             link.click();
+             Utils.toast('长图已保存', 'success');
+        };
+
+        function clearText() {
+            input.value = '';
+            draw();
+            Utils.toast('已清空', 'info');
+        }
+
+        // Initial
+        window.onload = draw;
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

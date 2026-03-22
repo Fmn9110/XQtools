@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>宠物翻译 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🦴 趣味 <span class="gradient-text">宠物翻译</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">跨越物种的“秘密对话”。纯属娱乐，只为博君一笑。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            <div class="max-w-lg mx-auto mb-10">
+                <div class="relative group mb-6">
+                    <label class="block text-[10px] font-black text-gray-300 uppercase tracking-widest mb-2 pl-4">Target / 翻译对象</label>
+                    <select id="pet" class="w-full p-4 bg-orange-50/20 rounded-2xl border-2 border-transparent focus:border-orange-200 outline-none font-bold text-gray-600 transition-all shadow-inner">
+                        <option>🐱 猫咪 / Meow</option>
+                        <option>🐶 狗狗 / Woof</option>
+                        <option>🐰 兔兔 / Bun</option>
+                    </select>
+                </div>
+
+                <div class="relative group mb-8">
+                    <label class="block text-[10px] font-black text-gray-300 uppercase tracking-widest mb-2 pl-4">Your Voice / 你想说的话</label>
+                    <textarea id="input" rows="3" placeholder="我也想知道你在想什么..." 
+                        class="w-full p-4 bg-orange-50/20 rounded-2xl border-2 border-transparent focus:border-orange-200 outline-none font-bold text-gray-600 transition-all shadow-inner resize-none"></textarea>
+                </div>
+
+                <button onclick="translatePet()" class="w-full py-5 bg-orange-500 hover:bg-orange-600 text-white font-black rounded-2xl shadow-xl shadow-orange-100 transition-all active:scale-95 text-xl flex items-center justify-center gap-2">
+                    🔄 开启跨物种翻译
+                </button>
+            </div>
+
+            <div class="bg-gradient-to-br from-orange-50/50 to-white rounded-[2rem] p-8 md:p-12 border-2 border-orange-100 shadow-inner group relative overflow-hidden">
+                <div class="absolute -top-6 -right-6 text-7xl text-orange-200 opacity-20 group-hover:rotate-12 transition-transform">🐾</div>
+                <p class="text-[10px] font-black text-orange-400 uppercase tracking-[0.4em] mb-4">Pet's Reply / 宠物的回复</p>
+                <div id="replyContainer" class="min-h-[60px] flex items-center justify-center">
+                    <p class="text-xl md:text-2xl font-bold text-gray-700 leading-relaxed text-center" id="reply">等待你开启对话... ✨</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🧸</span>
+                <p>其实，最好的翻译器是你每天的陪伴和观察。虽然它们不会说话，但每一次摆尾、每一声低唤都在表达着它们的爱。本工具仅供娱乐，请不要当真哦。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const replies = {
+            '🐱 猫咪 / Meow': [
+                '喵～你说什么？我没有在听。我在想鱼的事情。🐟',
+                '喵喵喵！翻译：铲屎的，你今天的罐头准备好了吗？',
+                '*慵懒地翻了个身* 你说的每个字我都听到了，但我选择忽略。',
+                '喵呜...翻译：我饿了。什么？你不是在说吃的？那我没兴趣。',
+                '*瞪大眼睛* 喵...翻译：你是我见过最好的铲屎官（之一）。'
+            ],
+            '🐶 狗狗 / Woof': [
+                '汪汪汪！翻译：你是全世界最好的主人！我爱你！❤️',
+                '*疯狂摇尾巴* 汪！翻译：出去玩？散步？球球？飞盘？都好都好！',
+                '汪呜...翻译：你是不是刚才摸了别的狗？我闻到了。解释一下。',
+                '汪汪！翻译：你每次出门我都以为你再也不会回来了，但你回来了！太开心了！',
+                '*歪头* 汪？翻译：你吃的那个东西...能不能分我一口？就一口？'
+            ],
+            '🐰 兔兔 / Bun': [
+                '*抖鼻子* 翻译：这个胡萝卜不错，但我更想吃那个。',
+                '*蹦跳* 翻译：你摸我的时候轻一点，我的毛很珍贵的。',
+                '*后腿蹬地* 翻译：我不是在生气！我只是...好吧我有点生气。',
+                '*啃啃啃* 翻译：这个线好好吃——什么？不能吃？那个也不能吃？你们人类好多规矩。',
+                '*缩成一团* 翻译：我今天不想动，让我做一个毛茸茸的球。'
+            ],
+        };
+
+        function translatePet() {
+            const pet = document.getElementById('pet').value;
+            const input = document.getElementById('input').value.trim();
+            const replyEl = document.getElementById('reply');
+            const pool = replies[pet];
+            
+            if(!input) {
+                Utils.toast('写点什么跟毛孩子交流吧', 'info');
+                return;
+            }
+
+            replyEl.style.opacity = '0';
+            replyEl.style.transform = 'translateY(10px)';
+            
+            setTimeout(() => {
+                const pick = pool[Math.floor(Math.random() * pool.length)];
+                replyEl.textContent = pick;
+                replyEl.style.opacity = '1';
+                replyEl.style.transform = 'translateY(0)';
+                replyEl.style.transition = 'all 0.4s ease-out';
+                Utils.toast('翻译报告已送达 ✨', 'success');
+            }, 300);
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

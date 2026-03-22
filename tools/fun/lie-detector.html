@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>测谎仪模拟 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .radar-scan {
+            position: relative;
+            overflow: hidden;
+        }
+        .radar-scan::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: conic-gradient(from 0deg, transparent 0%, rgba(244, 114, 182, 0.2) 10%, transparent 40%);
+            animation: rotate 2s linear infinite;
+            border-radius: 50%;
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🔍 测谎 <span class="gradient-text">模拟器</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">声波频率监测、微表情同步分析。探索真相的边界（仅供娱乐）。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white text-center animate-item" style="animation-delay: 0.2s">
+            <div class="max-w-md mx-auto mb-10">
+                <div class="relative group mb-6">
+                    <input type="text" id="statement" placeholder="说点什么，比如：我今天很漂亮..." 
+                        class="w-full p-6 bg-pink-50/30 rounded-[2rem] border-2 border-transparent focus:border-pink-200 outline-none text-center text-lg font-bold text-gray-700 transition-all shadow-inner">
+                    <label class="block text-[10px] font-black text-pink-300 uppercase tracking-widest mt-3">Input Statement / 输入陈述</label>
+                </div>
+                <button onclick="detect()" class="w-full py-5 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-2xl shadow-lg shadow-pink-100 transition-all active:scale-95 text-xl flex items-center justify-center gap-2" id="detectBtn">
+                    🔍 开始深度分析
+                </button>
+            </div>
+
+            <div id="result" class="hidden animate-item">
+                <div class="bg-gradient-to-br from-pink-50/50 to-indigo-50/50 rounded-[3rem] p-10 md:p-16 border-2 border-pink-100 shadow-inner group relative overflow-hidden">
+                    <div class="w-48 h-48 mx-auto rounded-full bg-white flex items-center justify-center mb-8 shadow-xl relative radar-scan border-4 border-white" id="meter">
+                        <p class="text-6xl md:text-7xl relative z-10" id="emoji"></p>
+                    </div>
+                    
+                    <p class="text-3xl md:text-4xl font-black mb-4 tracking-tighter" id="verdict"></p>
+                    <div class="h-1 w-12 bg-gray-200 rounded-full mx-auto mb-6 opacity-50"></div>
+                    
+                    <div class="bg-white/60 backdrop-blur-md rounded-2xl p-6 border border-pink-50 inline-block">
+                        <p class="text-gray-500 font-bold text-sm md:text-base" id="detail"></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="emptyTip" class="py-20 flex flex-col items-center opacity-20 select-none">
+                <span class="text-6xl mb-4">🩺</span>
+                <p class="text-xs font-black uppercase tracking-widest">Awaiting voice input...</p>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-2xl mt-1">🧪</span>
+                <p>科学免责声明：本测谎仪基于随机数生成算法与幽默美学设计，并不具备真实的生物特征分析功能。请勿将其作为处理严肃情感或法律问题的依据。祝您玩得开心！💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        function detect(){
+            const text = document.getElementById('statement').value.trim();
+            if(!text){
+                Utils.toast('请先输入一句话哦', 'info');
+                return;
+            }
+            
+            const btn = document.getElementById('detectBtn');
+            const resultBox = document.getElementById('result');
+            const emptyTip = document.getElementById('emptyTip');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="animate-spin text-2xl">🌀</span> 分析生物特征中...';
+            resultBox.classList.add('hidden');
+            emptyTip.classList.add('hidden');
+            
+            Utils.toast('正在进行声纹采集...', 'info');
+            
+            setTimeout(() => {
+                const isLie = Math.random() > 0.5;
+                const pct = isLie ? Math.floor(Math.random() * 30) + 70 : Math.floor(Math.random() * 30) + 5;
+                
+                btn.disabled = false;
+                btn.innerHTML = '🔍 开始深度分析';
+                
+                const meter = document.getElementById('meter');
+                const emoji = document.getElementById('emoji');
+                const verdict = document.getElementById('verdict');
+                const detail = document.getElementById('detail');
+                const resultCard = resultBox.querySelector('div');
+                
+                if(isLie){
+                    meter.classList.remove('radar-scan');
+                    meter.className = 'w-48 h-48 mx-auto rounded-full bg-rose-50 flex items-center justify-center mb-8 shadow-xl border-4 border-rose-200';
+                    emoji.textContent = '🤥';
+                    verdict.textContent = '检测到谎言！';
+                    verdict.className = 'text-3xl md:text-4xl font-black mb-4 tracking-tighter text-rose-500';
+                    detail.textContent = `🚨 谎言概率: ${pct}% · 语气迟疑 · 皮层波异常`;
+                } else {
+                    meter.classList.remove('radar-scan');
+                    meter.className = 'w-48 h-48 mx-auto rounded-full bg-emerald-50 flex items-center justify-center mb-8 shadow-xl border-4 border-emerald-200';
+                    emoji.textContent = '✨';
+                    verdict.textContent = '无可置疑的真话！';
+                    verdict.className = 'text-3xl md:text-4xl font-black mb-4 tracking-tighter text-emerald-500';
+                    detail.textContent = `🍀 真实概率: ${100-pct}% · 频率稳定 · 表情极佳`;
+                }
+                
+                resultBox.classList.remove('hidden');
+                Utils.toast('分析完成 ✨', 'success');
+                
+                setTimeout(() => {
+                    resultBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+            }, 2000);
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

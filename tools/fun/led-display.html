@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LED跑马灯 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            background: #fdf2f8;
+            height: 8px;
+            border-radius: 4px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            background: #f472b6;
+            border-radius: 50%;
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 4px 10px rgba(244, 114, 182, 0.4);
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">💡 LED <span class="gradient-text">跑马灯</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">全屏滚动弹幕，让你的心意闪耀全场。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            <div class="mb-8 relative group">
+                <input type="text" id="ledText" value="Hello Q-Tools!" class="w-full p-6 bg-pink-50/30 rounded-[2rem] border-2 border-transparent focus:border-pink-200 outline-none text-center text-2xl font-black text-gray-700 transition-all shadow-inner">
+                <label class="block text-[10px] font-black text-pink-300 uppercase tracking-[0.3em] mt-3">Bullet Screen Text / 弹幕文字内容</label>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 bg-pink-50/20 p-8 rounded-3xl">
+                <div>
+                    <div class="flex justify-between mb-2">
+                        <label class="text-[10px] font-black text-pink-400 uppercase tracking-widest">Text Color / 文字色</label>
+                    </div>
+                    <input type="color" id="ledColor" value="#ec4899" class="w-full h-14 rounded-2xl cursor-pointer border-4 border-white shadow-sm overflow-hidden">
+                </div>
+                <div>
+                    <div class="flex justify-between mb-2">
+                        <label class="text-[10px] font-black text-pink-400 uppercase tracking-widest">Background / 背景色</label>
+                    </div>
+                    <input type="color" id="ledBg" value="#000000" class="w-full h-14 rounded-2xl cursor-pointer border-4 border-white shadow-sm overflow-hidden">
+                </div>
+                <div>
+                    <div class="flex justify-between mb-2">
+                        <label class="text-[10px] font-black text-pink-400 uppercase tracking-widest">Speed / 滚动速度</label>
+                    </div>
+                    <input type="range" id="speed" min="1" max="10" value="5" class="w-full mt-4">
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-4 justify-center">
+                <button onclick="startLED()" class="w-full max-w-md py-5 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-2xl shadow-lg shadow-pink-100 transition-all active:scale-95 text-xl flex items-center justify-center gap-2 group">
+                    <span class="text-2xl group-hover:rotate-12 transition-transform">🚀</span> 开启全屏模式
+                </button>
+            </div>
+            
+            <p class="text-[10px] font-black text-gray-300 uppercase tracking-[0.4em] mt-10 text-center">Tap screen to exit / 进入后点击屏幕退出</p>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.5s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">📢</span>
+                    使用场景
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50 leading-relaxed text-gray-600 text-sm">
+                    <p>无论是演唱会应援、接机呼唤，还是派对上的惊喜表白，LED 跑马灯都能让你瞬间成为焦点。建议在全屏模式下将手机横置，效果最佳。</p>
+                </div>
+            </section>
+            <section class="animate-item" style="animation-delay: 0.6s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">✨</span>
+                    温馨提示
+                </h2>
+                <div class="bg-white p-6 rounded-2xl border border-pink-50 shadow-sm leading-relaxed text-gray-500 text-sm">
+                    <p>高亮度的跑马灯在暗处效果更佳。请注意合理设置颜色对比度（如黑底粉字），以确保文字清晰可辨。如果需要退出，只需轻轻点击全屏屏幕即可。💖</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div id="ledScreen" class="fixed inset-0 z-[999] hidden cursor-pointer overflow-hidden flex items-center" onclick="stopLED()">
+        <div id="ledMarquee" class="absolute whitespace-nowrap font-black leading-none" style="left: 100%;"></div>
+    </div>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let animId = null;
+        
+        function startLED(){
+            const text = document.getElementById('ledText').value || 'LED';
+            const color = document.getElementById('ledColor').value;
+            const bg = document.getElementById('ledBg').value;
+            const speed = parseInt(document.getElementById('speed').value);
+            const screen = document.getElementById('ledScreen');
+            const marquee = document.getElementById('ledMarquee');
+            
+            screen.style.backgroundColor = bg;
+            marquee.style.color = color;
+            marquee.style.fontSize = Math.min(window.innerHeight * 0.8, 300) + 'px';
+            marquee.textContent = text;
+            screen.classList.remove('hidden');
+            
+            // Standard Fullscreen API
+            if (screen.requestFullscreen) {
+                screen.requestFullscreen();
+            } else if (screen.webkitRequestFullscreen) {
+                screen.webkitRequestFullscreen();
+            } else if (screen.msRequestFullscreen) {
+                screen.msRequestFullscreen();
+            }
+
+            let x = window.innerWidth;
+            function animate(){
+                x -= speed * 3.5;
+                if(x < -marquee.offsetWidth) x = window.innerWidth;
+                marquee.style.left = x + 'px';
+                animId = requestAnimationFrame(animate);
+            }
+            animate();
+            
+            Utils.toast('已进入全屏模式 🚀', 'success');
+        }
+
+        function stopLED(){
+            document.getElementById('ledScreen').classList.add('hidden');
+            if(animId) cancelAnimationFrame(animId);
+            
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+
+        document.addEventListener('keydown', e => { 
+            if(e.key === 'Escape') stopLED(); 
+        });
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if(!document.getElementById('ledScreen').classList.contains('hidden')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

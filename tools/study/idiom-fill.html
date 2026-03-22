@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>成语填空 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">成语填词挑战</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">趣味填词，轻松掌握中华博大精深的成语文化。</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 mb-12 bg-white shadow-2xl animate-item" style="animation-delay: 0.2s">
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-black text-pink-400 uppercase tracking-widest">Score 积分</span>
+                    <span id="score" class="text-lg font-bold text-pink-500">0</span>
+                    <span class="text-pink-200">/</span>
+                    <span id="total" class="text-lg font-bold text-gray-400">0</span>
+                </div>
+                <button onclick="next()" class="px-4 py-2 bg-pink-50 text-pink-500 rounded-xl text-xs font-bold hover:bg-pink-100 transition-all">下一题</button>
+            </div>
+
+            <div id="quiz" class="p-8 md:p-12 bg-pink-50/20 rounded-[2.5rem] border-2 border-dashed border-pink-100 mb-8 relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-pink-100/20 rounded-full blur-3xl"></div>
+                
+                <p class="text-4xl md:text-5xl font-black text-slate-700 tracking-[0.2em] mb-6 flex justify-center items-center gap-2" id="display">
+                     <!-- Idiom chars generated here -->
+                </p>
+                
+                <p class="text-xs md:text-sm text-gray-400 font-medium mb-8 p-4 bg-white/50 rounded-2xl border border-pink-50/50 inline-block" id="hint">
+                   <!-- Hint generated here -->
+                </p>
+
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                    <input type="text" id="answer" maxlength="1" placeholder="填入" class="w-20 md:w-24 p-5 bg-white rounded-2xl border-2 border-pink-200 outline-none text-center text-3xl font-black text-pink-500 shadow-lg focus:border-pink-400 transition-all font-bold" onkeydown="if(event.key==='Enter')check()">
+                    <button onclick="check()" class="w-full sm:w-auto px-10 py-5 bg-pink-400 text-white rounded-2xl font-black shadow-lg hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95">验证答案</button>
+                </div>
+            </div>
+
+            <p id="feedback" class="text-base md:text-lg font-black transition-all duration-300"></p>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const idioms=[
+            {word:'画龙点睛',blank:2,hint:'形容说话或写文章在关键处点明要旨'},
+            {word:'守株待兔',blank:3,hint:'比喻不努力而希望获得成功'},
+            {word:'对牛弹琴',blank:1,hint:'比喻对不懂道理的人讲道理'},
+            {word:'井底之蛙',blank:3,hint:'比喻见识狭小的人'},
+            {word:'亡羊补牢',blank:2,hint:'出了问题后想办法补救'},
+            {word:'掩耳盗铃',blank:3,hint:'比喻自己欺骗自己'},
+            {word:'锦上添花',blank:1,hint:'好上加好'},
+            {word:'雪中送炭',blank:2,hint:'在别人困难时给予帮助'},
+            {word:'班门弄斧',blank:3,hint:'在行家面前卖弄本领'},
+            {word:'画蛇添足',blank:3,hint:'做多余的事反而不妙'},
+            {word:'杯弓蛇影',blank:1,hint:'比喻疑神疑鬼'},
+            {word:'叶公好龙',blank:2,hint:'比喻表面喜欢实际害怕'},
+            {word:'朝三暮四',blank:1,hint:'形容反复无常'},
+            {word:'刻舟求剑',blank:3,hint:'比喻拘泥不知变通'},
+            {word:'拔苗助长',blank:0,hint:'比喻违反事物发展规律'},
+        ];
+
+        let score=0, total=0, currentIdx=-1;
+
+        function next(){
+            currentIdx = (currentIdx + 1) % idioms.length;
+            const item = idioms[currentIdx];
+            const chars = [...item.word];
+            const display = chars.map((c, i) => i === item.blank ? '<span class="text-pink-200">_</span>' : c).join(' ');
+            document.getElementById('display').innerHTML = display;
+            document.getElementById('hint').textContent = '💡 ' + item.hint;
+            document.getElementById('answer').value = '';
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('answer').focus();
+        }
+
+        function check(){
+            const item = idioms[currentIdx];
+            const ans = document.getElementById('answer').value.trim();
+            const correct = [...item.word][item.blank];
+            
+            if(!ans) return;
+
+            total++;
+            if(ans === correct){
+                score++;
+                document.getElementById('feedback').innerHTML = `<span class="text-green-500">🎉 正确！</span>答案是「${item.word}」`;
+                Utils.toast('回答正确！✨', 'success');
+            }else{
+                document.getElementById('feedback').innerHTML = `<span class="text-pink-500">❌ 回答错误</span>，正确应为「${correct}」`;
+                Utils.toast('没关系，下次努力呢 🍬', 'warning');
+            }
+            document.getElementById('score').textContent = score;
+            document.getElementById('total').textContent = total;
+            
+            setTimeout(next, 2000);
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    next();
+                }, 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

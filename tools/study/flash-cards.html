@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>单词闪卡 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .flip-card {
+            perspective: 1000px;
+        }
+        .flip-card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: 0 10px 30px -5px rgba(244, 114, 182, 0.2);
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">单词记忆闪卡工具</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">翻转记忆，轻松掌握每一个新词汇。</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 mb-12 bg-white shadow-2xl animate-item flex flex-col items-center" style="animation-delay: 0.2s">
+            <div id="card" class="flip-card w-full max-w-sm h-64 cursor-pointer mb-10" onclick="flip()">
+                <div class="flip-card-inner w-full h-full relative rounded-3xl border border-pink-50">
+                    <!-- Front -->
+                    <div id="front" class="flip-card-front absolute w-full h-full bg-white rounded-3xl flex flex-col items-center justify-center p-6 text-center">
+                        <span class="text-[10px] font-black text-pink-300 uppercase tracking-[0.2em] mb-4">Front Side</span>
+                        <div id="frontText" class="text-3xl md:text-4xl font-black text-slate-800 leading-tight">Hello</div>
+                    </div>
+                    <!-- Back -->
+                    <div id="back" class="flip-card-back absolute w-full h-full bg-pink-50 rounded-3xl flex flex-col items-center justify-center p-8 text-center border-2 border-pink-100">
+                        <span class="text-[10px] font-black text-pink-400 uppercase tracking-[0.2em] mb-4">Meaning</span>
+                        <div id="backText" class="text-lg md:text-xl font-bold text-pink-600 leading-relaxed italic">你好，欢迎使用！</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <button onclick="prev(); event.stopPropagation();" class="w-12 h-12 rounded-full bg-white text-gray-300 hover:bg-pink-50 hover:text-pink-400 border border-pink-100 flex items-center justify-center transition-all shadow-sm">◀</button>
+                <div id="counter" class="text-sm font-black text-slate-400 font-mono tracking-widest">01 / 04</div>
+                <button onclick="next(); event.stopPropagation();" class="w-12 h-12 rounded-full bg-pink-400 text-white hover:bg-pink-500 flex items-center justify-center shadow-lg transform active:scale-95 transition-all">▶</button>
+            </div>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const words = [
+            {f: "Antigravity", b: "反重力；(AI) 抗引力工具"},
+            {f: "Algorithm", b: "算法"},
+            {f: "Frontend", b: "前端"},
+            {f: "Backend", b: "后端"},
+            {f: "Aesthetics", b: "美学；审美"},
+            {f: "Efficiency", b: "效率"}
+        ];
+        let idx = 0;
+        const cardElem = document.getElementById('card');
+        const frontText = document.getElementById('frontText');
+        const backText = document.getElementById('backText');
+        const counter = document.getElementById('counter');
+
+        function update() {
+            cardElem.classList.remove('flipped');
+            setTimeout(() => {
+                frontText.innerText = words[idx].f;
+                backText.innerText = words[idx].b;
+                counter.innerText = `${String(idx + 1).padStart(2, '0')} / ${String(words.length).padStart(2, '0')}`;
+            }, 300);
+        }
+
+        window.flip = () => {
+            cardElem.classList.toggle('flipped');
+        };
+
+        window.next = () => { idx = (idx + 1) % words.length; update(); };
+        window.prev = () => { idx = (idx - 1 + words.length) % words.length; update(); };
+        
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    update();
+                }, 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

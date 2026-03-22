@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>黄金重量换算 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50"><div class="container mx-auto flex justify-between items-center"><div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'"><div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div><span class="text-2xl font-bold gradient-text">小Q工具箱</span></div><a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a></div></nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">🥇 黄金重量换算</h1>
+            <p class="text-gray-500">克、盎司、两、钱之间快速换算</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div><label class="block text-xs font-bold text-gray-400 mb-2">重量数值</label><input type="number" id="val" value="50" step="any" class="w-full p-3 bg-gray-50 rounded-xl border outline-none" oninput="calc()"></div>
+                <div><label class="block text-xs font-bold text-gray-400 mb-2">单位</label><select id="unit" class="w-full p-3 bg-gray-50 rounded-xl border outline-none" onchange="calc()"><option value="g">克 (g)</option><option value="oz">金衡盎司 (oz t)</option><option value="liang">两 (50g)</option><option value="qian">钱 (5g)</option><option value="tael">港两/台两 (37.5g)</option></select></div>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                <div class="bg-yellow-50 rounded-xl p-4 text-center"><p class="text-xl font-bold text-yellow-600" id="rG">0</p><p class="text-xs text-gray-400">克</p></div>
+                <div class="bg-orange-50 rounded-xl p-4 text-center"><p class="text-xl font-bold text-orange-500" id="rOz">0</p><p class="text-xs text-gray-400">金衡盎司</p></div>
+                <div class="bg-red-50 rounded-xl p-4 text-center"><p class="text-xl font-bold text-red-500" id="rLiang">0</p><p class="text-xs text-gray-400">两</p></div>
+                <div class="bg-pink-50 rounded-xl p-4 text-center"><p class="text-xl font-bold text-pink-500" id="rQian">0</p><p class="text-xs text-gray-400">钱</p></div>
+                <div class="bg-purple-50 rounded-xl p-4 text-center"><p class="text-xl font-bold text-purple-500" id="rTael">0</p><p class="text-xs text-gray-400">港两/台两</p></div>
+            </div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>输入重量并选择单位。</li><li>实时查看五种单位的换算结果。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">两和港两的区别？</div><div class="text-gray-500 text-sm">大陆1两=50g; 港澳台1两(司马两)≈37.5g, 买金饰需注意。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        function calc() {
+            const val = parseFloat(document.getElementById('val').value) || 0;
+            const unit = document.getElementById('unit').value;
+            let grams;
+            if (unit === 'g') grams = val;
+            else if (unit === 'oz') grams = val * 31.1035;
+            else if (unit === 'liang') grams = val * 50;
+            else if (unit === 'qian') grams = val * 5;
+            else grams = val * 37.5;
+
+            document.getElementById('rG').textContent = grams.toFixed(2);
+            document.getElementById('rOz').textContent = (grams / 31.1035).toFixed(4);
+            document.getElementById('rLiang').textContent = (grams / 50).toFixed(2);
+            document.getElementById('rQian').textContent = (grams / 5).toFixed(2);
+            document.getElementById('rTael').textContent = (grams / 37.5).toFixed(4);
+        }
+        calc();
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

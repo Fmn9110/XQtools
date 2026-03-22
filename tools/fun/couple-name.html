@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>情侣CP名生成器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">💕 情侣 <span class="gradient-text">CP名生成器</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">输入你们的名字，编织专属的甜蜜暗号。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 max-w-2xl mx-auto">
+                <div class="animate-item" style="animation-delay: 0.3s">
+                    <label class="block text-[10px] font-black text-pink-300 uppercase tracking-widest mb-3 text-center md:text-left">NAME A / 你的名字</label>
+                    <input type="text" id="nameA" placeholder="张三" class="w-full p-4 bg-pink-50/30 rounded-2xl border-2 border-transparent focus:border-pink-100 outline-none text-center font-bold text-gray-600 transition-all">
+                </div>
+                <div class="animate-item" style="animation-delay: 0.4s">
+                    <label class="block text-[10px] font-black text-pink-300 uppercase tracking-widest mb-3 text-center md:text-left">NAME B / 另一半的名字</label>
+                    <input type="text" id="nameB" placeholder="李四" class="w-full p-4 bg-pink-50/30 rounded-2xl border-2 border-transparent focus:border-pink-100 outline-none text-center font-bold text-gray-600 transition-all">
+                </div>
+            </div>
+            
+            <button onclick="genCP()" class="theme-download-btn w-full max-w-md mx-auto block py-5 text-xl mb-10">💘 立即开启甜蜜连结</button>
+            
+            <div id="cpResult" class="hidden animate-item grid grid-cols-2 md:grid-cols-3 gap-4 max-w-2xl mx-auto pt-10 border-t border-pink-50"></div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.5s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">📖</span>
+                    情感释义
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50 leading-relaxed">
+                    <p class="text-gray-600 text-sm">
+                        CP 是 Coupling（配对）的缩写。一个好听的 CP 名不仅是社交媒体上的亮眼点缀，更是两人之间的一份独特羁绊与默契约定。
+                    </p>
+                </div>
+            </section>
+            <section class="animate-item" style="animation-delay: 0.6s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">✨</span>
+                    建议用法
+                </h2>
+                <div class="bg-white p-6 rounded-2xl border border-pink-50 shadow-sm leading-relaxed">
+                    <p class="text-gray-500 text-sm">除了直接使用生成的名称，您还可以将其作为灵感来源，结合两人的共同兴趣、定情信物或私密度假地来微调出一个绝无仅有的名字。</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        function genCP() {
+            const a = document.getElementById('nameA').value.trim();
+            const b = document.getElementById('nameB').value.trim();
+            if (!a || !b) { Utils.toast('请输入两人的名字哦', 'info'); return; }
+            
+            const results = [];
+            // 方案1: 各取一字组合
+            if (a.length >= 1 && b.length >= 1) {
+                results.push(`${a[a.length-1]}${b[b.length-1]}`);
+                results.push(`${b[b.length-1]}${a[a.length-1]}`);
+            }
+            // 方案2: 谐音/叠字
+            results.push(`小${a[a.length-1]}和小${b[b.length-1]}`);
+            results.push(`${a[a.length-1]}${b[b.length-1]}二人组`);
+            // 方案3: 加甜蜜后缀
+            const suffixes = ['甜心','宝贝','之恋','物语','情缘','甜甜','蜜蜜','星辰','暖暖'];
+            results.push(`${a[a.length-1]}${b[b.length-1]}${suffixes[Math.floor(Math.random()*suffixes.length)]}`);
+            // 方案4: 英文缩写风
+            results.push(`${a[0].toUpperCase()} × ${b[0].toUpperCase()}`);
+            // 方案5: 诗意风
+            const poetic = ['相守','与共','之约','如初','执手','白头','同心'];
+            results.push(`${a[a.length-1]}${b[b.length-1]}${poetic[Math.floor(Math.random()*poetic.length)]}`);
+
+            let html = '';
+            results.forEach((r, i) => {
+                html += `<div class="bg-gradient-to-r from-pink-50 to-orange-50 rounded-2xl p-4 text-center border border-pink-100/50 hover:scale-105 transition-all animate-item" style="animation-delay: ${i*0.1}s">
+                    <span class="text-lg font-black text-pink-500">${r}</span>
+                </div>`;
+            });
+            document.getElementById('cpResult').innerHTML = html;
+            document.getElementById('cpResult').classList.remove('hidden');
+            Utils.toast('已生成属于你们的甜蜜CP名', 'success');
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

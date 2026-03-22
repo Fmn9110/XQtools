@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>虚构收据生成器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Sans+SC:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        .thermal-receipt {
+            font-family: 'JetBrains Mono', 'Noto Sans SC', monospace;
+            background: #ffffff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            position: relative;
+        }
+        .thermal-receipt::before, .thermal-receipt::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background-image: radial-gradient(circle at 10px 0, transparent 10px, #ffffff 11px);
+            background-size: 20px 10px;
+        }
+        .thermal-receipt::before { top: -10px; transform: rotate(180deg); }
+        .thermal-receipt::after { bottom: -10px; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🧾 虚构 <span class="gradient-text">收据生成</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">模拟热敏打印小票。这也许是世界上最可爱的“账单”。✨</p>
+        </header>
+
+        <div class="grid lg:grid-cols-2 gap-8 mb-12">
+            <!-- Editor -->
+            <section class="cute-card p-6 md:p-8 bg-white animate-item" style="animation-delay: 0.2s">
+                <h3 class="text-lg font-black text-gray-800 mb-6 flex items-center">
+                    <span class="w-6 h-6 bg-pink-100 text-pink-500 rounded flex items-center justify-center mr-2 text-xs">✍️</span>
+                    收据编辑
+                </h3>
+                
+                <div class="mb-6">
+                    <label class="block text-[10px] font-black text-pink-300 uppercase tracking-widest mb-2">店铺名称</label>
+                    <input type="text" id="shopName" value="宇宙快乐杂货铺" class="w-full p-4 bg-pink-50/30 rounded-2xl border-2 border-transparent focus:border-pink-200 outline-none text-sm font-bold text-gray-700 transition-all">
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-[10px] font-black text-pink-300 uppercase tracking-widest mb-2">消费明细</label>
+                    <div id="items" class="space-y-3">
+                        <div class="flex gap-2 item-row animate-item">
+                            <input type="text" placeholder="商品名称" value="快乐能量" class="flex-1 p-3 bg-white rounded-xl border border-pink-100 outline-none text-sm font-bold text-gray-600 focus:border-pink-400 transition-colors">
+                            <input type="number" placeholder="金额" value="99.00" class="w-24 p-3 bg-white rounded-xl border border-pink-100 outline-none text-sm font-bold text-gray-600 focus:border-pink-400 transition-colors">
+                            <button onclick="this.parentElement.remove()" class="w-10 h-10 flex items-center justify-center text-pink-300 hover:text-pink-500 transition-colors">✕</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="addItem()" class="w-full py-3 mb-8 border-2 border-dashed border-pink-100 rounded-2xl text-pink-300 font-black text-xs uppercase tracking-widest hover:bg-pink-50/50 transition-all">+ Add New Item / 添加商品</button>
+
+                <button onclick="genReceipt()" class="theme-download-btn w-full py-5 text-xl">🧾 打印这张收据</button>
+            </section>
+
+            <!-- Preview -->
+            <section class="animate-item flex flex-col items-center" style="animation-delay: 0.3s">
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] mb-12">LIVE PREVIEW / 实时预览</p>
+                
+                <div id="receiptResult" class="hidden w-full max-w-[320px]">
+                    <div class="thermal-receipt p-8 md:p-10 flex flex-col items-center text-gray-800">
+                        <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center text-3xl mb-4 grayscale opacity-50">✨</div>
+                        <h2 class="text-lg font-black mb-1 text-center leading-tight" id="rShopName">宇宙快乐杂货铺</h2>
+                        <p class="text-[10px] font-bold text-gray-400 mb-6 uppercase tracking-widest">Official Receipt</p>
+                        
+                        <div class="w-full border-t-2 border-dashed border-gray-100 my-4"></div>
+                        
+                        <div class="w-full space-y-4 text-xs font-bold" id="rItems">
+                            <!-- Items go here -->
+                        </div>
+                        
+                        <div class="w-full border-t-2 border-dashed border-gray-100 my-6"></div>
+                        
+                        <div class="w-full flex justify-between items-center mb-10">
+                            <span class="text-sm font-black">TOTAL / 合计</span>
+                            <span class="text-xl font-black">¥<span id="rTotal">0.00</span></span>
+                        </div>
+                        
+                        <div class="w-full text-center space-y-2 opacity-50 mb-8">
+                            <p class="text-[9px] font-bold">ORDER ID: <span id="rOrderID">X00000000</span></p>
+                            <p class="text-[9px] font-bold" id="rDate">2026-03-22 10:00</p>
+                        </div>
+                        
+                        <div class="w-full bg-gray-50 p-4 rounded-xl text-center">
+                            <p class="text-[10px] font-black text-gray-400 leading-relaxed uppercase tracking-widest">
+                                Thank you for choosing Happiness!<br>
+                                愿你的每一天都闪闪发光
+                            </p>
+                        </div>
+                        
+                        <p class="mt-10 text-[8px] text-gray-200 font-bold uppercase tracking-widest">--- FOR ENTERTAINMENT PURPOSES ONLY ---</p>
+                    </div>
+                    
+                    <button onclick="window.print()" class="mt-12 w-full text-center text-xs font-black text-gray-300 hover:text-pink-400 transition-colors uppercase tracking-[0.3em]">🖨️ PDF 保存 / 打印</button>
+                    <p class="mt-4 text-[9px] text-gray-200 text-center leading-relaxed">提示：生成的收据由于 CSS `filter` 特效，部分浏览器截图可能失效，建议直接系统截图。</p>
+                </div>
+                
+                <div id="emptyTip" class="text-gray-200 py-32 flex flex-col items-center gap-4 animate-pulse">
+                    <span class="text-5xl">📄</span>
+                    <p class="text-[10px] font-black uppercase tracking-widest">Waiting for data...</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        function addItem() {
+            const div = document.createElement('div');
+            div.className = 'flex gap-2 item-row animate-item';
+            div.innerHTML = `
+                <input type="text" placeholder="商品名称" class="flex-1 p-3 bg-white rounded-xl border border-pink-100 outline-none text-sm font-bold text-gray-600 focus:border-pink-400 transition-colors">
+                <input type="number" placeholder="金额" class="w-24 p-3 bg-white rounded-xl border border-pink-100 outline-none text-sm font-bold text-gray-600 focus:border-pink-400 transition-colors">
+                <button onclick="this.parentElement.remove()" class="w-10 h-10 flex items-center justify-center text-pink-300 hover:text-pink-500 transition-colors">✕</button>
+            `;
+            document.getElementById('items').appendChild(div);
+        }
+
+        function genReceipt() {
+            const shop = document.getElementById('shopName').value || '快乐商店';
+            const rows = document.querySelectorAll('.item-row');
+            
+            let total = 0;
+            let itemsHtml = '';
+            
+            rows.forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                const name = inputs[0].value || '神秘物品';
+                const price = parseFloat(inputs[1].value) || 0;
+                total += price;
+                
+                itemsHtml += `
+                    <div class="flex justify-between items-start gap-4">
+                        <span class="flex-1">${name}</span>
+                        <span class="flex-shrink-0">¥${price.toFixed(2)}</span>
+                    </div>
+                `;
+            });
+
+            const now = new Date();
+            const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+            const orderId = 'Q' + Math.random().toString(36).slice(2,10).toUpperCase();
+
+            document.getElementById('rShopName').textContent = shop;
+            document.getElementById('rItems').innerHTML = itemsHtml;
+            document.getElementById('rTotal').textContent = total.toFixed(2);
+            document.getElementById('rOrderID').textContent = orderId;
+            document.getElementById('rDate').textContent = dateStr;
+
+            document.getElementById('receiptResult').classList.remove('hidden');
+            document.getElementById('emptyTip').classList.add('hidden');
+            
+            Utils.toast('收据已生成 🧾', 'success');
+            
+            setTimeout(() => {
+                document.getElementById('receiptResult').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

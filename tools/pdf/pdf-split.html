@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PDF 拆分 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">PDF 拆分</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">按页码提取您需要的部分，化整为零。✂️</p>
+        </header>
+
+        <section class="cute-card p-12 bg-white flex flex-col items-center shadow-2xl mb-12">
+            <div id="upload-area" class="w-full max-w-md p-16 border-4 border-dashed border-pink-100 rounded-3xl mb-8 group hover:border-pink-300 transition-all cursor-pointer">
+                <input type="file" id="fileInput" accept="application/pdf" class="hidden">
+                <div class="text-7xl mb-6">✂️</div>
+                <p class="text-lg font-bold text-pink-300">上传原始 PDF</p>
+            </div>
+
+            <div id="editor-area" class="hidden w-full animate-fade-in flex flex-col items-center">
+                <div class="w-full bg-pink-50/30 p-8 rounded-3xl border border-pink-100 mb-8 max-w-md text-left">
+                    <p id="file-info" class="text-sm font-bold text-gray-700 mb-4 truncate"></p>
+                    
+                    <div class="space-y-4">
+                        <label class="block text-xs font-bold text-gray-400 uppercase">提取范围</label>
+                        <div class="flex items-center gap-4">
+                            <input type="number" id="page-start" value="1" min="1" class="w-20 py-3 px-4 bg-white border border-pink-100 rounded-xl text-center font-bold">
+                            <span class="text-gray-300">到</span>
+                            <input type="number" id="page-end" value="1" min="1" class="w-20 py-3 px-4 bg-white border border-pink-100 rounded-xl text-center font-bold">
+                            <span id="total-pages" class="text-[10px] text-gray-400 italic"></span>
+                        </div>
+                        <p class="text-[10px] text-gray-400 italic mt-2">提示：页码均包含在内 (e.g. 1 到 3 提取第 1,2,3 页)</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <button id="splitBtn" class="cute-button bg-pink-500 text-white px-12 py-4 rounded-xl font-bold shadow-lg">拆分并导出</button>
+                    <button onclick="location.reload()" class="px-6 py-4 text-gray-300 text-xs hover:text-pink-500 theme-secondary-btn">重新选择</button>
+                </div>
+            </div>
+        </section>
+    
+        <!-- PDF 拆分 的专属定制说明与FAQ区 -->
+        <div class="grid md:grid-cols-2 gap-8 mb-12 animate-fade-in custom-faq-section">
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">🎯</span>
+                    专属指南及提示
+                </h2>
+                <div class="bg-white rounded-3xl p-8 shadow-sm border border-pink-50 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-full blur-3xl -mr-10 -mt-10 opacity-50"></div>
+                    <ul class="space-y-4 text-gray-600 list-decimal list-inside text-sm leading-relaxed relative z-10 font-medium">
+                        <li>载入您需要立刻被进行肢解分割或【PDF 拆分】动作的极清大图稿件/扫描原件。</li>
+<li>调控画板的吸附参数，譬如对齐比例尺（1:1, 4:3等）或是切图行列九宫结构。</li>
+<li>敲定完毕一键切割，如果是电脑用户请安心享受打包压缩 ZIP；若是手机用户请下拉至长图区直接逐张稳收相册。</li>
+
+                    </ul>
+                </div>
+            </section>
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">💬</span>
+                    PDF 拆分 - 常见答疑
+                </h2>
+                <div class="space-y-4">
+                    
+                <div class="bg-white p-5 rounded-2xl border border-pink-50 shadow-sm mt-4 hover:border-pink-200 transition-colors">
+                    <div class="font-bold text-gray-700 mb-2 flex items-center">
+                        <span class="w-1.5 h-1.5 rounded-full bg-pink-400 mr-2"></span>
+                        PDF 拆分 出来的图面交接边缘会出现毛糙锯齿吗？
+                    </div>
+                    <div class="text-gray-500 text-sm leading-relaxed pl-3.5">这个您可以放一万个心。我们的图形画布采用了精准到亚像素（Sub-pixel）级别的几何贴图抗锯齿，不会有分毫粗暴抹去原本的高频画质底蕴。</div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-pink-50 shadow-sm mt-4 hover:border-pink-200 transition-colors">
+                    <div class="font-bold text-gray-700 mb-2 flex items-center">
+                        <span class="w-1.5 h-1.5 rounded-full bg-pink-400 mr-2"></span>
+                        为啥我处理【PDF 拆分】的时候，放在公司电脑处理和随身手机端耗时悬殊如此巨大？
+                    </div>
+                    <div class="text-gray-500 text-sm leading-relaxed pl-3.5">这也是本地纯前端小工具站最大的特性反馈。因为它所有的运算均不借助光纤去发往超级机房借兵，它所有的性能天花板全权依赖于您手中设备的物理硬实力芯片能力。</div>
+                </div>
+                </div>
+            </section>
+        </div>
+
+        <p class="text-[10px] text-gray-300 font-bold uppercase tracking-[0.3em] pb-12">Universal PDF Processing & Document Intelligence Archive</p>
+    </main>
+
+    <!-- 移动端底部导航 -->
+    <div class="mobile-tab-bar">
+        <a href="../../index.html" class="flex flex-col items-center text-gray-400">
+            <span class="text-xl mb-1">🏠</span>
+            <span class="text-[10px] font-bold">首页</span>
+        </a>
+        <a href="../../categories.html" class="flex flex-col items-center text-gray-400">
+            <span class="text-xl mb-1">🗂️</span>
+            <span class="text-[10px] font-bold">分类</span>
+        </a>
+        <a href="../../tools.html" class="flex flex-col items-center text-pink-500">
+            <span class="text-xl mb-1">🛠️</span>
+            <span class="text-[10px] font-bold">工具</span>
+        </a>
+    </div>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('upload-area');
+        const editorArea = document.getElementById('editor-area');
+        const fileInfo = document.getElementById('file-info');
+        const totalPagesSpan = document.getElementById('total-pages');
+        const pageStart = document.getElementById('page-start');
+        const pageEnd = document.getElementById('page-end');
+        const splitBtn = document.getElementById('splitBtn');
+
+        let currentPdf = null;
+        let originalBytes = null;
+
+        uploadArea.onclick = () => fileInput.click();
+        fileInput.onchange = async (e) => {
+            if (e.target.files[0]) {
+                const file = e.target.files[0];
+                originalBytes = await file.arrayBuffer();
+                currentPdf = await PDFLib.PDFDocument.load(originalBytes);
+                const pageCount = currentPdf.getPageCount();
+
+                fileInfo.innerText = file.name;
+                totalPagesSpan.innerText = `(共 ${pageCount} 页)`;
+                pageStart.max = pageCount;
+                pageEnd.max = pageCount;
+                pageEnd.value = pageCount;
+
+                uploadArea.classList.add('hidden');
+                editorArea.classList.remove('hidden');
+            }
+        };
+
+        splitBtn.onclick = async () => {
+            const start = parseInt(pageStart.value);
+            const end = parseInt(pageEnd.value);
+            const pageCount = currentPdf.getPageCount();
+
+            if (start < 1 || end > pageCount || start > end) {
+                Utils.toast('页码范围无效', 'error');
+                return;
+            }
+
+            splitBtn.innerText = '处理中...';
+            splitBtn.disabled = true;
+
+            try {
+                const newPdf = await PDFLib.PDFDocument.create();
+                
+                // pdf-lib page indices are 0-indexed
+                const indices = [];
+                for (let i = start - 1; i < end; i++) {
+                    indices.push(i);
+                }
+
+                const pages = await newPdf.copyPages(currentPdf, indices);
+                pages.forEach(p => newPdf.addPage(p));
+
+                const bytes = await newPdf.save();
+                const blob = new Blob([bytes], { type: 'application/pdf' });
+                Utils.downloadFile(URL.createObjectURL(blob), `split_${Date.now()}.pdf`, 'application/pdf');
+                Utils.toast('拆分成功！', 'success');
+            } catch (err) {
+                console.error(err);
+                Utils.toast('拆分失败', 'error');
+            } finally {
+                splitBtn.innerText = '拆分并导出';
+                splitBtn.disabled = false;
+            }
+        };
+
+        // 加载与点击特效
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                }, 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

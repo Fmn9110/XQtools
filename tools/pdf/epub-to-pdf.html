@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EPUB转PDF - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">📚 EPUB转PDF</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">将EPUB电子书文件转换为PDF格式（提取文本内容）</p>
+        </header>
+
+        <section class="cute-card p-8 mb-12 bg-white text-center">
+    <div class="border-2 border-dashed border-pink-300 rounded-xl p-8 mb-4 cursor-pointer bg-pink-50/50 hover:bg-pink-50" onclick="document.getElementById('fileInput').click()">
+        <input type="file" id="fileInput" accept=".epub" class="hidden" onchange="loadEpub(event)">
+        <p class="text-pink-400 text-lg">📁 选择EPUB文件</p>
+    </div>
+    <div id="status" class="text-sm text-gray-400 mb-4"></div>
+    <div id="content" class="hidden bg-gray-50 rounded-xl p-6 text-left text-sm text-gray-700 max-h-64 overflow-auto mb-4 whitespace-pre-line"></div>
+    <p class="text-xs text-amber-500 mb-4">⚠ 纯前端限制：EPUB解析需要JSZip库支持，此工具提取EPUB中的纯文本内容并生成可打印页面。</p>
+    <button onclick="printContent()" id="printBtn" class="hidden w-full py-3 bg-pink-500 text-white font-bold rounded-xl">🖨️ 打印为PDF（Ctrl+P）</button>
+</section>
+<section class="cute-card p-6 mb-8 bg-white"><h2 class="text-xl font-bold text-gray-800 mb-3">📘 使用说明</h2><ol class="text-gray-600 text-sm space-y-2 list-decimal list-inside"><li>选择一个EPUB文件</li><li>工具会尝试读取其文本内容</li><li>点击打印按钮，使用浏览器的"打印为PDF"功能保存</li></ol></section>
+
+        <p class="text-[10px] text-gray-300 font-bold uppercase tracking-[0.3em] pb-12">Universal PDF Processing & Document Intelligence Archive</p>
+    </main>
+
+    <!-- 移动端底部导航 -->
+    <div class="mobile-tab-bar">
+        <a href="../../index.html" class="flex flex-col items-center text-gray-400">
+            <span class="text-xl mb-1">🏠</span>
+            <span class="text-[10px] font-bold">首页</span>
+        </a>
+        <a href="../../categories.html" class="flex flex-col items-center text-gray-400">
+            <span class="text-xl mb-1">🗂️</span>
+            <span class="text-[10px] font-bold">分类</span>
+        </a>
+        <a href="../../tools.html" class="flex flex-col items-center text-pink-500">
+            <span class="text-xl mb-1">🛠️</span>
+            <span class="text-[10px] font-bold">工具</span>
+        </a>
+    </div>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+
+async function loadEpub(e){
+    const file=e.target.files[0];if(!file)return;
+    document.getElementById('status').textContent='正在读取文件...';
+    try{
+        const text=await file.text();
+        // EPUB本质是ZIP包含HTML/XML，直接读取会是乱码
+        // 提取可见的纯文本片段
+        const cleanText=text.replace(/<[^>]*>/g,' ').replace(/[^\u4e00-\u9fa5a-zA-Z0-9\s，。、！？；：""''（）\n]/g,'').replace(/\s+/g,' ').trim();
+        if(cleanText.length>100){
+            document.getElementById('content').textContent=cleanText.slice(0,50000);
+            document.getElementById('content').classList.remove('hidden');
+            document.getElementById('printBtn').classList.remove('hidden');
+            document.getElementById('status').textContent=`已提取 ${cleanText.length} 个字符`;
+        }else{
+            document.getElementById('status').textContent='⚠ 无法直接解析EPUB（需JSZip库解压）。建议使用专业转换工具。';
+        }
+    }catch(err){document.getElementById('status').textContent='读取失败: '+err.message;}
+}
+function printContent(){window.print();}
+
+        // 加载与点击特效
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                }, 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

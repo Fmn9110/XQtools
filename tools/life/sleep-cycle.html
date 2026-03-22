@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>睡眠周期计算 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div>
+                <span class="text-2xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">🌙 睡眠周期计算</h1>
+            <p class="text-gray-500">根据R.E.M睡眠周期(约90分钟一个周期)，计算最佳入睡/起床时间</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="flex gap-4 mb-6 justify-center">
+                <button onclick="switchMode('sleep')" id="btnSleep" class="px-6 py-3 rounded-xl font-bold transition-all bg-pink-500 text-white">我要几点睡</button>
+                <button onclick="switchMode('wake')" id="btnWake" class="px-6 py-3 rounded-xl font-bold transition-all bg-gray-100 text-gray-500">我要几点起</button>
+            </div>
+            <div id="sleepMode">
+                <label class="block text-xs font-bold text-gray-400 uppercase mb-2 text-center">我想在以下时间起床</label>
+                <input type="time" id="wakeTime" value="07:00" class="block mx-auto p-4 bg-gray-50 rounded-xl border border-pink-100 outline-none text-center text-2xl mb-6">
+                <button onclick="calcSleep()" class="w-full py-4 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl text-lg">计算最佳入睡时间</button>
+            </div>
+            <div id="wakeMode" class="hidden">
+                <label class="block text-xs font-bold text-gray-400 uppercase mb-2 text-center">我打算在以下时间入睡</label>
+                <input type="time" id="sleepTime" value="23:00" class="block mx-auto p-4 bg-gray-50 rounded-xl border border-pink-100 outline-none text-center text-2xl mb-6">
+                <button onclick="calcWake()" class="w-full py-4 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-xl text-lg">计算最佳起床时间</button>
+            </div>
+            <div id="result" class="hidden mt-8">
+                <p class="text-center text-gray-500 mb-4" id="resultLabel">建议入睡时间：</p>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4" id="timeCards"></div>
+                <p class="text-center text-gray-400 text-xs mt-4">💡 每个睡眠周期约90分钟，包含14分钟入睡时间</p>
+            </div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">!</span>使用说明
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50">
+                    <ul class="space-y-4 text-gray-600 list-disc list-inside">
+                        <li>选择"我要几点睡"或"我要几点起"模式。</li>
+                        <li>输入对应的起床/入睡时间。</li>
+                        <li>获取推荐的完整睡眠周期时间点。</li>
+                    </ul>
+                </div>
+            </section>
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2>
+                <div class="space-y-4">
+                    <div class="bg-white p-4 rounded-xl border border-pink-50">
+                        <div class="font-bold text-gray-700 mb-1">什么是睡眠周期？</div>
+                        <div class="text-gray-500 text-sm">每个周期约90分钟，包含浅睡→深睡→REM快速眼动等阶段。在周期末尾醒来会更清爽。</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const CYCLE = 90; // 每个睡眠周期90分钟
+        const FALL_ASLEEP = 14; // 平均入睡时间14分钟
+
+        function switchMode(mode) {
+            document.getElementById('sleepMode').classList.toggle('hidden', mode !== 'sleep');
+            document.getElementById('wakeMode').classList.toggle('hidden', mode !== 'wake');
+            document.getElementById('btnSleep').className = mode === 'sleep' ? 'px-6 py-3 rounded-xl font-bold transition-all bg-pink-500 text-white' : 'px-6 py-3 rounded-xl font-bold transition-all bg-gray-100 text-gray-500';
+            document.getElementById('btnWake').className = mode === 'wake' ? 'px-6 py-3 rounded-xl font-bold transition-all bg-indigo-500 text-white' : 'px-6 py-3 rounded-xl font-bold transition-all bg-gray-100 text-gray-500';
+            document.getElementById('result').classList.add('hidden');
+        }
+
+        function formatTime(totalMins) {
+            let m = ((totalMins % 1440) + 1440) % 1440;
+            const h = Math.floor(m / 60);
+            const min = m % 60;
+            return String(h).padStart(2,'0') + ':' + String(min).padStart(2,'0');
+        }
+
+        function calcSleep() {
+            const [h, m] = document.getElementById('wakeTime').value.split(':').map(Number);
+            const wakeMins = h * 60 + m;
+            document.getElementById('resultLabel').textContent = '💤 建议入睡时间（绿色=推荐6个周期）';
+            let html = '';
+            for (let c = 6; c >= 3; c--) {
+                const sleepMins = wakeMins - c * CYCLE - FALL_ASLEEP;
+                const recommended = c >= 5;
+                html += `<div class="p-4 rounded-2xl text-center ${recommended ? 'bg-green-50 border-2 border-green-200' : 'bg-gray-50 border border-gray-100'}">
+                    <p class="text-3xl font-black ${recommended ? 'text-green-500' : 'text-gray-500'}">${formatTime(sleepMins)}</p>
+                    <p class="text-xs text-gray-400 mt-1">${c}个周期 · ${c*1.5}小时</p>
+                </div>`;
+            }
+            document.getElementById('timeCards').innerHTML = html;
+            document.getElementById('result').classList.remove('hidden');
+        }
+
+        function calcWake() {
+            const [h, m] = document.getElementById('sleepTime').value.split(':').map(Number);
+            const sleepMins = h * 60 + m + FALL_ASLEEP;
+            document.getElementById('resultLabel').textContent = '⏰ 建议起床时间（绿色=推荐6个周期）';
+            let html = '';
+            for (let c = 3; c <= 6; c++) {
+                const wakeMins = sleepMins + c * CYCLE;
+                const recommended = c >= 5;
+                html += `<div class="p-4 rounded-2xl text-center ${recommended ? 'bg-green-50 border-2 border-green-200' : 'bg-gray-50 border border-gray-100'}">
+                    <p class="text-3xl font-black ${recommended ? 'text-green-500' : 'text-gray-500'}">${formatTime(wakeMins)}</p>
+                    <p class="text-xs text-gray-400 mt-1">${c}个周期 · ${c*1.5}小时</p>
+                </div>`;
+            }
+            document.getElementById('timeCards').innerHTML = html;
+            document.getElementById('result').classList.remove('hidden');
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

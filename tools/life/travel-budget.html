@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>旅行行程预算 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div>
+                <span class="text-2xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">✈️ 旅行预算分配</h1>
+            <p class="text-gray-500">规划你的旅行花销，让每分钱花在刀刃上</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase mb-2">总预算 (元)</label>
+                    <input type="number" id="budget" value="5000" class="w-full p-4 bg-gray-50 rounded-xl border border-pink-100 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase mb-2">旅行天数</label>
+                    <input type="number" id="days" value="5" class="w-full p-4 bg-gray-50 rounded-xl border border-pink-100 outline-none">
+                </div>
+            </div>
+            <div class="mb-6">
+                <label class="block text-xs font-bold text-gray-400 uppercase mb-2">旅行类型</label>
+                <select id="style" class="w-full p-4 bg-gray-50 rounded-xl border border-pink-100 outline-none">
+                    <option value="budget">穷游背包客</option>
+                    <option value="normal" selected>舒适自由行</option>
+                    <option value="luxury">豪华度假</option>
+                </select>
+            </div>
+            <button onclick="calc()" class="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl text-lg">📊 生成预算分配</button>
+            <div id="result" class="hidden mt-8">
+                <div class="space-y-3" id="budgetItems"></div>
+                <div class="mt-6 bg-blue-50 rounded-xl p-4 text-center">
+                    <p class="text-sm text-gray-500">日均花费约 ¥<strong id="dailyBudget" class="text-blue-500">0</strong></p>
+                </div>
+            </div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center"><span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">!</span>使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>输入总预算和旅行天数。</li><li>选择旅行风格调整分配比例。</li><li>查看各项目建议金额。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">比例可以自定义吗？</div><div class="text-gray-500 text-sm">目前基于经典分配模型自动计算，后续将支持自定义。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const ratios = {
+            budget:  [{name:'🚗 交通',pct:0.30},{name:'🏨 住宿',pct:0.20},{name:'🍜 餐饮',pct:0.25},{name:'🎫 门票/体验',pct:0.10},{name:'🛍️ 购物/纪念品',pct:0.05},{name:'💡 备用应急',pct:0.10}],
+            normal:  [{name:'🚗 交通',pct:0.25},{name:'🏨 住宿',pct:0.30},{name:'🍜 餐饮',pct:0.20},{name:'🎫 门票/体验',pct:0.12},{name:'🛍️ 购物/纪念品',pct:0.05},{name:'💡 备用应急',pct:0.08}],
+            luxury:  [{name:'🚗 交通',pct:0.20},{name:'🏨 住宿',pct:0.35},{name:'🍜 餐饮',pct:0.20},{name:'🎫 门票/体验',pct:0.15},{name:'🛍️ 购物/纪念品',pct:0.05},{name:'💡 备用应急',pct:0.05}]
+        };
+        const colors = ['bg-blue-50 border-blue-200','bg-purple-50 border-purple-200','bg-orange-50 border-orange-200','bg-green-50 border-green-200','bg-pink-50 border-pink-200','bg-yellow-50 border-yellow-200'];
+
+        function calc() {
+            const budget = parseFloat(document.getElementById('budget').value);
+            const days = parseInt(document.getElementById('days').value);
+            const style = document.getElementById('style').value;
+            const items = ratios[style];
+
+            let html = '';
+            items.forEach((item, i) => {
+                const amount = budget * item.pct;
+                const daily = amount / days;
+                html += `<div class="flex items-center gap-4 rounded-xl p-4 border ${colors[i]}">
+                    <div class="flex-1">
+                        <p class="font-bold text-gray-700">${item.name}</p>
+                        <p class="text-xs text-gray-400">${(item.pct*100)}% · 日均¥${daily.toFixed(0)}</p>
+                    </div>
+                    <p class="text-xl font-black text-gray-600">¥${Math.round(amount)}</p>
+                    <div class="w-24 bg-gray-200 rounded-full h-2">
+                        <div class="h-2 rounded-full bg-blue-400" style="width:${item.pct*100}%"></div>
+                    </div>
+                </div>`;
+            });
+            document.getElementById('budgetItems').innerHTML = html;
+            document.getElementById('dailyBudget').textContent = (budget / days).toFixed(0);
+            document.getElementById('result').classList.remove('hidden');
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

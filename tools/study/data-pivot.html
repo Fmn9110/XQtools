@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>数据图表生成 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-5xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">数据透视表生成</h1>
+            <p class="text-gray-500 italic text-sm md:text-base animate-item" style="animation-delay: 0.1s">输入数据，瞬间生成精美的图表。</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 bg-white shadow-2xl mb-12 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 animate-item" style="animation-delay: 0.2s">
+            <div class="md:col-span-1 text-left space-y-6">
+                <div>
+                    <label class="block text-[10px] font-black text-pink-300 uppercase mb-2 tracking-widest">图表类型</label>
+                    <select id="type" class="w-full p-4 bg-gray-50 rounded-2xl border border-pink-50 outline-none focus:border-pink-200 transition-all text-sm cursor-pointer">
+                        <option value="bar">📊 柱状图</option>
+                        <option value="line">📈 折线图</option>
+                        <option value="pie">🍕 饼状图</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-pink-300 uppercase mb-2 tracking-widest">数据标签 (逗号分隔)</label>
+                    <input type="text" id="labels" value="A,B,C,D" class="w-full p-4 bg-gray-50 rounded-2xl border border-pink-50 outline-none focus:border-pink-200 transition-all text-sm">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-pink-300 uppercase mb-2 tracking-widest">数据 (逗号分隔)</label>
+                    <input type="text" id="values" value="10,20,30,40" class="w-full p-4 bg-gray-50 rounded-2xl border border-pink-50 outline-none focus:border-pink-200 transition-all text-sm">
+                </div>
+                <button onclick="render()" class="cute-button bg-pink-400 hover:bg-pink-500 text-white px-12 py-4 rounded-xl font-bold shadow-lg w-full">生成图表</button>
+            </div>
+            
+            <div class="md:col-span-2 flex items-center justify-center bg-pink-50/10 rounded-3xl p-4 md:p-8 border border-dashed border-pink-100 min-h-[350px]">
+                 <canvas id="myChart"></canvas>
+            </div>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let chart = null;
+        const colors = ['#f472b6', '#fb7185', '#ec4899', '#db2777', '#f9a8d4', '#fda4af'];
+        
+        function render() {
+            const ctx = document.getElementById('myChart').getContext('2d');
+            const type = document.getElementById('type').value;
+            const labels = document.getElementById('labels').value.split(',').map(s => s.trim());
+            const values = document.getElementById('values').value.split(',').map(v => parseFloat(v.trim()) || 0);
+
+            if(chart) chart.destroy();
+
+            chart = new Chart(ctx, {
+                type: type,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '数据预览',
+                        data: values,
+                        backgroundColor: type === 'pie' ? colors : colors[0],
+                        borderColor: '#ffffff',
+                        borderWidth: 2,
+                        borderRadius: type === 'bar' ? 12 : 0,
+                        tension: 0.4,
+                        fill: type === 'line'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: type === 'pie',
+                            position: 'bottom',
+                            labels: {
+                                font: { family: 'Outfit, sans-serif', size: 12 }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                            titleColor: '#1e293b',
+                            bodyColor: '#1e293b',
+                            borderColor: '#f9a8d4',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: true,
+                            usePointStyle: true
+                        }
+                    },
+                    scales: type !== 'pie' ? {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(244, 114, 182, 0.05)' },
+                            ticks: { font: { family: 'Outfit, sans-serif' } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Outfit, sans-serif' } }
+                        }
+                    } : {}
+                }
+            });
+            Utils.toast('图表已更新', 'success');
+        }
+        
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    render();
+                }, 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>情话生成器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">💕 情话 <span class="gradient-text">生成器</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">爱要说出口，哪怕只是一个瞬间的灵感。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white text-center animate-item" style="animation-delay: 0.2s">
+            <div class="flex gap-3 justify-center mb-10 pb-8 border-b border-pink-50">
+                <button onclick="gen('土味')" class="px-6 py-2 bg-pink-100 text-pink-500 rounded-full font-black text-xs hover:bg-pink-500 hover:text-white transition-all active:scale-95 shadow-sm">🧡 土味</button>
+                <button onclick="gen('文艺')" class="px-6 py-2 bg-indigo-100 text-indigo-500 rounded-full font-black text-xs hover:bg-indigo-500 hover:text-white transition-all active:scale-95 shadow-sm">💜 文艺</button>
+                <button onclick="gen('古风')" class="px-6 py-2 bg-amber-100 text-amber-500 rounded-full font-black text-xs hover:bg-amber-500 hover:text-white transition-all active:scale-95 shadow-sm">🤎 古风</button>
+            </div>
+
+            <div class="bg-gradient-to-br from-pink-50/50 to-rose-50/50 rounded-[3rem] p-10 md:p-16 border-2 border-pink-100 shadow-inner group relative overflow-hidden min-h-[250px] flex items-center justify-center">
+                <div class="absolute -top-10 -right-10 text-9xl text-pink-500/10 opacity-30 group-hover:rotate-12 transition-transform">💌</div>
+                
+                <p class="text-xl md:text-2xl font-black text-gray-700 leading-relaxed max-w-lg transition-all" id="loveText">选择风格，让心跳加速 ❤️</p>
+            </div>
+            
+            <div class="mt-10 flex justify-center">
+                <button onclick="copyResult()" class="text-[10px] font-black text-gray-300 hover:text-pink-500 transition-colors uppercase tracking-[0.4em]">
+                    Click above or tap style to refresh / 点击复制或再次点击风格刷新
+                </button>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🍫</span>
+                <p>无论是一句冷幽默的土味情话，还是一首深情的古风词句，都是平凡生活里的糖。在这个世界上，总有一个人值得你把最温柔的话讲给TA听。保持热爱，保持表达。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        function pick(a){return a[Math.floor(Math.random()*a.length)];}
+        const words = {
+            土味: [
+                '你知道你和星星的区别吗？星星在天上，你在我心里。',
+                '我不是天气预报，但我能预报你接下来的天气——你在我心里永远是晴天。',
+                '你是不是偷了我的心？因为从见到你开始，我的心就不在我这了。',
+                '如果美丽是一种罪，你已经罪无可赦了。',
+                '你是我的WiFi，没有你我就断网了。',
+                '你知道世界上最甜的东西是什么吗？是我想你时候嘴角的微笑。',
+                '不要抱怨，抱我。',
+                '我怀疑你的本质是一本书，不然为什么让我越看越想睡？'
+            ],
+            文艺: [
+                '遇见你之后，我觉得浪漫和温柔都是很具体的。就像风吹过的时候，想牵的是你的手。',
+                '我不知道永远有多远，但我知道，如果你在的话，再远的路我也愿意走。',
+                '想把关于你的一切都写成诗，可是你本身就是最美的诗。',
+                '如果世界是一本书，遇见你的那一页，是我最想反复翻阅的。',
+                '你是我意料之外的温柔，是我所有美好期待的答案。',
+                '草在结它的种子，风在摇它的叶子。我们站着，不说话，就十分美好。',
+                '我曾踏月而来，只因你在山中。'
+            ],
+            古风: [
+                '此情若经年不忘，定许你一世安康。',
+                '愿余生有你，小舟从此逝，江海寄余生。',
+                '若有来世，我愿化作一缕清风，守你岁岁年年。',
+                '山有木兮木有枝，心悦君兮君不知——但现在你知道了。',
+                '三生有幸识君颜，自此春风不羡仙。',
+                '浮世三千，吾爱有三。日、月与卿。日为朝，月为暮，卿为朝朝暮暮。',
+                '愿得一人心，白首不相离。'
+            ],
+        };
+
+        function gen(style){
+            const el = document.getElementById('loveText');
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(10px)';
+            
+            setTimeout(() => {
+                el.textContent = pick(words[style]);
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+                Utils.toast(`✨ ${style}灵感已送达`, 'success');
+            }, 200);
+        }
+
+        function copyResult() {
+            const text = document.getElementById('loveText').textContent;
+            if(text.includes('选择风格')) return;
+            navigator.clipboard.writeText(text).then(() => {
+                Utils.toast('情话已复制到剪贴板，快发给TA吧 ✨', 'success');
+            });
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

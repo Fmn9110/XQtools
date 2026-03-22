@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>逻辑推理题 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🧠 逻辑 <span class="gradient-text">推理挑战</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">燃烧你的理性，在迷雾中寻找唯一的真相。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            <div class="bg-gradient-to-br from-indigo-50/50 to-pink-50/50 rounded-[2.5rem] p-8 md:p-10 mb-8 border-2 border-indigo-100 shadow-inner group relative">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="bg-indigo-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest" id="qNum">Question 01</span>
+                    <span class="text-xs font-black text-indigo-300 uppercase tracking-tighter" id="progress">1 / 5</span>
+                </div>
+                <p class="text-lg md:text-xl font-black text-gray-700 leading-relaxed" id="qText"></p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8" id="opts">
+                <!-- Options injected here -->
+            </div>
+
+            <div id="feedback" class="hidden rounded-2xl p-6 mb-8 border-2 transition-all animate-item"></div>
+
+            <div class="flex justify-center">
+                <button id="nextBtn" onclick="nextQ()" class="w-full max-w-sm py-4 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-2xl shadow-lg shadow-pink-100 transition-all active:scale-95 hidden">
+                    ➡️ NEXT_LOGIC_LEVEL
+                </button>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">💡</span>
+                <p>逻辑学是一门严谨的艺术。在这些题目中，有些依赖于数学模型，有些则考验你的语言严密性。保持冷静，不被陷阱迷惑。祝你好运！💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const questions = [
+            {q:'如果所有的猫都怕水，小花是一只猫，那么：',opts:['小花怕水','小花不怕水','不确定','以上都不对'],ans:0},
+            {q:'观察数列：2, 6, 12, 20, 30, ?',opts:['40','42','36','38'],ans:1},
+            {q:'A比B高，C比A矮，D比B高。谁是一定最矮的？',opts:['A','B','C','D'],ans:2},
+            {q:'如果今天不是周一，那么明天不是周二。事实上今天是周二，那么：',opts:['这构成逻辑矛盾','今天是周一','昨天是周一','明天是周二'],ans:0},
+            {q:'钟面上 3:15 时，时针和分针的夹角是多少度？',opts:['0度','7.5度','15度','22.5度'],ans:1},
+        ];
+
+        let currentIdx = 0;
+        let answered = false;
+
+        function show() {
+            const q = questions[currentIdx % questions.length];
+            document.getElementById('qNum').textContent = `Question ${String(currentIdx + 1).padStart(2, '0')}`;
+            document.getElementById('progress').textContent = `${(currentIdx % questions.length) + 1} / ${questions.length}`;
+            document.getElementById('qText').textContent = q.q;
+            
+            document.getElementById('opts').innerHTML = q.opts.map((o, i) => `
+                <button onclick="check(${i}, ${q.ans})" 
+                    class="opt-btn w-full p-5 bg-white border-2 border-pink-50 rounded-2xl text-left font-bold text-gray-600 hover:border-pink-300 hover:bg-pink-50 transition-all active:scale-95 shadow-sm">
+                    <span class="inline-block w-8 h-8 bg-pink-50 text-pink-400 rounded-lg text-center leading-8 mr-3 text-xs font-black">${String.fromCharCode(65+i)}</span>
+                    ${o}
+                </button>
+            `).join('');
+            
+            document.getElementById('feedback').classList.add('hidden');
+            document.getElementById('nextBtn').classList.add('hidden');
+            answered = false;
+        }
+
+        function check(sel, ans) {
+            if (answered) return;
+            answered = true;
+            
+            const fb = document.getElementById('feedback');
+            const btns = document.querySelectorAll('.opt-btn');
+            
+            btns.forEach((btn, i) => {
+                if (i === ans) {
+                    btn.classList.add('border-emerald-400', 'bg-emerald-50', 'text-emerald-700');
+                } else if (i === sel) {
+                    btn.classList.add('border-rose-400', 'bg-rose-50', 'text-rose-700');
+                }
+            });
+
+            if (sel === ans) {
+                fb.className = 'rounded-2xl p-6 mb-8 border-2 bg-emerald-50 border-emerald-100 text-emerald-600 font-black animate-item';
+                fb.innerHTML = '<p class="flex items-center gap-2">✅ EXCELLENT! 逻辑链条完美。 继续下一题吧！</p>';
+                Utils.toast('回答正确！✨', 'success');
+            } else {
+                fb.className = 'rounded-2xl p-6 mb-8 border-2 bg-rose-50 border-rose-100 text-rose-600 font-black animate-item';
+                fb.innerHTML = `<p class="flex items-center gap-2">❌ OOPS! 这里的真相是选项 ${String.fromCharCode(65+ans)}。</p>`;
+                Utils.toast('逻辑有误哦，再接再厉', 'info');
+            }
+            
+            fb.classList.remove('hidden');
+            document.getElementById('nextBtn').classList.remove('hidden');
+        }
+
+        function nextQ() {
+            currentIdx++;
+            show();
+            Utils.toast('Next Level Loading...', 'info');
+        }
+
+        // Initialize
+        show();
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

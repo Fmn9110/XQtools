@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>屏幕分辨率图 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f6]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-rose-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl font-bold shadow-lg">Q</div>
+                <span class="text-2xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-400 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-4 md:py-8 px-4 max-w-6xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">屏幕校准测试图</h1>
+            <p class="text-gray-500">生成标准比对图像，用于检测显示器的色彩偏好、坏点及灰阶表现。📺</p>
+        </header>
+
+        <section class="grid md:grid-cols-3 gap-8 mb-12">
+            <div class="md:col-span-2 space-y-6">
+                <!-- Keep canvas container dark because it's a screen test -->
+                <div class="bg-black rounded-3xl overflow-hidden shadow-2xl border border-rose-100 aspect-video flex items-center justify-center p-2">
+                    <canvas id="test-canvas" class="max-w-full max-h-full rounded-2xl"></canvas>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="bg-white p-8 rounded-3xl border border-rose-50 shadow-sm space-y-6">
+                    <h3 class="font-bold text-gray-800 mb-4">测试模式</h3>
+                    <div class="grid grid-cols-1 gap-3">
+                        <button class="mode-btn py-3 px-4 bg-pink-400 text-white rounded-xl text-xs font-bold text-left shadow-md transition-colors" data-mode="colorbars">🌈 SMPTE 标准彩条</button>
+                        <button class="mode-btn py-3 px-4 bg-pink-50 text-pink-600 rounded-xl text-xs font-bold text-left hover:bg-pink-100 transition-colors" data-mode="grayscale">⬛ 256级 灰阶测试</button>
+                        <button class="mode-btn py-3 px-4 bg-pink-50 text-pink-600 rounded-xl text-xs font-bold text-left hover:bg-pink-100 transition-colors" data-mode="grid">📏 像素对齐 网格</button>
+                        <button class="mode-btn py-3 px-4 bg-pink-50 text-pink-600 rounded-xl text-xs font-bold text-left hover:bg-pink-100 transition-colors" data-mode="focus">🎯 锐度测试 靶图</button>
+                    </div>
+
+                    <div class="pt-6 border-t border-rose-100">
+                        <label class="block text-xs font-bold text-gray-500 mb-2 uppercase">分辨率</label>
+                        <select id="resolution" class="w-full py-3 px-4 bg-gray-50 border border-gray-100 rounded-xl text-xs text-gray-800 outline-none focus:ring-2 focus:ring-pink-200">
+                            <option value="1920x1080">1920 x 1080 (FHD)</option>
+                            <option value="1280x720">1280 x 720 (HD)</option>
+                            <option value="2560x1440">2560 x 1440 (2K)</option>
+                            <option value="3840x2160">3840 x 2160 (4K)</option>
+                        </select>
+                    </div>
+
+                    <button id="download-btn" class="w-full bg-pink-400 text-white py-4 rounded-xl font-bold shadow-lg shadow-pink-100 hover:bg-pink-500 transition-all active:scale-95">下载测试图 (PNG)</button>
+                </div>
+            </div>
+        </section>
+    
+        <!-- 屏幕分辨率图 的专属定制说明与FAQ区 -->
+        <div class="grid md:grid-cols-2 gap-8 mb-12 animate-fade-in custom-faq-section">
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">🎯</span>
+                    专属指南及提示
+                </h2>
+                <div class="bg-white rounded-3xl p-8 shadow-sm border border-pink-50 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-full blur-3xl -mr-10 -mt-10 opacity-50"></div>
+                    <ul class="space-y-4 text-gray-600 list-decimal list-inside text-sm leading-relaxed relative z-10 font-medium">
+                        <li>在上方可爱的上传格栏里挑准那张需要进行修容锻造的主图，启动这伟大的【屏幕分辨率图】工作。</li>
+<li>肆意滑动各种调整轨的推子，实施滤镜或者参数重置调优魔法。</li>
+<li>对即时呈现的幻彩成效赞叹不已并且定稿无虞后，长按预览中心（对应触屏手机）即刻顺走成品！</li>
+
+                    </ul>
+                </div>
+            </section>
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">💬</span>
+                    屏幕分辨率图 - 常见答疑
+                </h2>
+                <div class="space-y-4">
+                    
+                <div class="bg-white p-5 rounded-2xl border border-pink-50 shadow-sm mt-4 hover:border-pink-200 transition-colors">
+                    <div class="font-bold text-gray-700 mb-2 flex items-center">
+                        <span class="w-1.5 h-1.5 rounded-full bg-pink-400 mr-2"></span>
+                        这些多重深度的精修计算加工会偷偷降低我原始物料的主分辨率基调吗？
+                    </div>
+                    <div class="text-gray-500 text-sm leading-relaxed pl-3.5">除非是刻意进行了降级。我们这里所有的底层引擎 API 控制对【屏幕分辨率图】操作都拥有高度严格的不妥协准绳，坚定遵循原 1:1 输出等比画板映射逻辑来反馈素材的原真色泽。</div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-pink-50 shadow-sm mt-4 hover:border-pink-200 transition-colors">
+                    <div class="font-bold text-gray-700 mb-2 flex items-center">
+                        <span class="w-1.5 h-1.5 rounded-full bg-pink-400 mr-2"></span>
+                        为啥我处理【屏幕分辨率图】的时候，放在公司电脑处理和随身手机端耗时悬殊如此巨大？
+                    </div>
+                    <div class="text-gray-500 text-sm leading-relaxed pl-3.5">这也是本地纯前端小工具站最大的特性反馈。因为它所有的运算均不借助光纤去发往超级机房借兵，它所有的性能天花板全权依赖于您手中设备的物理硬实力芯片能力。</div>
+                </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const canvas = document.getElementById('test-canvas');
+        const ctx = canvas.getContext('2d');
+        const modeBtns = document.querySelectorAll('.mode-btn');
+        const resSelect = document.getElementById('resolution');
+        const downloadBtn = document.getElementById('download-btn');
+
+        let currentMode = 'colorbars';
+
+        function render() {
+            const [w, h] = resSelect.value.split('x').map(Number);
+            canvas.width = w;
+            canvas.height = h;
+
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, w, h);
+
+            if (currentMode === 'colorbars') drawColorBars(w, h);
+            else if (currentMode === 'grayscale') drawGrayscale(w, h);
+            else if (currentMode === 'grid') drawGrid(w, h);
+            else if (currentMode === 'focus') drawFocus(w, h);
+        }
+
+        function drawColorBars(w, h) {
+            const colors = ['#ffffff', '#ffff00', '#00ffff', '#00ff00', '#ff00ff', '#ff0000', '#0000ff'];
+            const stripeW = w / colors.length;
+            colors.forEach((c, i) => {
+                ctx.fillStyle = c;
+                ctx.fillRect(i * stripeW, 0, stripeW, h * 0.7);
+            });
+            // 底部小条
+            const smallColors = ['#0000ff', '#131313', '#ff00ff', '#131313', '#00ffff', '#131313', '#ffffff'];
+            smallColors.forEach((c, i) => {
+                ctx.fillStyle = c;
+                ctx.fillRect(i * stripeW, h * 0.7, stripeW, h * 0.1);
+            });
+        }
+
+        function drawGrayscale(w, h) {
+            const steps = 32;
+            const stepW = w / steps;
+            for(let i=0; i<steps; i++) {
+                const v = Math.round(i * 255 / (steps - 1));
+                ctx.fillStyle = `rgb(${v},${v},${v})`;
+                ctx.fillRect(i * stepW, 0, stepW, h);
+            }
+        }
+
+        function drawGrid(w, h) {
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1;
+            for(let x=0; x<w; x+=20) {
+                ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke();
+            }
+            for(let y=0; y<h; y+=20) {
+                ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke();
+            }
+            ctx.strokeStyle = '#fff';
+            ctx.strokeRect(w/2 - 100, h/2 - 100, 200, 200);
+        }
+
+        function drawFocus(w, h) {
+            ctx.strokeStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(w/2, h/2, 200, 0, Math.PI*2);
+            ctx.stroke();
+            for(let i=0; i<360; i+=10) {
+                ctx.beginPath();
+                ctx.moveTo(w/2, h/2);
+                ctx.lineTo(w/2 + 300 * Math.cos(i * Math.PI/180), h/2 + 300 * Math.sin(i * Math.PI/180));
+                ctx.stroke();
+            }
+        }
+
+        modeBtns.forEach(btn => {
+            btn.onclick = () => {
+                modeBtns.forEach(b => {
+                    b.classList.replace('bg-pink-400', 'bg-pink-50');
+                    b.classList.replace('text-white', 'text-pink-600');
+                    b.classList.remove('shadow-md');
+                });
+                btn.classList.replace('bg-pink-50', 'bg-pink-400');
+                btn.classList.replace('text-pink-600', 'text-white');
+                btn.classList.add('shadow-md');
+                
+                currentMode = btn.dataset.mode;
+                render();
+            };
+        });
+
+        resSelect.onchange = render;
+        downloadBtn.onclick = () => {
+            Utils.downloadFile(canvas.toDataURL('image/png'), `test_pattern_${resSelect.value}.png`, 'image/png');
+        };
+
+        render();
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

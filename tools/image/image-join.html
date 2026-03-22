@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>图片无缝拼接 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        #preview-list div:active { transform: scale(0.95); cursor: grabbing; }
+        .result-image-container::before {
+            content: 'PREVIEW';
+            position: absolute; top: 1rem; left: 1rem;
+            background: #f472b6; color: white;
+            font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 4px;
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fffafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 transition-transform hover:rotate-0">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-4 md:py-8 px-4 max-w-5xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold mb-4 animate-item gradient-text">长图融铸实验室</h1>
+            <p class="text-gray-500 animate-item" style="animation-delay: 0.1s">横向追随，纵向延续。让零散的快门瞬间汇集成有张力的叙事长图。🖇️</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 animate-item" style="animation-delay: 0.2s">
+            <div id="upload-stage" class="text-center">
+                <div id="drop-zone" class="w-full border-4 border-dashed border-pink-100 rounded-3xl p-8 md:p-16 hover:border-pink-300 transition-all cursor-pointer bg-white group">
+                    <input type="file" id="fileInput" accept="image/*" multiple class="hidden">
+                    <div class="text-7xl mb-6 group-hover:scale-110 transition-transform">🖇️</div>
+                    <p class="text-xl font-bold text-gray-700">提交需要拼接的碎片</p>
+                    <p class="text-pink-400 mt-2 text-sm italic">支持多选，即刻融合成长图</p>
+                </div>
+            </div>
+
+            <div id="editor-stage" class="hidden animate-fade-in space-y-12">
+                <!-- Image Queue -->
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center px-2">
+                        <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest italic flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-pink-400 animate-pulse"></span>
+                            物料队列 (可拖拽删除)
+                        </h3>
+                        <button id="addMoreBtn" class="text-[10px] font-black text-pink-500 hover:text-pink-600 transition-colors uppercase underline decoration-2 underline-offset-4">继续添加碎片</button>
+                    </div>
+                    <div id="preview-list" class="flex flex-wrap gap-4 p-6 bg-gray-50 rounded-[2.5rem] border border-pink-50/50 shadow-inner justify-center min-h-[140px]">
+                        <!-- Tiles -->
+                    </div>
+                </div>
+
+                <!-- Config & Result -->
+                <div class="grid lg:grid-cols-2 gap-12 items-start">
+                    <div class="space-y-8 bg-white p-8 rounded-[2.5rem] border border-pink-50 shadow-sm flex flex-col items-center">
+                        <div class="w-full space-y-6">
+                            <h3 class="font-black text-gray-800 italic uppercase flex items-center gap-2 text-sm">
+                                 <span class="w-2 h-6 bg-pink-400 rounded-full"></span>
+                                 融合方向
+                            </h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="relative group cursor-pointer">
+                                    <input type="radio" name="direction" value="vertical" checked class="peer hidden">
+                                    <div class="p-6 bg-gray-50 rounded-[2rem] border-2 border-transparent peer-checked:border-pink-400 peer-checked:bg-pink-50 transition-all text-center">
+                                        <span class="text-2xl mb-1 block group-hover:scale-110 transition-transform">↕️</span>
+                                        <span class="text-[10px] font-black text-gray-400 peer-checked:text-pink-500 uppercase italic">纵向长图</span>
+                                    </div>
+                                </label>
+                                <label class="relative group cursor-pointer">
+                                    <input type="radio" name="direction" value="horizontal" class="peer hidden">
+                                    <div class="p-6 bg-gray-50 rounded-[2rem] border-2 border-transparent peer-checked:border-pink-400 peer-checked:bg-pink-50 transition-all text-center">
+                                        <span class="text-2xl mb-1 block group-hover:scale-110 transition-transform">↔️</span>
+                                        <span class="text-[10px] font-black text-gray-400 peer-checked:text-pink-500 uppercase italic">横向画卷</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="w-full flex flex-col gap-3">
+                            <button id="generateBtn" class="w-full py-5 bg-pink-400 text-white rounded-full font-black shadow-lg shadow-pink-100 hover:bg-pink-500 transition-all">执行融金操作</button>
+                            <button id="downloadBtn" class="w-full py-5 bg-pink-600 text-white rounded-full font-black shadow-lg shadow-pink-100 hover:bg-pink-700 transition-all hidden theme-download-btn uppercase">保存最终卷轴</button>
+                            <button id="resetBtn" class="w-full py-3 text-gray-300 font-bold hover:text-pink-400 transition-all theme-secondary-btn italic uppercase text-[10px] font-black">清空所有实验物料</button>
+                        </div>
+                    </div>
+
+                    <div id="preview-result" class="hidden relative result-image-container bg-gray-800/5 p-4 rounded-[2.5rem] border border-pink-50 min-h-[400px] flex items-center justify-center overflow-auto shadow-inner">
+                        <img id="resultImage" class="max-w-full rounded-2xl shadow-sm border border-white/50">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.3s">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">💡</span>
+                融合准则
+            </h2>
+            <div class="bg-white rounded-3xl p-8 shadow-sm border border-pink-50 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-full blur-3xl -mr-10 -mt-10 opacity-50"></div>
+                <div class="grid md:grid-cols-2 gap-8 relative z-10 text-xs text-gray-500 font-medium italic leading-relaxed">
+                    <p>1. <b>高度自适应：</b>系统将根据队列中的平均画幅自动缩放所有物料，确保长图的边缘完美对齐而不留缝隙。</p>
+                    <p>2. <b>动态追加：</b>在生成前，你可以随时点击“继续添加”来丰富你的画卷长度，完全不受初次上传的数量限制。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-10 text-center text-gray-400 text-xs border-t border-pink-50 mt-12 bg-white/50">
+        © 2026 小Q工具箱 · 拼接实验室 💖
+    </footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadStage = document.getElementById('upload-stage');
+        const editorStage = document.getElementById('editor-stage');
+        const previewList = document.getElementById('preview-list');
+        const previewResult = document.getElementById('preview-result');
+        const resultImage = document.getElementById('resultImage');
+        const generateBtn = document.getElementById('generateBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const addMoreBtn = document.getElementById('addMoreBtn');
+
+        let imageFiles = [];
+
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.getElementById('drop-zone').onclick = () => fileInput.click();
+        addMoreBtn.onclick = () => fileInput.click();
+
+        fileInput.onchange = async (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+            imageFiles = imageFiles.concat(files);
+            if (imageFiles.length < 2) {
+                Utils.toast('拼接至少需要注入两枚碎片', 'info');
+            }
+            renderPreviews();
+            uploadStage.classList.add('hidden');
+            editorStage.classList.remove('hidden');
+            fileInput.value = '';
+        };
+
+        async function renderPreviews() {
+            previewList.innerHTML = '';
+            for (let i = 0; i < imageFiles.length; i++) {
+                const url = await Utils.readFileAsDataURL(imageFiles[i]);
+                const div = document.createElement('div');
+                div.className = 'relative w-24 h-24 bg-white rounded-2xl overflow-hidden shadow-sm border border-pink-50 group transition-transform hover:scale-105';
+                div.innerHTML = `
+                    <img src="${url}" class="w-full h-full object-cover">
+                    <button onclick="removeImage(${i})" class="absolute top-1 right-1 bg-pink-500/80 backdrop-blur-sm text-white w-6 h-6 rounded-full text-[8px] shadow hover:bg-pink-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">✖</button>
+                `;
+                previewList.appendChild(div);
+            }
+        }
+
+        window.removeImage = (index) => {
+            imageFiles.splice(index, 1);
+            renderPreviews();
+            if(imageFiles.length === 0) resetBtn.click();
+        };
+
+        generateBtn.onclick = async () => {
+            const direction = document.querySelector('input[name="direction"]:checked').value;
+            const images = await Promise.all(imageFiles.map(file => {
+                return new Promise(resolve => {
+                    const img = new Image();
+                    Utils.readFileAsDataURL(file).then(url => {
+                        img.src = url; img.onload = () => resolve(img);
+                    });
+                });
+            }));
+
+            if (images.length < 2) {
+                Utils.toast('合成需要至少两枚碎片', 'error');
+                return;
+            }
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            if (direction === 'vertical') {
+                const avgWidth = images.reduce((sum, img) => sum + img.width, 0) / images.length;
+                canvas.width = avgWidth;
+                let totalHeight = 0;
+                const scaled = images.map(img => {
+                    const h = img.height * (avgWidth / img.width);
+                    totalHeight += h; return { img, w: avgWidth, h };
+                });
+                canvas.height = totalHeight;
+                let currentY = 0;
+                scaled.forEach(item => { ctx.drawImage(item.img, 0, currentY, item.w, item.h); currentY += item.h; });
+            } else {
+                const avgHeight = images.reduce((sum, img) => sum + img.height, 0) / images.length;
+                canvas.height = avgHeight;
+                let totalWidth = 0;
+                const scaled = images.map(img => {
+                    const w = img.width * (avgHeight / img.height);
+                    totalWidth += w; return { img, w, h: avgHeight };
+                });
+                canvas.width = totalWidth;
+                let currentX = 0;
+                scaled.forEach(item => { ctx.drawImage(item.img, currentX, 0, item.w, item.h); currentX += item.w; });
+            }
+
+            resultImage.src = canvas.toDataURL('image/png');
+            previewResult.classList.remove('hidden');
+            downloadBtn.classList.remove('hidden');
+            resultImage.onload = () => previewResult.scrollIntoView({ behavior: 'smooth' });
+
+            downloadBtn.onclick = () => {
+                Utils.downloadFile(resultImage.src, `q_stitch_${Date.now()}.png`, 'image/png');
+                Utils.toast('卷轴已长载入库', 'success');
+            };
+        };
+
+        resetBtn.onclick = () => {
+            imageFiles = []; fileInput.value = '';
+            uploadStage.classList.remove('hidden'); editorStage.classList.add('hidden');
+            previewResult.classList.add('hidden'); downloadBtn.classList.add('hidden');
+        };
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

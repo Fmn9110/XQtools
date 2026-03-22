@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>正则替换 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen pb-20 md:pb-0">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4">正则替换</h1>
+            <p class="text-gray-500 italic">利用正则表达式进行极客级的批量文本处理。⚙️</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-8 bg-white shadow-xl mb-12">
+            <div class="relative group mb-6">
+                <label class="block text-[10px] font-bold text-pink-300 uppercase tracking-widest mb-2 ml-2">待处理原始文本</label>
+                <textarea id="textInput" class="w-full h-48 md:h-56 p-6 bg-pink-50/10 border-2 border-pink-50 rounded-[2rem] text-xs outline-none focus:border-pink-200 transition-all resize-none shadow-inner" placeholder="在此输入原始文本..."></textarea>
+                <button onclick="clearAll()" class="absolute right-6 top-10 text-pink-200 hover:text-pink-400 p-2 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="flex flex-col gap-2">
+                    <label class="block text-[10px] font-bold text-pink-300 uppercase tracking-widest ml-2">查找正则</label>
+                    <input type="text" id="pattern" class="p-4 bg-pink-50/20 border border-pink-50 rounded-2xl text-xs font-mono focus:border-pink-300 outline-none transition-colors" placeholder="正则表达式 (如 \d+)">
+                </div>
+                <div class="flex flex-col gap-2">
+                    <label class="block text-[10px] font-bold text-pink-300 uppercase tracking-widest ml-2">替换为</label>
+                    <input type="text" id="replacement" class="p-4 bg-pink-50/20 border border-pink-50 rounded-2xl text-xs font-mono focus:border-pink-300 outline-none transition-colors" placeholder="替换内容...">
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-6 justify-center items-center mb-8 bg-pink-50/30 p-4 rounded-2xl border border-pink-50/50">
+                <label class="flex items-center gap-2 text-xs font-bold text-pink-400 cursor-pointer">
+                    <input type="checkbox" id="globalFlag" checked class="w-4 h-4 accent-pink-500 rounded border-pink-200"> 全局搜索 (g)
+                </label>
+                <label class="flex items-center gap-2 text-xs font-bold text-pink-400 cursor-pointer">
+                    <input type="checkbox" id="caseFlag" class="w-4 h-4 accent-pink-500 rounded border-pink-200"> 忽略大小写 (i)
+                </label>
+            </div>
+
+            <button id="execBtn" class="theme-download-btn w-full py-4 text-sm font-bold shadow-lg shadow-pink-100 mb-8">执行正则替换</button>
+            
+            <div class="relative">
+                <label class="block text-[10px] font-bold text-pink-300 uppercase tracking-widest mb-2 ml-2">处理结果</label>
+                <textarea id="textOutput" readonly class="w-full h-48 md:h-56 p-6 bg-pink-50/5 border-2 border-pink-50 rounded-[2rem] text-xs outline-none resize-none" placeholder="替换后的结果将显示在这里..."></textarea>
+                <button onclick="copyResult()" class="absolute right-4 bottom-4 bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-pink-100 text-pink-400 hover:text-pink-600 shadow-sm transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                </button>
+            </div>
+        </section>
+    </main>
+
+
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        document.getElementById('execBtn').onclick = () => {
+             const text = document.getElementById('textInput').value;
+             const patternStr = document.getElementById('pattern').value;
+             const replacement = document.getElementById('replacement').value;
+             
+             if(!patternStr) {
+                 Utils.toast('请输入正则表达式', 'warning');
+                 return;
+             }
+
+             try {
+                let flags = "";
+                if(document.getElementById('globalFlag').checked) flags += "g";
+                if(document.getElementById('caseFlag').checked) flags += "i";
+                
+                const regex = new RegExp(patternStr, flags);
+                document.getElementById('textOutput').value = text.replace(regex, replacement);
+                Utils.toast('正则替换成功', 'success');
+             } catch (e) {
+                 Utils.toast('正则格式有误', 'error');
+             }
+        };
+
+        function copyResult() {
+            const val = document.getElementById('textOutput').value;
+            if(!val) {
+                Utils.toast('没有可复制的内容', 'warning');
+                return;
+            }
+            navigator.clipboard.writeText(val).then(() => {
+                Utils.toast('已复制到剪贴板', 'success');
+            });
+        }
+
+        function clearAll() {
+            document.getElementById('textInput').value = '';
+            document.getElementById('textOutput').value = '';
+            Utils.toast('已清空内容', 'info');
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

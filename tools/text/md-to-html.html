@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Markdown 转 HTML - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+        .preview-area img { max-width: 100%; border-radius: 12px; margin: 1rem 0; }
+        .preview-area h1 { font-size: 1.8em; font-weight: 800; margin-bottom: 0.6em; color: #db2777; border-bottom: 2px solid #fecdd3; padding-bottom: 0.3em; }
+        .preview-area h2 { font-size: 1.4em; font-weight: 700; margin-top: 1.2em; margin-bottom: 0.5em; color: #be185d; }
+        .preview-area h3 { font-size: 1.2em; font-weight: 600; margin-top: 1em; margin-bottom: 0.4em; color: #9d174d; }
+        .preview-area p { margin-bottom: 1em; line-height: 1.7; color: #4b5563; }
+        .preview-area pre { background: #fff1f2; padding: 1.2em; border-radius: 16px; overflow-x: auto; margin-bottom: 1.2em; border: 1px solid #ffe4e6; }
+        .preview-area code { background: #fff1f2; padding: 0.2em 0.4em; border-radius: 6px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 0.9em; color: #e11d48; }
+        .preview-area blockquote { border-left: 4px solid #f9a8d4; padding-left: 1.2em; border-radius: 4px; color: #707070; font-style: italic; margin: 1.5em 0; background: #fffafb; padding: 1em 1.2em; }
+        .preview-area ul, .preview-area ol { padding-left: 1.5em; margin-bottom: 1em; list-style-type: disc; }
+        .preview-area li { margin-bottom: 0.5em; color: #4b5563; }
+        .preview-area table { width: 100%; border-collapse: collapse; margin-bottom: 1em; }
+        .preview-area th, .preview-area td { border: 1px solid #fecdd3; padding: 0.8em; text-align: left; }
+        .preview-area th { background: #fff1f2; color: #db2777; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen pb-20 md:pb-0">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-6xl">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4">Markdown 转 HTML</h1>
+            <p class="text-gray-500 italic">即时预览并转换 Markdown 格式为标准的网页 HTML。📄</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            <!-- 编辑器 -->
+            <section class="cute-card p-6 bg-white shadow-xl flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-[10px] font-bold text-pink-300 uppercase tracking-widest">Markdown 编辑器</span>
+                    <button id="clearBtn" class="text-[10px] font-bold text-red-300 hover:text-red-500 uppercase tracking-widest transition-colors cursor-pointer">清空内容</button>
+                </div>
+                <textarea id="mdInput" class="w-full h-[400px] md:h-[500px] p-6 bg-pink-50/20 border border-pink-50 rounded-2xl text-sm font-mono outline-none resize-none focus:border-pink-200 transition-colors" placeholder="# 在这里输入 Markdown 代码..."></textarea>
+            </section>
+
+            <!-- 预览区 -->
+            <section class="cute-card p-6 bg-white shadow-xl flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-[10px] font-bold text-pink-300 uppercase tracking-widest">HTML 即时预览</span>
+                    <div class="flex gap-4">
+                         <button id="copyCodeBtn" class="text-[10px] font-bold text-pink-400 hover:text-pink-600 uppercase tracking-widest transition-colors">复制 HTML 源码</button>
+                    </div>
+                </div>
+                <div id="previewArea" class="preview-area w-full h-[400px] md:h-[500px] p-8 bg-white border border-pink-50 rounded-2xl text-left overflow-auto scrollbar-hide">
+                    <div class="flex items-center justify-center h-full text-gray-300 italic">
+                        等待输入内容...
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const mdInput = document.getElementById('mdInput');
+        const previewArea = document.getElementById('previewArea');
+
+        mdInput.addEventListener('input', () => {
+             if (!mdInput.value.trim()) {
+                 previewArea.innerHTML = '<div class="flex items-center justify-center h-full text-gray-300 italic">等待输入内容...</div>';
+                 return;
+             }
+             const html = marked.parse(mdInput.value);
+             previewArea.innerHTML = html;
+        });
+
+        document.getElementById('clearBtn').onclick = () => {
+            mdInput.value = '';
+            previewArea.innerHTML = '<div class="flex items-center justify-center h-full text-gray-300 italic">等待输入内容...</div>';
+            Utils.toast('已清空内容', 'info');
+        };
+
+        document.getElementById('copyCodeBtn').onclick = () => {
+            const html = marked.parse(mdInput.value);
+            if(!mdInput.value.trim()) {
+                Utils.toast('没有可复制的内容', 'warning');
+                return;
+            }
+            navigator.clipboard.writeText(html).then(() => {
+                Utils.toast('HTML 源码已复制', 'success');
+            });
+        };
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

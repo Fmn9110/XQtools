@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>洗牌模拟器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🃏 扑克 <span class="gradient-text">洗牌模拟器</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">公平、公正、公开。每一次随机，都是命运的曼妙起舞。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            <div class="flex flex-col md:flex-row gap-6 items-center md:items-end mb-10 max-w-2xl mx-auto">
+                <div class="flex-1 w-full animate-item" style="animation-delay: 0.3s">
+                    <label class="block text-[10px] font-black text-pink-300 uppercase tracking-widest mb-3 text-center md:text-left">DEAL COUNT / 发牌数量</label>
+                    <input type="number" id="dealCount" value="5" min="1" max="52" class="w-full p-4 bg-pink-50/30 rounded-2xl border-2 border-transparent focus:border-pink-100 outline-none text-center font-bold text-gray-600 transition-all">
+                </div>
+                <button onclick="shuffle()" class="theme-download-btn w-full md:w-auto px-10 py-5 text-xl animate-item" style="animation-delay: 0.4s">🔀 开始发牌</button>
+            </div>
+            
+            <div class="bg-gradient-to-br from-pink-50/50 to-indigo-50/50 rounded-[2.5rem] p-8 md:p-12 border-2 border-pink-100/50 shadow-inner min-h-[220px] flex flex-wrap gap-4 justify-center items-center overflow-hidden" id="cards">
+                <p class="text-gray-300 text-xs font-black uppercase tracking-[0.5em] animate-pulse">Waiting for shuffle...</p>
+            </div>
+
+            <div class="mt-8 pt-8 border-t border-pink-50 flex flex-col md:flex-row justify-between items-center gap-4 animate-item" style="animation-delay: 0.5s">
+                <div class="px-6 py-2 bg-pink-50 text-pink-400 rounded-full text-xs font-bold border border-pink-100/50" id="stats">准备就绪</div>
+                <button onclick="clearCards()" class="text-[10px] font-black text-gray-300 uppercase tracking-widest hover:text-pink-400 transition-colors">Clear All / 清空桌面</button>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.6s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">📖</span>
+                    算法简介
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50">
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        本工具采用经典的 Fisher-Yates 洗牌算法，确保了组合生成的数学随机性与公平性。无论是桌游发牌还是概率研究，都能提供客观的数据支持。
+                    </p>
+                </div>
+            </section>
+            <section class="animate-item" style="animation-delay: 0.7s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">✨</span>
+                    牌型说明
+                </h2>
+                <div class="bg-white p-6 rounded-2xl border border-pink-50 shadow-sm leading-relaxed">
+                    <p class="text-gray-500 text-sm">发牌数量达到 5 张及以上时，系统会自动为您分析常见的德州扑克牌型（如：四条、葫芦、三条、两对等）。</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const suits = ['♠','♥','♦','♣'];
+        const suitColors = {'♠':'text-gray-800','♥':'text-rose-500','♦':'text-rose-400','♣':'text-gray-600'};
+        const ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+
+        function createDeck() {
+            const deck = [];
+            suits.forEach(s => ranks.forEach(r => deck.push({suit:s, rank:r})));
+            return deck;
+        }
+
+        function shuffle() {
+            const countInput = document.getElementById('dealCount');
+            const count = Math.min(52, Math.max(1, parseInt(countInput.value) || 5));
+            countInput.value = count;
+
+            const deck = createDeck();
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+            
+            const hand = deck.slice(0, count);
+            let html = '';
+            hand.forEach((c, i) => {
+                html += `<div class="w-16 h-24 md:w-20 md:h-32 bg-white rounded-2xl border-4 border-white shadow-xl flex flex-col items-center justify-center transform transition-all hover:-translate-y-4 hover:rotate-3 select-none group" style="animation: bounceIn 0.5s ease ${i*0.05}s both;">
+                    <span class="text-xl md:text-2xl ${suitColors[c.suit]} font-black mb-1 group-hover:scale-110 transition-transform">${c.rank}</span>
+                    <span class="text-3xl md:text-4xl shadow-sm">${c.suit}</span>
+                </div>`;
+            });
+            document.getElementById('cards').innerHTML = html;
+
+            // 牌型分析
+            const rankCounts = {};
+            hand.forEach(c => { rankCounts[c.rank] = (rankCounts[c.rank]||0)+1; });
+            const counts = Object.values(rankCounts).sort((a,b)=>b-a);
+            let handType = '';
+            if (count >= 5) {
+                if (counts[0]===4) handType = '🔥 四条！';
+                else if (counts[0]===3 && counts[1]===2) handType = '💎 葫芦！';
+                else if (counts[0]===3) handType = '🌟 三条';
+                else if (counts[0]===2 && counts[1]===2) handType = '✨ 两对';
+                else if (counts[0]===2) handType = '💫 一对';
+                else handType = '🃏 高牌';
+            }
+            document.getElementById('stats').textContent = `共发 ${count} 张 · ${handType || '随机发牌'}`;
+            Utils.toast('洗牌完成', 'success');
+        }
+
+        function clearCards() {
+            document.getElementById('cards').innerHTML = '<p class="text-gray-300 text-xs font-black uppercase tracking-[0.5em] animate-pulse">Waiting for shuffle...</p>';
+            document.getElementById('stats').textContent = '已清空';
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+    <style>
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3) translateY(40px); }
+            50% { opacity: 0.9; transform: scale(1.1) translateY(-10px); }
+            70% { transform: scale(0.9) translateY(5px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+    </style>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

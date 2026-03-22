@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>像素头像DIY - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        .grid-cell {
+            border: 1px solid #f8fafc;
+            transition: background-color 0.1s;
+        }
+        #palette button.active {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 2px #fff, 0 0 0 4px #f472b6;
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-2xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🧑‍🎨 头像 <span class="gradient-text">像素工坊</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">在 8x8 的极限网格里，定义你的赛博身份。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 mb-12 bg-white animate-item text-center" style="animation-delay: 0.2s">
+            
+            <p class="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-6">Colors / 调色盘</p>
+            <div class="flex gap-2 flex-wrap justify-center mb-10" id="palette">
+                <!-- JS Inject -->
+            </div>
+
+            <div class="bg-gray-50/50 rounded-[2.5rem] p-6 border-2 border-pink-50/50 inline-block mb-10 shadow-inner">
+                <div class="bg-white p-1 rounded-xl shadow-xl overflow-hidden">
+                    <div class="inline-grid gap-0 bg-white" id="grid" style="grid-template-columns:repeat(8,1fr); cursor: crosshair;">
+                        <!-- JS Inject -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-4 justify-center max-w-sm mx-auto">
+                <button onclick="clear8()" class="flex-1 py-4 bg-white border-2 border-rose-50 text-rose-400 hover:bg-rose-50 hover:border-rose-200 font-black rounded-2xl transition-all active:scale-95 text-sm flex items-center justify-center gap-2">
+                    🗑️ 清空
+                </button>
+                <button onclick="download8()" class="flex-1 py-4 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-2xl shadow-xl shadow-pink-100 transition-all active:scale-95 text-base flex items-center justify-center gap-2">
+                    📥 下载头像
+                </button>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>极简主义的艺术。8x8 的空间虽然狭小，但足以勾勒出一个鲜活的灵魂。无论是卡通人物、抽象符号还是简单的表情，都是独一无二的你。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const colors=['#ffffff','#000000','#ff5252','#ff9800','#ffeb3b','#4caf50','#2196f3','#9c27b0','#795548','#ffb6c1'];
+        let curColor='#000000', painting=false;
+        
+        // Init Palette
+        const pal = document.getElementById('palette');
+        colors.forEach(c => {
+            const b = document.createElement('button');
+            b.className = 'w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-white shadow-sm transition-transform hover:scale-110';
+            b.style.backgroundColor = c;
+            if(c === '#ffffff') b.style.borderColor = '#eee';
+            if(c === '#000000') b.classList.add('active');
+            b.onclick = () => {
+                curColor = c;
+                document.querySelectorAll('#palette button').forEach(btn => btn.classList.remove('active'));
+                b.classList.add('active');
+                Utils.toast('切换颜色 ✨', 'info');
+            };
+            pal.appendChild(b);
+        });
+
+        // Init Grid
+        const grid = document.getElementById('grid');
+        for(let i=0; i<64; i++){
+            const cell = document.createElement('div');
+            cell.className = 'w-10 h-10 md:w-12 md:h-12 border border-slate-50 cursor-pointer transition-colors';
+            cell.style.background = '#ffffff';
+            cell.addEventListener('mousedown', (e) => { e.preventDefault(); painting=true; cell.style.background=curColor; });
+            cell.addEventListener('mouseenter', () => { if(painting) cell.style.background=curColor; });
+            cell.addEventListener('touchstart', e => { e.preventDefault(); cell.style.background=curColor; });
+            grid.appendChild(cell);
+        }
+        document.addEventListener('mouseup', () => painting=false);
+
+        function clear8(){
+            grid.querySelectorAll('div').forEach(c => c.style.background='#ffffff');
+            Utils.toast('已清空画布 ✨', 'info');
+        }
+
+        function download8(){
+            const canvas = document.createElement('canvas');
+            canvas.width = 8; canvas.height = 8;
+            const ctx = canvas.getContext('2d');
+            grid.querySelectorAll('div').forEach((c, i) => {
+                ctx.fillStyle = c.style.background || '#ffffff';
+                ctx.fillRect(i % 8, Math.floor(i / 8), 1, 1);
+            });
+            // Export as 1024x1024 for high quality avatar
+            const big = document.createElement('canvas');
+            big.width = 1024; big.height = 1024;
+            const bctx = big.getContext('2d');
+            bctx.imageSmoothingEnabled = false;
+            bctx.drawImage(canvas, 0, 0, 1024, 1024);
+            
+            const link = document.createElement('a');
+            link.download = 'my-pixel-avatar.png';
+            link.href = big.toDataURL();
+            link.click();
+            Utils.toast('头像保存成功 💾', 'success');
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('#grid') || e.target.closest('#palette')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

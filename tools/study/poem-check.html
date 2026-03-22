@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>古诗鉴赏与平仄检测 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-5xl text-center">
+        <header class="mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">中华诗词平仄鉴赏</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">格律校验与意境赏析，领略古典文学的音韵之美。</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white shadow-2xl animate-item flex flex-col items-center" style="animation-delay: 0.2s">
+            <div class="w-full flex gap-3 flex-wrap justify-center mb-12" id="tabs">
+                <!-- Tabs generated via JS -->
+            </div>
+
+            <div id="poem-inner" class="w-full bg-pink-50/20 p-8 md:p-16 rounded-[4rem] border-2 border-dashed border-pink-50 flex flex-col items-center animate-fade-in relative shadow-inner overflow-hidden">
+                <div class="absolute -right-12 -top-12 w-48 h-48 bg-white/40 rounded-full blur-2xl"></div>
+                <div class="absolute -left-12 -bottom-12 w-48 h-48 bg-white/40 rounded-full blur-2xl"></div>
+
+                <div id="poem-header" class="mb-10 flex flex-col items-center">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="px-2 py-0.5 bg-pink-100 text-pink-400 text-[9px] font-black rounded-lg uppercase tracking-widest" id="dynasty-tag">唐</span>
+                        <p id="author-info" class="text-xs font-black text-rose-300 uppercase tracking-[0.2em] leading-none">---</p>
+                    </div>
+                    <h2 id="poem-title" class="text-3xl md:text-5xl font-black text-slate-800 tracking-tighter mb-2 font-serif">载入中..</h2>
+                </div>
+                
+                <article id="poem-display" class="relative group">
+                    <div id="poem-text" class="text-2xl md:text-3xl text-slate-700 whitespace-pre-line leading-[3] mb-12 font-serif font-black italic text-center transition-all"></div>
+                </article>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full mt-6">
+                    <div class="p-8 bg-white/80 backdrop-blur-sm rounded-[2.5rem] shadow-sm border border-pink-50 text-left relative group">
+                        <div class="absolute -right-4 top-4 text-4xl opacity-5 rotate-12 group-hover:rotate-0 transition-all">🏮</div>
+                        <p class="text-[10px] font-black text-pink-300 uppercase tracking-widest mb-4 flex items-center gap-2">
+                             Analysis 深度赏析
+                        </p>
+                        <p id="poem-note" class="text-sm text-gray-500 leading-relaxed font-medium"></p>
+                    </div>
+                    
+                    <div class="p-8 bg-white/80 backdrop-blur-sm rounded-[2.5rem] shadow-sm border border-pink-50 text-left relative group">
+                        <div class="absolute -right-4 top-4 text-4xl opacity-5 rotate-12 group-hover:rotate-0 transition-all">🎼</div>
+                        <p class="text-[10px] font-black text-pink-300 uppercase tracking-widest mb-4 flex items-center gap-2">
+                             Tone Guide 平仄指示
+                        </p>
+                        <div id="tone-indicator" class="flex flex-wrap gap-2">
+                            <!-- Tone dots injected here -->
+                        </div>
+                        <p class="text-[9px] text-gray-400 mt-4 leading-relaxed italic">注：● 平声（平） | ○ 仄声（仄） | 格律仅供参考</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 p-6 bg-slate-50/50 rounded-3xl border border-slate-100 max-w-lg">
+                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-relaxed">
+                    "Poetry is the rhythmical creation of beauty in words."
+                </p>
+            </div>
+        </section>
+        
+        <footer class="text-gray-300 text-[10px] uppercase font-black tracking-[0.5em] pb-12 animate-item" style="animation-delay: 0.3s">
+            Literary Arts & Classical Rhyme Lab
+        </footer>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const poems = [
+            {
+                title: '静夜思', author: '李白', dynasty: '唐', 
+                text: '床前明月光，\n疑是地上霜。\n举头望明月，\n低头思故乡。', 
+                tones: '○ ○ ○ ● ●，○ ● ● ○ ●。● ● ● ○ ●，● ● ○ ● ●。',
+                note: '这是李白最著名的五言绝句之一。作者以简单的意象，勾勒出寂静夜晚独居异乡的孤独感。句中“床”在学术界有井栏、坐具等多种解释，但意境均指向寒冷与清幽。'
+            },
+            {
+                title: '登鹳雀楼', author: '王之涣', dynasty: '唐', 
+                text: '白日依山尽，\n黄河入海流。\n欲穷千里目，\n更上一层楼。', 
+                tones: '● ● ○ ○ ●，○ ○ ● ● ○。● ○ ○ ● ●，● ● ● ○ ○。',
+                note: '此诗描写登楼远望的壮阔景色。前两句写实，后两句寓理于景，将诗人积极向上进取的人生态度与开阔的宇宙视野完美融合，被誉为盛唐五言绝句的巅峰。'
+            },
+            {
+                title: '春晓', author: '孟浩然', dynasty: '唐', 
+                text: '春眠不觉晓，\n处处闻啼鸟。\n夜来风雨声，\n花落知多少。', 
+                tones: '○ ○ ○ ● ●，● ● ○ ○ ●。● ○ ○ ● ○，○ ● ○ ○ ●。',
+                note: '诗人描写春天早晨初醒时的真实感受。全诗不带一丝人工凿痕，语言浅易清新，抒发了诗人对春色的无限热爱与惜春之情，意境浑然天成。'
+            },
+            {
+                title: '江雪', author: '柳宗元', dynasty: '唐', 
+                text: '千山鸟飞绝，\n万径人踪灭。\n孤舟蓑笠翁，\n独钓寒江雪。', 
+                tones: '○ ○ ● ○ ●，● ● ○ ○ ●。○ ○ ○ ● ●，● ● ○ ○ ●。',
+                note: '诗人被贬永州后所作，借寒江雪景中形影相吊的老翁，寄寓自己不甘受辱、孤傲不群的人格。虽满纸寒意，却透出一种顶天立地的精神力量。'
+            },
+            {
+                title: '水调歌头', author: '苏轼', dynasty: '宋', 
+                text: '明月几时有？把酒问青天。\n不知天上宫阙，今夕是何年。\n我欲乘风归去，又恐琼楼玉宇，\n高处不胜寒。\n起舞弄清影，何似在人间。\n\n转朱阁，低绮户，照无眠。\n不应有恨，何事长向别时圆？\n人有悲欢离合，月有阴晴圆缺，\n此事古难全。\n但愿人长久，千里共婵娟。', 
+                tones: '--- (词律较复杂)',
+                note: '苏轼中秋怀人名篇。上阕写月下饮酒，月宫幻想；下阕转回人间，感悟离合。全词意境豪迈而灵动，最后两句将对亲人的思念升华为对全人类的美好祝愿。'
+            }
+        ];
+
+        function show(i) {
+            const p = poems[i];
+            const inner = document.getElementById('poem-inner');
+            const toneBox = document.getElementById('tone-indicator');
+            
+            inner.classList.remove('animate-fade-in');
+            void inner.offsetWidth;
+            inner.classList.add('animate-fade-in');
+
+            document.getElementById('dynasty-tag').textContent = p.dynasty;
+            document.getElementById('author-info').textContent = p.author;
+            document.getElementById('poem-title').textContent = p.title;
+            document.getElementById('poem-text').textContent = p.text;
+            document.getElementById('poem-note').textContent = p.note;
+            
+            // Build tone indicators
+            toneBox.innerHTML = "";
+            if(p.tones !== '--- (词律较复杂)') {
+                p.tones.split(' ').forEach(t => {
+                    const dot = document.createElement('span');
+                    if(t.includes('●')) {
+                        dot.className = "w-3 h-3 bg-pink-400 rounded-full shadow-sm";
+                        dot.title = "平声";
+                    } else if(t.includes('○')) {
+                        dot.className = "w-3 h-3 border-2 border-pink-300 rounded-full bg-white";
+                        dot.title = "仄声";
+                    } else {
+                        dot.className = "w-2 border-l-2 border-pink-100 h-3 mx-1 opacity-20";
+                    }
+                    toneBox.appendChild(dot);
+                });
+            } else {
+                toneBox.innerHTML = '<span class="text-[10px] text-gray-300 italic">词作格律因曲调而异，暂不单独标注点阵。</span>';
+            }
+            
+            document.querySelectorAll('#tabs button').forEach((b, j) => {
+                if(j === i) {
+                    b.className = 'px-8 py-3 bg-pink-400 text-white rounded-2xl text-[10px] font-black shadow-xl scale-110 z-10 transition-all';
+                } else {
+                    b.className = 'px-6 py-2 bg-pink-50 text-pink-400 rounded-2xl text-[10px] font-black hover:bg-pink-100 transition-all opacity-70';
+                }
+            });
+            
+            Utils.toast(`欣赏作品: 『${p.title}』 ✨`);
+        }
+
+        document.getElementById('tabs').innerHTML = poems.map((p, i) => `
+            <button onclick="show(${i})">${p.title}</button>
+        `).join('');
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    show(0);
+                }, 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

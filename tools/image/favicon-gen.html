@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Favicon生成 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fffafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 transition-transform hover:rotate-0">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-4 md:py-8 px-4 max-w-6xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold mb-4 animate-item gradient-text">Favicon生成全家桶</h1>
+            <p class="text-gray-500 animate-item" style="animation-delay: 0.1s">一键制作网站专用小图标，适配现代浏览器及移动端桌面。🎨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-8 mb-12 animate-item" style="animation-delay: 0.2s">
+            <div id="upload-stage" class="text-center">
+                <div id="drop-zone" class="w-full border-4 border-dashed border-pink-100 rounded-3xl p-8 md:p-16 hover:border-pink-300 transition-all cursor-pointer bg-white group">
+                    <input type="file" id="fileInput" accept="image/*" class="hidden">
+                    <div class="text-7xl mb-6 group-hover:scale-110 transition-transform">🖼️</div>
+                    <p class="text-xl font-bold text-gray-700">上传图片生成图标包</p>
+                    <p class="text-pink-400 mt-2 text-sm italic">自动生成 ICO、Apple Touch Icon 及 HTML 引入指南</p>
+                </div>
+            </div>
+
+            <div id="editor-stage" class="hidden flex flex-col lg:flex-row gap-8 lg:gap-12 animate-fade-in">
+                <!-- Config -->
+                <div class="flex-1 space-y-6">
+                    <div class="bg-pink-50/30 p-6 md:p-8 rounded-3xl space-y-6">
+                        <h3 class="font-bold text-gray-800 flex items-center">
+                            <span class="w-1.5 h-6 bg-pink-400 rounded-full mr-3"></span>
+                            资源包清单
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="bg-white p-3 rounded-2xl border border-pink-50 text-xs text-gray-500 flex items-center italic">
+                                <span class="text-pink-400 mr-2 text-[10px]">✔</span> favicon.ico (多尺寸混合)
+                            </div>
+                            <div class="bg-white p-3 rounded-2xl border border-pink-50 text-xs text-gray-500 flex items-center italic">
+                                <span class="text-pink-400 mr-2 text-[10px]">✔</span> apple-touch-icon.png
+                            </div>
+                            <div class="bg-white p-3 rounded-2xl border border-pink-50 text-xs text-gray-500 flex items-center italic">
+                                <span class="text-pink-400 mr-2 text-[10px]">✔</span> favicon-32x32.png
+                            </div>
+                            <div class="bg-white p-3 rounded-2xl border border-pink-50 text-xs text-gray-500 flex items-center italic">
+                                <span class="text-pink-400 mr-2 text-[10px]">✔</span> site.webmanifest
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 pt-6 border-t border-pink-100">
+                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1">HTML 引入代码</h4>
+                            <div class="relative group">
+                                <pre id="code-snippet" class="p-6 bg-gray-900 text-pink-300 rounded-3xl text-[10px] font-mono overflow-x-auto shadow-inner leading-relaxed">
+&lt;link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"&gt;
+&lt;link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"&gt;
+&lt;link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"&gt;
+&lt;link rel="manifest" href="/site.webmanifest"&gt;</pre>
+                                <button onclick="copyCode()" class="absolute top-4 right-4 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg text-[10px] font-bold backdrop-blur-md transition-all">复制</button>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 flex flex-col sm:flex-row gap-3">
+                            <button id="downloadBtn" class="cute-button flex-1 theme-download-btn px-6 py-4 rounded-full font-bold">打包下载 ZIP</button>
+                            <button onclick="location.reload()" class="theme-secondary-btn py-4 px-6 rounded-full text-xs font-bold">更换图片</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview -->
+                <div class="w-full lg:w-80 space-y-6">
+                    <h3 class="font-bold text-gray-800 pl-2">视觉预览</h3>
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="bg-white rounded-3xl p-6 border border-pink-50 flex flex-col items-center gap-4 shadow-sm">
+                            <div class="w-24 h-24 bg-gray-50 rounded-2xl flex items-center justify-center p-2 border border-gray-100">
+                                <img id="preview-180" class="max-w-full max-h-full rounded-lg">
+                            </div>
+                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Apple Touch</span>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="flex-1 bg-white rounded-3xl p-4 border border-pink-50 flex flex-col items-center gap-2 shadow-sm">
+                                <div class="w-8 h-8 bg-gray-50 flex items-center justify-center p-1 border border-gray-100">
+                                    <img id="preview-32" class="max-w-full max-h-full">
+                                </div>
+                                <span class="text-[8px] font-bold text-gray-400 uppercase tracking-widest">32x32</span>
+                            </div>
+                            <div class="flex-1 bg-white rounded-3xl p-4 border border-pink-50 flex flex-col items-center gap-2 shadow-sm">
+                                <div class="w-4 h-4 bg-gray-50 flex items-center justify-center p-0.5 border border-gray-100">
+                                    <img id="preview-16" class="max-w-full max-h-full">
+                                </div>
+                                <span class="text-[8px] font-bold text-gray-400 uppercase tracking-widest">16x16</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    
+        <div class="grid md:grid-cols-2 gap-8 mb-12 animate-item" style="animation-delay: 0.3s">
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">💡</span>
+                    为什么需要全家桶？
+                </h2>
+                <div class="bg-white rounded-3xl p-8 shadow-sm border border-pink-50 relative overflow-hidden h-full">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-full blur-3xl -mr-10 -mt-10 opacity-50"></div>
+                    <ul class="space-y-4 text-gray-600 list-decimal list-inside text-sm leading-relaxed relative z-10 font-medium">
+                        <li>**favicon.ico**：解决上古浏览器的兼容性及搜索引擎爬虫的抓取。</li>
+                        <li>**Apple Touch Icon**：用于 iOS 设备点击“添加到主屏幕”时的桌面高清图标。</li>
+                        <li>**Webmanifest**：支持 PWA，让网站在 Android 桌面更像原生应用。</li>
+                    </ul>
+                </div>
+            </section>
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">💬</span>
+                    部署说明
+                </h2>
+                <div class="bg-white p-5 rounded-2xl border border-pink-50 shadow-sm hover:border-pink-200 transition-colors">
+                    <div class="font-bold text-gray-700 mb-2 flex items-center">
+                        <span class="w-1.5 h-1.5 rounded-full bg-pink-400 mr-2"></span>
+                        快速集成指南
+                    </div>
+                    <div class="text-gray-500 text-xs leading-relaxed pl-3.5 italic">
+                        将下载得到的全部文件解压并放置在您网站的“根目录”下。随后将预览区下方的 HTML 标签复制到所有页面的 &lt;head&gt; 部分即可。如果您使用的是 WordPress，通常在 header.php 中修改。
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-10 text-center text-gray-400 text-xs border-t border-pink-50 mt-12 bg-white/50">
+        © 2026 小Q工具箱 · 离线全平台兼容方案 💖
+    </footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadStage = document.getElementById('upload-stage');
+        const editorStage = document.getElementById('editor-stage');
+        const dropZone = document.getElementById('drop-zone');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        let originalImg = new Image();
+
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        dropZone.onclick = () => fileInput.click();
+        fileInput.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            originalImg.src = await Utils.readFileAsDataURL(file);
+            originalImg.onload = () => {
+                uploadStage.classList.add('hidden');
+                editorStage.classList.remove('hidden');
+                [180, 32, 16].forEach(size => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = size; canvas.height = size;
+                    const ctx = canvas.getContext('2d');
+                    const s = Math.min(originalImg.width, originalImg.height);
+                    ctx.drawImage(originalImg, (originalImg.width-s)/2, (originalImg.height-s)/2, s, s, 0, 0, size, size);
+                    document.getElementById(`preview-${size}`).src = canvas.toDataURL();
+                });
+            };
+        };
+
+        async function createIco(img, sizes) {
+            const pngBlobs = await Promise.all(sizes.map(size => {
+                const canvas = document.createElement('canvas');
+                canvas.width = size; canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                const s = Math.min(img.width, img.height);
+                ctx.drawImage(img, (img.width-s)/2, (img.height-s)/2, s, s, 0, 0, size, size);
+                return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            }));
+            const buffers = await Promise.all(pngBlobs.map(b => b.arrayBuffer()));
+            const header = new DataView(new ArrayBuffer(6));
+            header.setUint16(2, 1, true); header.setUint16(4, sizes.length, true);
+            const directory = new DataView(new ArrayBuffer(16 * sizes.length));
+            let offset = 6 + 16 * sizes.length;
+            buffers.forEach((buf, i) => {
+                const s = sizes[i], entry = i * 16;
+                directory.setUint8(entry, s >= 256 ? 0 : s);
+                directory.setUint8(entry+1, s >= 256 ? 0 : s);
+                directory.setUint16(entry+4, 1, true);
+                directory.setUint16(entry+6, 32, true);
+                directory.setUint32(entry+8, buf.byteLength, true);
+                directory.setUint32(entry+12, offset, true);
+                offset += buf.byteLength;
+            });
+            return new Blob([header.buffer, directory.buffer, ...buffers], { type: 'image/x-icon' });
+        }
+
+        downloadBtn.onclick = async () => {
+            if (window.innerWidth <= 768) {
+                Utils.toast('移动设备建议直接保存预览图，ICO 格式需电脑端生成', 'info');
+                return;
+            }
+            downloadBtn.disabled = true;
+            downloadBtn.textContent = '📦 正在打包...';
+            const zip = new JSZip();
+            try {
+                const icoBlob = await createIco(originalImg, [16, 32, 48]);
+                zip.file('favicon.ico', icoBlob);
+                const generatePng = (size) => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = size; canvas.height = size;
+                    const ctx = canvas.getContext('2d');
+                    const s = Math.min(originalImg.width, originalImg.height);
+                    ctx.drawImage(originalImg, (originalImg.width-s)/2, (originalImg.height-s)/2, s, s, 0, 0, size, size);
+                    return new Promise(resolve => canvas.toBlob(resolve));
+                };
+                zip.file('apple-touch-icon.png', await generatePng(180));
+                zip.file('favicon-32x32.png', await generatePng(32));
+                zip.file('favicon-16x16.png', await generatePng(16));
+                zip.file('site.webmanifest', JSON.stringify({name:'My App',icons:[{src:'/favicon-32x32.png',sizes:'32x32',type:'image/png'}],theme_color:'#ffffff',display:'standalone'}, null, 2));
+                const content = await zip.generateAsync({ type: 'blob' });
+                Utils.downloadFile(content, `favicon-pack.zip`, 'application/zip');
+                Utils.toast('图标包已打包下载！', 'success');
+            } catch (err) {
+                Utils.toast('保存失败', 'error');
+            } finally {
+                downloadBtn.disabled = false;
+                downloadBtn.textContent = '打包下载 ZIP';
+            }
+        };
+
+        function copyCode() {
+            navigator.clipboard.writeText(document.getElementById('code-snippet').innerText);
+            Utils.toast('代码已复制！', 'success');
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>抽签/抽奖 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .winner-anim {
+            animation: bounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite alternate;
+        }
+        @keyframes bounce {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🎫 抽签 <span class="gradient-text">/ 抽奖</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">让运气决定归属。每一次跳动，都充满期待。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white text-center animate-item" style="animation-delay: 0.2s">
+            <div class="relative group mb-8">
+                <textarea id="items" rows="5" placeholder="一行一个选项，例如：&#10;特等奖：马卡龙礼盒&#10;一等奖：粉红心愿&#10;谢谢参与" 
+                    class="w-full p-6 bg-pink-50/30 rounded-[2rem] border-2 border-transparent focus:border-pink-200 outline-none resize-none text-sm font-bold text-gray-700 transition-all shadow-inner"></textarea>
+                <div class="absolute bottom-4 right-6 text-[10px] font-black text-pink-200 uppercase tracking-widest pointer-events-none">Options Pool / 奖池</div>
+            </div>
+
+            <div class="flex justify-center mb-10">
+                <button onclick="draw()" id="drawBtn" class="w-full max-w-md py-5 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-2xl shadow-lg shadow-pink-100 transition-all active:scale-95 text-xl">
+                    🎲 随机开启命运
+                </button>
+            </div>
+
+            <div id="result" class="hidden animate-item">
+                <div class="bg-gradient-to-br from-pink-50/50 to-amber-50/50 rounded-[3rem] p-10 md:p-16 border-4 border-white shadow-2xl group relative overflow-hidden">
+                    <div class="absolute -top-10 -right-10 text-9xl text-pink-500/10 opacity-30 group-hover:rotate-12 transition-transform">🎉</div>
+                    
+                    <p class="text-[10px] font-black text-pink-300 uppercase tracking-widest mb-4">The Winner is / 恭喜获得者</p>
+                    <p class="text-3xl md:text-5xl font-black text-pink-500 mt-2 winner-anim drop-shadow-sm" id="winner"></p>
+                    
+                    <div class="h-1 w-12 bg-pink-200 rounded-full mx-auto mt-10 opacity-40"></div>
+                </div>
+            </div>
+            
+            <div id="emptyTip" class="py-12 flex flex-col items-center opacity-20 select-none">
+                <span class="text-6xl mb-4">🎲</span>
+                <p class="text-[10px] font-black uppercase tracking-widest text-center">Ready to roll...</p>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">💖</span>
+                <p>抽奖不仅是概率的游戏，更是仪式感的载体。无论结果如何，享受揭幕的那一刻吧。本工具采用公平随机算法，确保每个选项的机会均等。祝好运连连！✨</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        function draw() {
+            const text = document.getElementById('items').value.trim();
+            if(!text) {
+                Utils.toast('请先输入抽奖选项哦', 'info');
+                return;
+            }
+            
+            const items = text.split('\n').map(s => s.trim()).filter(Boolean);
+            if(items.length < 2) {
+                Utils.toast('至少需要两个选项才能抽奖呢', 'info');
+                return;
+            }
+            
+            const btn = document.getElementById('drawBtn');
+            const winnerEl = document.getElementById('winner');
+            const resultBox = document.getElementById('result');
+            const emptyTip = document.getElementById('emptyTip');
+            
+            btn.disabled = true;
+            btn.textContent = '🎲 正在剧烈摇晃中...';
+            winnerEl.classList.remove('winner-anim');
+            
+            Utils.toast('Luck is in the air...', 'info');
+            
+            let count = 0;
+            const total = 25;
+            const interval = setInterval(() => {
+                winnerEl.textContent = items[Math.floor(Math.random() * items.length)];
+                resultBox.classList.remove('hidden');
+                emptyTip.classList.add('hidden');
+                count++;
+                
+                if(count >= total) {
+                    clearInterval(interval);
+                    winnerEl.textContent = items[Math.floor(Math.random() * items.length)];
+                    winnerEl.classList.add('winner-anim');
+                    btn.disabled = false;
+                    btn.textContent = '🎲 再次开启命运';
+                    Utils.toast('恭喜中奖者！✨', 'success');
+                }
+            }, 100);
+            
+            setTimeout(() => {
+                resultBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 500);
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

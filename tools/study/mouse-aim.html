@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>鼠标精准训练 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">鼠标精准度靶向训练</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">提升点击精准度与反应速度，射击与制图爱好者的必修课。</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 mb-12 bg-white shadow-2xl animate-item flex flex-col items-center" style="animation-delay: 0.2s">
+            <div class="w-full flex justify-between items-center mb-10 px-4 max-w-xl">
+                <div class="flex flex-col items-start translate-y-1">
+                    <p class="text-[10px] font-black text-rose-300 uppercase tracking-widest leading-none mb-1">Time Left</p>
+                    <p id="timer" class="text-3xl font-black text-rose-500 font-mono">30s</p>
+                </div>
+                <button onclick="start()" class="px-8 py-4 bg-pink-400 text-white rounded-2xl text-sm font-black shadow-lg hover:bg-pink-500 transition-all transform hover:scale-105 active:scale-95 group">
+                    ▶️ <span class="group-hover:tracking-widest transition-all">START TRAINING</span>
+                </button>
+                <div class="flex flex-col items-end translate-y-1">
+                    <p class="text-[10px] font-black text-pink-300 uppercase tracking-widest leading-none mb-1">Target Hits</p>
+                    <p id="hits" class="text-3xl font-black text-pink-500 font-mono">0</p>
+                </div>
+            </div>
+
+            <div id="arena" class="relative w-full bg-pink-50/20 rounded-[3.5rem] border-2 border-dashed border-pink-100 overflow-hidden shadow-inner group no-select" style="height:480px; cursor:crosshair">
+                <div class="absolute inset-0 flex items-center justify-center transition-opacity duration-500" id="intro-msg">
+                    <p class="text-pink-200 font-black text-xl italic tracking-wider animate-pulse">点击 “START” 按钮进入训练区 🎯</p>
+                </div>
+            </div>
+            
+            <div class="mt-8 flex items-center gap-6 justify-center">
+                <p class="text-[10px] text-gray-300 font-black uppercase tracking-[0.3em] flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-pink-300"></span> Precision
+                </p>
+                <p class="text-[10px] text-gray-300 font-black uppercase tracking-[0.3em] flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-pink-300"></span> Reaction
+                </p>
+                <p class="text-[10px] text-gray-300 font-black uppercase tracking-[0.3em] flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-pink-300"></span> Focus
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let hits = 0, timeLeft = 30, interval, targetInterval;
+        let isStarted = false;
+
+        function start(){
+            if(isStarted) return;
+            isStarted = true;
+            hits = 0; 
+            timeLeft = 30;
+            document.getElementById('hits').textContent = 0;
+            document.getElementById('timer').textContent = '30s';
+            document.getElementById('intro-msg').classList.add('opacity-0');
+            const arena = document.getElementById('arena');
+            arena.innerHTML = ""; // Clear game over screen if exists
+            
+            clearInterval(interval);
+            clearInterval(targetInterval);
+            
+            interval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = timeLeft + 's';
+                if(timeLeft <= 5) document.getElementById('timer').classList.add('animate-pulse', 'text-rose-600');
+                if(timeLeft <= 0) endChallenge();
+            }, 1000);
+            
+            spawnTarget();
+            Utils.toast('开始训练！🎯');
+        }
+
+        function spawnTarget(){
+            const arena = document.getElementById('arena');
+            if(timeLeft <= 0) return;
+            
+            const existing = arena.querySelector('.game-target');
+            if(existing) existing.remove();
+
+            const size = Math.max(30, 65 - Math.floor(hits / 3) * 3); 
+            const x = Math.floor(Math.random() * (arena.offsetWidth - size - 60)) + 30;
+            const y = Math.floor(Math.random() * (arena.offsetHeight - size - 60)) + 30;
+            
+            const target = document.createElement('div');
+            target.className = 'game-target animate-fade-in transition-all duration-200';
+            target.style.cssText = `position:absolute; left:${x}px; top:${y}px; width:${size}px; height:${size}px; background:white; border:6px solid #ffb7c5; border-radius:50%; cursor:pointer; box-shadow:0 12px 25px rgba(255,183,197,0.3); display:flex; align-items:center; justify-content:center; transform: scale(0);`;
+            
+            const center = document.createElement('div');
+            center.style.cssText = `width:35%; height:35%; background:#ff4d6d; border-radius:50%; box-shadow: 0 0 10px rgba(255,77,109,0.5);`;
+            target.appendChild(center);
+            
+            setTimeout(() => target.style.transform = 'scale(1)', 10);
+
+            target.onclick = (e) => {
+                e.stopPropagation();
+                hits++;
+                document.getElementById('hits').textContent = hits;
+                target.style.background = '#ff4d6d';
+                target.style.borderColor = 'white';
+                center.style.background = 'white';
+                target.style.transform = 'scale(1.4)';
+                target.style.opacity = '0';
+                setTimeout(() => {
+                    target.remove();
+                    spawnTarget();
+                }, 150);
+            };
+            
+            arena.appendChild(target);
+        }
+
+        function endChallenge() {
+            clearInterval(interval);
+            clearInterval(targetInterval);
+            isStarted = false;
+            const arena = document.getElementById('arena');
+            arena.innerHTML = `
+                <div class="absolute inset-0 flex flex-col items-center justify-center animate-fade-in bg-white/90 backdrop-blur-md">
+                    <div class="w-24 h-24 bg-pink-100 rounded-full flex items-center justify-center text-5xl mb-6 shadow-inner tracking-tight">🏆</div>
+                    <p id="finalHits" class="text-7xl font-black text-pink-500 mb-2 tracking-tighter animate-item">${hits}</p>
+                    <p class="text-[12px] font-black text-slate-400 uppercase tracking-widest mb-10">Total Hits Achieved</p>
+                    <button onclick="start()" class="px-12 py-4 bg-pink-400 text-white rounded-2xl text-sm font-black shadow-xl hover:bg-pink-500 transition-all hover:-translate-y-1 active:scale-95 leading-none">TRY AGAIN 重来一次</button>
+                </div>
+            `;
+            document.getElementById('timer').classList.remove('animate-pulse', 'text-rose-600');
+            Utils.toast(`训练结束！命中 ${hits} 个目标！✨`, 'success');
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+    <style>
+        .no-select { user-select: none; -webkit-user-select: none; }
+    </style>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

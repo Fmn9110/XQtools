@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>粒子沙漏模拟器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        .sand-canvas {
+            filter: drop-shadow(0 20px 50px rgba(244, 114, 182, 0.2));
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 3rem;
+            border: 4px solid white;
+        }
+        .control-pill {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">⏳ 物理 <span class="gradient-text">粒子沙漏</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">时间如指缝流沙。在一场粉色的物理实验中感受时间的流逝。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white flex flex-col items-center animate-item shadow-2xl" style="animation-delay: 0.2s">
+            
+            <div class="w-full max-w-md mb-10 space-y-6">
+                <div class="flex gap-4">
+                    <div class="flex-1 relative">
+                        <label class="block text-[10px] font-black text-gray-300 uppercase tracking-widest mb-2 pl-4">Duration / 倒计时 (秒)</label>
+                        <input type="number" id="duration" value="60" min="5" max="3600" 
+                            class="w-full p-4 bg-gray-50 rounded-2xl border-none outline-none font-black text-pink-500 text-center text-xl shadow-inner appearance-none">
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <button onclick="startTimer()" id="startBtn" class="flex-[2] py-5 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-2xl shadow-xl shadow-pink-100 transition-all active:scale-95 text-lg flex items-center justify-center gap-2">
+                        ▶️ 开始计时
+                    </button>
+                    <button onclick="resetTimer()" class="flex-1 py-5 bg-white border-2 border-pink-50 text-pink-300 hover:bg-pink-50 hover:border-pink-200 font-black rounded-2xl transition-all text-lg">
+                        重置
+                    </button>
+                </div>
+            </div>
+
+            <div class="relative inline-block mb-10">
+                <canvas id="hourglass" width="240" height="360" class="sand-canvas mx-auto"></canvas>
+                <div class="absolute inset-x-0 -bottom-12 text-center">
+                    <p class="text-4xl font-black gradient-text" id="timeLeft"></p>
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>时间是无法留存的，正如这个沙漏中的每一颗微粒。当它们落到底部时，生命也随之翻过一页。本模拟器采用简单的物理粒子引擎。愿你在流沙的律动中，找到内心的宁静。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端物理实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const canvas = document.getElementById('hourglass');
+        const ctx = canvas.getContext('2d');
+
+        let particles = [];
+        let pool = [];
+        let running = false;
+        let totalTime = 60;
+        let startTime = 0;
+        let animId;
+
+        class Sand {
+            constructor() { this.reset(); }
+            reset(x = 120, y = 180) {
+                this.x = x + (Math.random() - 0.5) * 4;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 0.4;
+                this.vy = Math.random() * 1.8 + 1.5;
+                this.size = Math.random() * 2.5 + 1.2;
+                this.life = 1.0;
+                const hue = 330 + Math.random() * 30;
+                this.color = `hsla(${hue}, 80%, 70%, `;
+            }
+            update() {
+                this.vy += 0.08;
+                this.vx *= 0.98;
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.y > 330) this.life -= 0.05;
+            }
+            draw() {
+                ctx.fillStyle = this.color + this.life + ')';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function getParticle() { return pool.length ? pool.pop() : new Sand(); }
+        function releaseParticle(p) { pool.push(p); }
+
+        function drawGlass() {
+            ctx.save();
+            ctx.strokeStyle = "#f472b6";
+            ctx.lineWidth = 6;
+            ctx.lineJoin = "round";
+            ctx.lineCap = "round";
+
+            ctx.beginPath();
+            ctx.moveTo(50, 40); ctx.lineTo(190, 40); ctx.lineTo(125, 180); 
+            ctx.moveTo(115, 180); ctx.lineTo(50, 40);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(125, 180); ctx.lineTo(190, 320); 
+            ctx.moveTo(115, 180); ctx.lineTo(50, 320);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(50, 320); ctx.lineTo(95, 320); ctx.moveTo(145, 320); ctx.lineTo(190, 320);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function drawTopSand(progress) {
+            const count = Math.floor((1 - progress) * 300);
+            if (count <= 0) return;
+            ctx.fillStyle = "rgba(244, 114, 182, 0.4)";
+            const topLimit = 45;
+            const bottomLimit = 178;
+            const currentH = (bottomLimit - topLimit) * (1 - progress);
+            for (let i = 0; i < count; i++) {
+                const y = bottomLimit - Math.random() * currentH;
+                const width = 120 * (1 - (y - topLimit) / (bottomLimit - topLimit)) + 12;
+                const x = 120 + (Math.random() - 0.5) * width;
+                ctx.fillRect(x, y, 3, 3);
+            }
+        }
+
+        function animate() {
+            if (!running) return;
+            ctx.clearRect(0, 0, 240, 360);
+            const elapsed = (Date.now() - startTime) / 1000;
+            const progress = Math.min(1, elapsed / totalTime);
+            drawGlass();
+            drawTopSand(progress);
+            if (progress < 1) {
+                for (let i = 0; i < 3; i++) {
+                    let p = getParticle(); p.reset(120, 180); particles.push(p);
+                }
+            }
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i]; p.update(); p.draw();
+                if (p.life <= 0 || p.y > 380) { releaseParticle(p); particles.splice(i, 1); }
+            }
+            document.getElementById('timeLeft').textContent = progress >= 1 ? "Time Up!" : Math.max(0, Math.ceil(totalTime - elapsed)) + 's';
+            if (progress < 1) animId = requestAnimationFrame(animate);
+            else { running = false; Utils.toast('时间到了哦 ⏰', 'success'); }
+        }
+
+        function startTimer() {
+            if (running) return;
+            totalTime = Math.max(5, parseInt(document.getElementById('duration').value) || 60);
+            startTime = Date.now(); particles = []; running = true;
+            animate();
+            Utils.toast('开始计时 ✨', 'info');
+        }
+
+        function resetTimer() {
+            running = false; if (animId) cancelAnimationFrame(animId);
+            particles = []; ctx.clearRect(0, 0, 240, 360);
+            document.getElementById('timeLeft').textContent = "";
+            drawGlass();
+            Utils.toast('已重置 ✨', 'info');
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+            drawGlass();
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy  -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>赛博朋克花名生成器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🤖 赛博朋克 <span class="gradient-text">花名生成器</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">生成你的赛博世界专属代号，开启数字冒险。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            <div class="text-center mb-8">
+                <div id="nameDisplay" class="bg-gradient-to-br from-gray-900 to-pink-900/80 rounded-[2.5rem] p-10 mb-8 shadow-2xl relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(244,114,182,0.1),transparent)] group-hover:scale-150 transition-transform duration-1000"></div>
+                    <p class="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-pink-400 to-purple-400 mb-4 tracking-tight drop-shadow-sm" id="cyberName">点击生成</p>
+                    <p class="text-pink-200/60 text-sm font-mono tracking-widest uppercase" id="cyberCode">[ AWAITING INITIALIZATION ]</p>
+                </div>
+                
+                <div class="flex flex-col md:flex-row gap-4 max-w-md mx-auto mb-6">
+                    <select id="style" class="flex-1 p-4 bg-pink-50/30 rounded-2xl border-2 border-transparent focus:border-pink-100 outline-none text-gray-600 font-bold transition-all cursor-pointer">
+                        <option value="hacker">💻 黑客边缘</option>
+                        <option value="anime">🌸 霓虹次元</option>
+                        <option value="wuxia">⚔️ 赛博武林</option>
+                        <option value="mecha">🔋 钢铁意志</option>
+                    </select>
+                    <button onclick="gen()" class="theme-download-btn px-8 py-4 whitespace-nowrap">⚡ 立即生成</button>
+                </div>
+                
+                <button onclick="copyName()" class="text-xs font-black text-pink-300 uppercase tracking-widest hover:text-pink-500 transition-colors flex items-center justify-center gap-2 mx-auto">
+                    <span class="text-lg">📋</span> 复制专属代号
+                </button>
+            </div>
+
+            <div class="mt-10 pt-10 border-t border-pink-50">
+                <p class="text-xs font-black text-gray-300 uppercase tracking-widest mb-4 text-center">生成历史</p>
+                <div class="flex flex-wrap justify-center gap-2" id="history">
+                    <div class="text-[10px] text-gray-300 italic">暂无历史记录</div>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.3s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">📖</span>
+                    使用说明
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50">
+                    <ul class="space-y-4 text-gray-600 text-sm">
+                        <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full bg-pink-50 text-pink-400 flex items-center justify-center text-[10px] font-bold">1</span> 选择你喜欢的生成风格。</li>
+                        <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full bg-pink-50 text-pink-400 flex items-center justify-center text-[10px] font-bold">2</span> 点击“立即生成”即可获取随机组合。</li>
+                        <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full bg-pink-50 text-pink-400 flex items-center justify-center text-[10px] font-bold">3</span> 自动生成唯一的数字ID作为防伪标识。</li>
+                    </ul>
+                </div>
+            </section>
+            <section class="animate-item" style="animation-delay: 0.4s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">?</span>
+                    常见问题
+                </h2>
+                <div class="space-y-4">
+                    <div class="bg-white p-6 rounded-2xl border border-pink-50 shadow-sm">
+                        <div class="font-bold text-gray-700 mb-2">会重复吗？</div>
+                        <div class="text-gray-500 text-sm leading-relaxed">系统内置超过百万种词库组合，几乎不会产生重复的专属代号。</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const data = {
+            hacker:{prefix:['暗影','幽灵','量子','虚空','深渊','脉冲','矩阵','熵增','零号','混沌'],mid:['猎手','行者','破晓','铸造者','编织者','收割者','追踪者','观测者'],suffix:['_X','_0','_v2','_mk3','_NEO','_PRIME','_NULL','_VOID']},
+            anime:{prefix:['银翼','星尘','月光','樱花','雷电','焰舞','冰霜','暗夜','苍穹','红莲'],mid:['使者','骑士','魔导师','剑仙','猎魔人','守护者','领主','公主'],suffix:['sama','chan','kun','senpai','dono','hime']},
+            wuxia:{prefix:['孤','冷','醉','逆','狂','绝','天','风','云','剑'],mid:['刃','影','魂','尊','帝','仙','侠','圣'],suffix:['无双','无敌','九天','三千','一笑','如风','逍遥','不败']},
+            mecha:{prefix:['钛合金','等离子','光子','重力','裂变','磁暴','超导','反物质'],mid:['战锤','猎鹰','独角兽','雷神','暴风','幻影','泰坦','天狼'],suffix:['-01','-EX','-α','-Ω','-ZERO','-MAX','-ULTRA']},
+        };
+        const history = [];
+        function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+        function gen() {
+            const style = document.getElementById('style').value;
+            const d = data[style];
+            const name = pick(d.prefix) + pick(d.mid) + pick(d.suffix);
+            const code = 'ID_' + Math.random().toString(36).substr(2,8).toUpperCase();
+            document.getElementById('cyberName').textContent = name;
+            document.getElementById('cyberCode').textContent = `[ ${code} ]`;
+            history.unshift(name);
+            if (history.length > 8) history.pop();
+            document.getElementById('history').innerHTML = history.map(h => `<div class="text-[10px] text-pink-400 bg-pink-50/50 rounded-full px-3 py-1 font-bold border border-pink-100/50">${h}</div>`).join('');
+            Utils.toast('代号初始化完成', 'success');
+        }
+        function copyName() {
+            const name = document.getElementById('cyberName').textContent;
+            if (name === '点击生成') return;
+            navigator.clipboard.writeText(name).then(() => Utils.toast('代号已存入芯片', 'success'));
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

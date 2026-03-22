@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>艺术词云生成器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@500;800&display=swap" rel="stylesheet">
+    <style>
+        .canvas-area { background-image: radial-gradient(#e2e8f0 1px, transparent 1px); background-size: 20px 20px; }
+        .palette-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .palette-btn:hover { transform: scale(1.1); }
+        .palette-btn.active { border-color: #f472b6; box-shadow: 0 0 15px rgba(244, 114, 182, 0.3); }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6 shadow-sm no-print">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-5xl text-center">
+        <header class="mb-10 md:mb-14">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-800 mb-4 animate-item">文字织造：艺术词云</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s italic italic">从庞杂叙述中提炼核心灵魂。数据可视化，亦是视觉艺术。🎨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-14 mb-12 bg-white shadow-2xl animate-item" style="animation-delay: 0.2s">
+            <div class="text-left mb-10 no-print">
+                <p class="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em] mb-4 pl-4">Source Material (文本素材库)</p>
+                <textarea id="textInput" rows="6" placeholder="在此粘贴长篇论文、会议摘要或关键词列表...&#10;例: 创新 协同 数字化 转型 价值链 闭环..." class="w-full p-8 bg-slate-50 rounded-[3rem] border-2 border-transparent focus:border-pink-50 outline-none focus:bg-white focus:shadow-inner transition-all font-black text-slate-700 placeholder:text-slate-200 resize-none shadow-sm"></textarea>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-6 mb-12 no-print items-center">
+                <div class="flex-1 flex gap-3 items-center">
+                     <p class="text-[9px] font-black text-slate-300 uppercase tracking-widest whitespace-nowrap">Palette:</p>
+                     <div class="flex gap-2">
+                        <button onclick="setPalette(0)" class="palette-btn active w-8 h-8 rounded-full border-2 border-white bg-gradient-to-br from-pink-400 to-indigo-500" title="Cyberpunk"></button>
+                        <button onclick="setPalette(1)" class="palette-btn w-8 h-8 rounded-full border-2 border-white bg-gradient-to-br from-emerald-400 to-teal-600" title="Forest"></button>
+                        <button onclick="setPalette(2)" class="palette-btn w-8 h-8 rounded-full border-2 border-white bg-gradient-to-br from-orange-400 to-rose-600" title="Sunset"></button>
+                     </div>
+                </div>
+                <div class="flex gap-4 w-full md:w-auto">
+                    <button onclick="generate()" class="flex-1 md:flex-none px-12 py-5 bg-pink-400 text-white font-black rounded-3xl shadow-2xl shadow-pink-100 hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-lg">
+                        ✨ 重塑词云 (WEAVE)
+                    </button>
+                    <button id="downloadBtn" onclick="download()" class="hidden px-8 py-5 bg-slate-900 text-white font-black rounded-3xl shadow-xl hover:bg-black transition-all transform hover:-translate-y-1 active:scale-95">
+                        📥 导出
+                    </button>
+                </div>
+            </div>
+
+            <!-- Display Area -->
+            <div id="stage" class="hidden animate-item">
+                <div class="relative bg-slate-50/50 rounded-[4rem] p-4 md:p-10 border border-slate-100 flex items-center justify-center min-h-[500px] canvas-area group shadow-inner">
+                    <canvas id="cloud" width="1000" height="600" class="max-w-full rounded-[2rem] drop-shadow-2xl transition-transform group-hover:scale-[1.01]"></canvas>
+                    <div class="absolute bottom-8 right-12 text-[9px] font-black text-slate-300 uppercase tracking-[0.5em] italic">Artistic Processing Unit v2.0</div>
+                </div>
+            </div>
+
+            <div id="empty" class="py-24 text-center opacity-10 select-none">
+                <p class="text-7xl mb-6">🖼️</p>
+                <p class="text-[10px] font-black uppercase tracking-[0.6em] text-slate-400">Architectural Silence: Feed to Start</p>
+            </div>
+        </section>
+        
+        <p class="text-[10px] text-gray-300 font-bold uppercase tracking-[0.5em] pb-12 animate-item">
+            Semantic Visualization & Visual Syntax Synthesis Infrastructure
+        </p>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const palettes = [
+            ['#f472b6', '#6366f1', '#fb7185', '#a78bfa', '#2dd4bf', '#fb923c'], // Cyberpunk
+            ['#10b981', '#059669', '#047857', '#065f46', '#34d399', '#6ee7b7'], // Forest
+            ['#f97316', '#ea580c', '#fb7185', '#be123c', '#fdba74', '#f43f5e']  // Sunset
+        ];
+        let currentPalette = 0;
+
+        function setPalette(idx) {
+            currentPalette = idx;
+            document.querySelectorAll('.palette-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+            generate();
+        }
+
+        function generate() {
+            const raw = document.getElementById('textInput').value.trim();
+            if (!raw) { Utils.toast('请输入需要可视化的文本 📝', 'warning'); return; }
+
+            document.getElementById('empty').style.display = 'none';
+            document.getElementById('stage').classList.remove('hidden');
+            document.getElementById('downloadBtn').classList.remove('hidden');
+
+            const words = processText(raw);
+            if(!words.length) { Utils.toast('文本太短或未发现关键词 🧐', 'info'); return; }
+            
+            draw(words);
+            Utils.toast('艺术词云已随机生长 ✨', 'success');
+        }
+
+        function processText(text) {
+            const stops = [
+                '的', '了', '和', '是', '就', '都', '而', '及', '与', '着', '或', '一个', '没有', '我们', '你们', '他们',
+                'the', 'a', 'an', 'and', 'or', 'in', 'on', 'at', 'to', 'for', 'with', 'by', 'is', 'are', 'was', 'were'
+            ];
+            // Split by punctuation and whitespace
+            const tokens = text.toLowerCase().split(/[\s,.;:!?，。；：！？（）/\\"“”、\n]+/).filter(t => t.length > 1 && !stops.includes(t));
+            const freq = {};
+            tokens.forEach(t => freq[t] = (freq[t] || 0) + 1);
+            return Object.entries(freq).sort((a,b) => b[1] - a[1]).slice(0, 50);
+        }
+
+        function draw(words) {
+            const canvas = document.getElementById('cloud');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const maxFreq = words[0][1];
+            const colors = palettes[currentPalette];
+
+            words.forEach(([text, count], i) => {
+                const size = Math.max(16, 20 + (count / maxFreq) * 100);
+                ctx.font = `bold ${size}px Outfit`;
+                ctx.fillStyle = colors[i % colors.length];
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                // Spiral search replacement (random for now but with better bounds)
+                let attempts = 0;
+                let x, y, rot;
+                while(attempts < 20) {
+                     x = 150 + Math.random() * (canvas.width - 300);
+                     y = 100 + Math.random() * (canvas.height - 200);
+                     rot = Math.random() > 0.85 ? Math.PI / 2 : 0;
+                     attempts++;
+                     // In a real word cloud we'd check collision here
+                }
+                
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(rot);
+                ctx.fillText(text, 0, 0);
+                ctx.restore();
+            });
+        }
+
+        function download() {
+            const canvas = document.getElementById('cloud');
+            const link = document.createElement('a');
+            link.download = `q-word-art-${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            Utils.toast('图像正在导出 📥', 'success');
+        }
+
+        // Init
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button') || e.target.closest('textarea')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

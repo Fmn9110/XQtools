@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>节日祝福语生成器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🎊 节日祝福 <span class="gradient-text">生成器</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">传递温暖，不仅是文字，更是一份沉甸甸的心意。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                <div class="animate-item" style="animation-delay: 0.3s">
+                    <label class="block text-xs font-black text-pink-300 uppercase tracking-widest mb-3">🗓️ 选择节日</label>
+                    <select id="holiday" class="w-full p-4 bg-pink-50/30 rounded-2xl border-2 border-transparent focus:border-pink-100 outline-none text-gray-600 font-bold transition-all cursor-pointer">
+                        <option>春节</option><option>元宵</option><option>情人节</option><option>母亲节</option><option>父亲节</option><option>中秋</option><option>国庆</option><option>生日</option><option>圣诞</option><option>新年</option>
+                    </select>
+                </div>
+                <div class="animate-item" style="animation-delay: 0.4s">
+                    <label class="block text-xs font-black text-pink-300 uppercase tracking-widest mb-3">👤 祝福对象</label>
+                    <select id="target" class="w-full p-4 bg-pink-50/30 rounded-2xl border-2 border-transparent focus:border-pink-100 outline-none text-gray-600 font-bold transition-all cursor-pointer">
+                        <option>朋友</option><option>家人</option><option>恋人</option><option>同事</option><option>老师</option><option>客户</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button onclick="genBlessing()" class="theme-download-btn w-full py-5 text-xl mb-10">🎉 生成专属祝福词</button>
+            
+            <div id="blessingResult" class="hidden animate-item">
+                <div class="bg-gradient-to-br from-pink-50/50 to-orange-50/50 rounded-[2.5rem] p-10 md:p-12 border-2 border-pink-100/50 shadow-inner text-center">
+                    <p class="text-gray-700 leading-loose text-lg font-medium mb-8" id="blessingText"></p>
+                    <button onclick="copyBlessing()" class="theme-secondary-btn px-10 py-3">📋 复制内容</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.5s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">📖</span>
+                    使用指南
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50">
+                    <ul class="space-y-4 text-gray-600 text-sm">
+                        <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full bg-pink-50 text-pink-400 flex items-center justify-center text-[10px] font-bold">1</span> 选择对应的节日背景和目标对象。</li>
+                        <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full bg-pink-50 text-pink-400 flex items-center justify-center text-[10px] font-bold">2</span> 每次点击生成都会随机切换不同的诚挚祝福。</li>
+                        <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full bg-pink-50 text-pink-400 flex items-center justify-center text-[10px] font-bold">3</span> 复制后可根据实际情况添加对方的名字微调。</li>
+                    </ul>
+                </div>
+            </section>
+            <section class="animate-item" style="animation-delay: 0.6s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">?</span>
+                    常见问题
+                </h2>
+                <div class="bg-white p-6 rounded-2xl border border-pink-50 shadow-sm">
+                    <div class="font-bold text-gray-700 mb-2">可以自定义吗？</div>
+                    <div class="text-gray-500 text-sm leading-relaxed">目前系统提供精选的模版库。生成后点击复制，您可以在发送前融入更多私人情感细节。</div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        function pick(arr) { return arr[Math.floor(Math.random()*arr.length)]; }
+        const blessings = {
+            春节:{朋友:'新春快乐！愿新的一年，你的每一天都比前一天更精彩，笑口常开，好运连连！🧨',家人:'亲爱的家人，新年快乐！感恩有你们的陪伴，愿我们的家永远温暖幸福，阖家安康！🏮',恋人:'亲爱的，新年快乐！新的一年，我最大的愿望就是继续和你一起，共度每一个春夏秋冬。❤️',同事:'新春大吉！感谢过去一年的合作，祝新年事业高升，万事如意！🎊',老师:'老师新年好！感谢您的辛勤教导，祝您新年快乐，桃李满天下！🎍',客户:'恭祝新春！感谢您的信任与支持，祝您新的一年生意兴隆、财源广进！🧧'},
+            中秋:{朋友:'中秋快乐！月圆人团圆，愿远方的你一切安好，记得吃月饼哦🥮',家人:'中秋团圆，月是故乡明。愿我们永远是彼此最温暖的牵挂。🌕',恋人:'月亮代表我的心，中秋快乐，想你了。🌙',同事:'中秋佳节，祝工作顺利，阖家欢乐！🥮',老师:'老师中秋快乐！感谢您的谆谆教诲，月明情更浓。',客户:'中秋佳节，感谢您一直以来的支持，祝阖家幸福美满！'},
+            生日:{朋友:'生日快乐！愿你永远年轻，永远热泪盈眶，做这世上最快乐的人！🎂',家人:'亲爱的，生日快乐！愿你健康平安，快乐每一天。🎉',恋人:'宝贝生日快乐！遇见你是我最大的幸运，希望你的每一个愿望都能实现。💕',同事:'生日快乐！祝前程似锦，步步高升！🎈',老师:'老师生日快乐！愿您身体健康，工作顺心！',客户:'祝您生日快乐！感谢有您，祝一切顺遂！🎁'},
+            情人节:{朋友:'情人节快乐！单身也要爱自己，你值得世界上最好的一切！💝',家人:'情人节快乐！家人的爱是世界上最珍贵的礼物。💗',恋人:'情人节快乐！有你的每一天都是情人节。遇见你，三生有幸。💘',同事:'情人节快乐！无论有没有另一半，都要对自己好一点～🌹',老师:'情人节快乐！愿老师幸福美满！💐',客户:'情人节快乐！愿爱 and 温暖常伴您左右。'},
+        };
+        const generic = {朋友:'祝你开心每一天，好运常伴！🎉',家人:'祝阖家幸福，健康平安！💖',恋人:'和你在一起的每一天都是最好的日子。❤️',同事:'祝工作顺利，前程似锦！🌟',老师:'感恩有您，祝万事如意！🌸',客户:'感谢您的信任，祝一切顺利！🤝'};
+
+        function genBlessing() {
+            const h = document.getElementById('holiday').value;
+            const t = document.getElementById('target').value;
+            let text;
+            if (blessings[h] && blessings[h][t]) { text = blessings[h][t]; }
+            else { text = `${h}快乐！${generic[t]}`; }
+            document.getElementById('blessingText').textContent = text;
+            document.getElementById('blessingResult').classList.remove('hidden');
+            Utils.toast('祝福语已生成', 'success');
+        }
+        function copyBlessing() {
+            navigator.clipboard.writeText(document.getElementById('blessingText').textContent).then(() => Utils.toast('文字已复制', 'success'));
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

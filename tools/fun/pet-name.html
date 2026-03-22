@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>宠物取名 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🐾 萌宠 <span class="gradient-text">取名灵感</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">给毛孩子一个动听的名字。每一声呼唤都满载爱意。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 max-w-lg mx-auto">
+                <div class="relative group">
+                    <label class="block text-[10px] font-black text-gray-300 uppercase tracking-widest mb-2 pl-4">Pet Type / 宠物类型</label>
+                    <select id="petType" class="w-full p-4 bg-orange-50/20 rounded-2xl border-2 border-transparent focus:border-orange-200 outline-none font-bold text-gray-600 transition-all shadow-inner">
+                        <option>🐱 猫咪 / Cat</option>
+                        <option>🐶 狗狗 / Dog</option>
+                        <option>🐰 兔兔 / Rabbit</option>
+                        <option>🐹 仓鼠 / Hamster</option>
+                    </select>
+                </div>
+                <div class="relative group">
+                    <label class="block text-[10px] font-black text-gray-300 uppercase tracking-widest mb-2 pl-4">Style / 给名风格</label>
+                    <select id="nameStyle" class="w-full p-4 bg-orange-50/20 rounded-2xl border-2 border-transparent focus:border-orange-200 outline-none font-bold text-gray-600 transition-all shadow-inner">
+                        <option value="可爱">🌸 可爱系</option>
+                        <option value="霸气">🔥 霸气系</option>
+                        <option value="食物">🥨 食物系</option>
+                        <option value="日系">🍵 日系</option>
+                        <option value="搞笑">🤡 搞笑系</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex justify-center mb-12">
+                <button onclick="genPetName()" class="w-full max-w-sm py-5 bg-orange-500 hover:bg-orange-600 text-white font-black rounded-2xl shadow-xl shadow-orange-100 transition-all active:scale-95 text-xl flex items-center justify-center gap-2">
+                    🎲 摇出萌宠好名
+                </button>
+            </div>
+
+            <div id="petNames" class="grid grid-cols-2 md:grid-cols-3 gap-4 animate-item">
+                <!-- Name cards dynamic -->
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🧸</span>
+                <p>一个好的宠物名字不仅要好听，更要好记、好叫。建议选择两到三个字的名字，发音响亮且没有歧义。最重要的是，无论给它起什么名字，它永远是你最忠诚的陪伴者。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const names = {
+            可爱:['团团','圆圆','糯米','豆豆','芋圆','布丁','奶茶','棉花糖','小丸子','年糕','汤圆','麻薯','果冻','小奶油','泡芙','蜜桃'],
+            霸气:['王者','至尊','黑豹','暴风','帝王','龙王','霸天','战神','铁拳','雷霆','烈焰','暗影','风暴','银河','天狼'],
+            食物:['小笼包','肉松','烧麦','叉烧','披萨','寿司','天妇罗','薯条','可乐','芒果','荔枝','草莓','蓝莓','牛油果','抹茶'],
+            日系:['花丸','小铃','樱桃','抹茶','柚子','桃子','小梅','若叶','雪见','月见','星丸','空太','风太','雷太','雨丸'],
+            搞笑:['王富贵','李狗蛋','赵铁柱','呆毛','秃头','肥肥','懒癌','咸鱼','摸鱼','钞票','暴富','锦鲤','二哈','瓜皮','皮蛋'],
+        };
+
+        function genPetName() {
+            const style = document.getElementById('nameStyle').value;
+            const pool = names[style];
+            const shuffled = [...pool].sort(()=>Math.random()-0.5);
+            const count = Math.min(9, shuffled.length);
+            
+            const container = document.getElementById('petNames');
+            container.style.opacity = '0';
+            
+            setTimeout(() => {
+                let html = '';
+                for(let i=0;i<count;i++){
+                    html += `
+                    <div class="bg-gradient-to-br from-orange-50/50 to-white rounded-2xl p-6 text-center border border-orange-100 shadow-sm hover:border-orange-300 hover:shadow-md transition-all group cursor-pointer" onclick="copyName('${shuffled[i]}')">
+                        <span class="text-xl font-black text-orange-600 group-hover:scale-110 block transition-transform">${shuffled[i]}</span>
+                        <p class="text-[8px] font-black text-orange-200 mt-2 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Copy / 复制</p>
+                    </div>`;
+                }
+                container.innerHTML = html;
+                container.style.opacity = '1';
+                container.style.transition = 'all 0.4s ease-out';
+                Utils.toast('已摇出一组好名 ✨', 'success');
+            }, 200);
+        }
+
+        function copyName(name) {
+            navigator.clipboard.writeText(name).then(() => {
+                Utils.toast(`已复制：${name} 🐾`, 'success');
+            });
+        }
+
+        // Initialize
+        genPetName();
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BMI计算器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-gray-100 flex justify-between items-center">
+        <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg font-bold">❤️</div>
+            <span class="text-2xl font-bold text-gray-800">小Q工具箱</span>
+        </div>
+        <a href="../../tools.html" class="text-gray-500 hover:text-indigo-600 font-semibold text-sm transition-colors">返回列表</a>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">身材健康监测</h1>
+            <p class="text-gray-500 italic">BMI 计算与理想体重参考，开启你的健康生活。🥗</p>
+        </header>
+
+        <section class="cute-card p-10 bg-white shadow-2xl mb-12">
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-left">
+                  <div>
+                       <label class="block text-[10px] font-bold text-gray-400 uppercase mb-2">你的身高 (cm)</label>
+                       <input type="number" id="h" value="175" class="w-full p-4 bg-gray-50 rounded-xl border">
+                  </div>
+                  <div>
+                       <label class="block text-[10px] font-bold text-gray-400 uppercase mb-2">你的体重 (kg)</label>
+                       <input type="number" id="w" value="65" class="w-full p-4 bg-gray-50 rounded-xl border">
+                  </div>
+             </div>
+             
+             <div id="resBox" class="hidden p-10 bg-indigo-50/20 rounded-3xl border border-indigo-50 items-center justify-between flex flex-col md:flex-row gap-6">
+                  <div class="text-left">
+                       <p class="text-[10px] font-bold text-indigo-400 uppercase mb-2">BMI 指数</p>
+                       <p id="bmi" class="text-6xl font-black text-indigo-600">21.2</p>
+                  </div>
+                  <div class="flex-1 text-right">
+                       <p id="level" class="text-2xl font-black text-green-500 mb-1">身材匀称</p>
+                       <p class="text-gray-400 text-sm">理想体重参考: <span id="ideal">61.2 ~ 73.5</span> kg</p>
+                  </div>
+             </div>
+             
+             <button onclick="calc()" class="cute-button bg-indigo-600 text-white px-12 py-4 rounded-xl font-bold mt-10 w-full">开始计算</button>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        function calc() {
+            const h = parseFloat(document.getElementById('h').value) / 100;
+            const w = parseFloat(document.getElementById('w').value);
+            const bmi = w / (h * h);
+            
+            document.getElementById('bmi').innerText = bmi.toFixed(1);
+            let level = "体型正常";
+            let color = "text-green-500";
+            
+            if(bmi < 18.5) { level = "瘦削型"; color = "text-blue-500"; }
+            else if(bmi > 24 && bmi < 28) { level = "微胖型"; color = "text-orange-500"; }
+            else if(bmi >= 28) { level = "丰满型"; color = "text-rose-500"; }
+            
+            document.getElementById('level').innerText = level;
+            document.getElementById('level').className = `text-2xl font-black mb-1 ${color}`;
+            document.getElementById('resBox').classList.remove('hidden');
+            document.getElementById('resBox').classList.add('flex');
+            
+            const low = 18.5 * h * h;
+            const high = 24.0 * h * h;
+            document.getElementById('ideal').innerText = `${low.toFixed(1)} ~ ${high.toFixed(1)}`;
+            Utils.toast('计算完成', 'success');
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

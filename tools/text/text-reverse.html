@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>文本反转 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen pb-20 md:pb-0">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4">文本反转</h1>
+            <p class="text-gray-500 italic">将文字倒序排列，或者上下行序颠倒，产生奇妙的效果。⏳</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 bg-white shadow-xl mb-12">
+            <div class="relative group mb-8">
+                <label class="block text-[10px] font-bold text-pink-300 uppercase tracking-widest mb-3 ml-2">待处理文本</label>
+                <textarea id="textInput" class="w-full h-80 p-8 bg-pink-50/10 border-2 border-pink-50 rounded-[2.5rem] text-sm outline-none focus:border-pink-200 transition-all resize-none shadow-inner" placeholder="在这里输入想要反转的文字..."></textarea>
+                <button onclick="clearInput()" class="absolute right-6 top-12 text-pink-200 hover:text-pink-400 p-2 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+            </div>
+            
+            <div class="flex flex-col md:flex-row gap-4 justify-center">
+                <button id="charRev" class="theme-download-btn px-10 py-4 text-base font-bold shadow-lg shadow-pink-100 flex-1">字符逐个反转</button>
+                <button id="lineRev" class="theme-secondary-btn px-10 py-4 text-base font-bold border-2 flex-1">上下行序反转</button>
+                <button onclick="copyResult()" class="theme-secondary-btn px-10 py-4 text-base font-bold border-2">复制结果</button>
+            </div>
+        </section>
+
+        <section class="max-w-2xl mx-auto text-left opacity-60">
+            <p class="text-xs text-gray-400 text-center">示例：abc → cba | 第一行 第二行 → 第二行 第一行</p>
+        </section>
+    </main>
+
+
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const input = document.getElementById('textInput');
+
+        document.getElementById('charRev').onclick = () => {
+            const val = input.value;
+            if(!val) { Utils.toast('请输入内容', 'warning'); return; }
+            input.value = Array.from(val).reverse().join('');
+            Utils.toast('已完成字符反转', 'success');
+        };
+
+        document.getElementById('lineRev').onclick = () => {
+            const val = input.value;
+            if(!val) { Utils.toast('请输入内容', 'warning'); return; }
+            input.value = val.split('\n').reverse().join('\n');
+            Utils.toast('已完成行序反转', 'success');
+        };
+
+        function clearInput() {
+            input.value = '';
+            Utils.toast('已清空', 'info');
+        }
+
+        function copyResult() {
+            if(!input.value) { Utils.toast('内容为空', 'warning'); return; }
+            navigator.clipboard.writeText(input.value).then(() => {
+                Utils.toast('内容已复制', 'success');
+            });
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

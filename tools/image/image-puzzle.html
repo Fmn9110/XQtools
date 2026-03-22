@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>趣味拼图 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .puzzle-tile {
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .puzzle-tile:hover { filter: brightness(1.1); transform: scale(0.98); }
+        .puzzle-tile:active { transform: scale(0.92); }
+        .empty-slot { background: rgba(0,0,0,0.05); box-shadow: inset 0 2px 8px rgba(0,0,0,0.05); }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fffafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 transition-transform hover:rotate-0">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-4 md:py-8 px-4 max-w-5xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold mb-4 animate-item gradient-text">智力拼图实验室</h1>
+            <p class="text-gray-500 animate-item" style="animation-delay: 0.1s">碎片重组，逻辑归位。让一张普通的图片变成充满挑战的趣味游戏。🧩</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 animate-item" style="animation-delay: 0.2s">
+            <div id="upload-stage" class="text-center">
+                <div id="drop-zone" class="w-full border-4 border-dashed border-pink-100 rounded-3xl p-8 md:p-16 hover:border-pink-300 transition-all cursor-pointer bg-white group">
+                    <input type="file" id="fileInput" accept="image/*" class="hidden">
+                    <div class="text-7xl mb-6 group-hover:scale-110 transition-transform">🧩</div>
+                    <p class="text-xl font-bold text-gray-700">提交需要拆解的快门素材</p>
+                    <p class="text-pink-400 mt-2 text-sm italic">自定义宫格难度，即刻开启脑力风暴</p>
+                </div>
+            </div>
+
+            <div id="editor-stage" class="hidden animate-fade-in flex flex-col lg:flex-row gap-12 items-start">
+                <!-- Left: Board -->
+                <div class="flex-1 w-full bg-gray-50 p-6 rounded-[2.5rem] border border-pink-50 shadow-inner flex flex-col items-center overflow-hidden">
+                    <div id="puzzle-board" class="grid gap-1 bg-white p-1 shadow-2xl rounded-2xl overflow-hidden w-full max-w-[450px] aspect-square">
+                        <!-- Tiles -->
+                    </div>
+                    <div class="mt-8 grid grid-cols-2 gap-4 w-full max-w-[400px]">
+                        <div class="bg-white p-4 rounded-3xl border border-pink-50/50 shadow-sm text-center">
+                            <p class="text-[10px] text-gray-400 uppercase tracking-widest font-black italic">已走步数 (MOVES)</p>
+                            <p id="move-count" class="text-3xl font-black text-pink-500 font-mono">0</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-3xl border border-pink-50/50 shadow-sm text-center">
+                            <p class="text-[10px] text-gray-400 uppercase tracking-widest font-black italic">挑战耗时 (TIME)</p>
+                            <p id="timer" class="text-3xl font-black text-pink-500 font-mono">00:00</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Controls -->
+                <div class="w-full lg:w-80 space-y-6">
+                    <div class="bg-white p-8 rounded-[2.5rem] border border-pink-50 shadow-sm space-y-8">
+                        <div class="space-y-4">
+                            <h3 class="font-black text-gray-800 italic uppercase flex items-center gap-2 text-sm">
+                                <span class="w-2 h-6 bg-pink-400 rounded-full"></span>
+                                难度设定
+                            </h3>
+                            <select id="grid-size" class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl font-bold text-gray-700 outline-none focus:ring-2 focus:ring-pink-300 transition-all text-sm">
+                                <option value="3">3 x 3 (新手入坑)</option>
+                                <option value="4" selected>4 x 4 (标准挑战)</option>
+                                <option value="5">5 x 5 (硬核玩家)</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-4">
+                            <h3 class="font-black text-gray-800 italic uppercase flex items-center gap-2 text-sm">
+                                <span class="w-2 h-6 bg-pink-400 rounded-full"></span>
+                                原图参考
+                            </h3>
+                            <div class="aspect-square bg-gray-50 rounded-2xl overflow-hidden border border-pink-50/50 shadow-inner">
+                                <img id="ref-image" class="w-full h-full object-cover grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all">
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <button id="shuffleBtn" class="w-full py-5 bg-pink-500 text-white rounded-full font-black shadow-lg shadow-pink-100 hover:bg-pink-600 transition-all uppercase text-sm">重新洗牌</button>
+                            <button id="resetBtn" class="w-full py-3 text-gray-300 font-bold hover:text-pink-400 transition-all theme-secondary-btn italic uppercase text-[10px] font-black">更换拼图素材</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.3s">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">🎯</span>
+                游戏规则
+            </h2>
+            <div class="bg-white rounded-3xl p-8 shadow-sm border border-pink-50 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-full blur-3xl -mr-10 -mt-10 opacity-50"></div>
+                <div class="grid md:grid-cols-2 gap-8 relative z-10 text-xs text-gray-500 font-medium italic leading-relaxed">
+                    <p>1. <b>移动逻辑：</b>点击任何与空白格（带有阴影的凹陷区域）相邻的图片碎片，即可将其推入空白位置。</p>
+                    <p>2. <b>终极目标：</b>利用这唯一的空白位，不断挪移碎片，最终还原出右侧“参考原图”所呈现的完整秩序。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-10 text-center text-gray-400 text-xs border-t border-pink-50 mt-12 bg-white/50">
+        © 2026 小Q工具箱 · 拼图实验室 💖
+    </footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadStage = document.getElementById('upload-stage');
+        const editorStage = document.getElementById('editor-stage');
+        const puzzleBoard = document.getElementById('puzzle-board');
+        const gridSizeSelect = document.getElementById('grid-size');
+        const refImage = document.getElementById('ref-image');
+        const shuffleBtn = document.getElementById('shuffleBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const moveCountText = document.getElementById('move-count');
+        const timerText = document.getElementById('timer');
+
+        let originalImg = new Image(), tiles = [], emptySlot = { row: 0, col: 0 }, moves = 0, seconds = 0, timerInterval = null, isSolved = false;
+
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.getElementById('drop-zone').onclick = () => fileInput.click();
+
+        fileInput.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const url = await Utils.readFileAsDataURL(file);
+            originalImg.src = url; refImage.src = url;
+            originalImg.onload = () => {
+                uploadStage.classList.add('hidden');
+                editorStage.classList.remove('hidden');
+                editorStage.classList.add('flex');
+                initGame();
+            };
+        };
+
+        gridSizeSelect.onchange = () => initGame();
+
+        function initGame() {
+            const size = parseInt(gridSizeSelect.value);
+            puzzleBoard.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+            puzzleBoard.style.gridTemplateRows = `repeat(${size}, 1fr)`;
+            tiles = []; moves = 0; seconds = 0; isSolved = false;
+            moveCountText.innerText = '0'; timerText.innerText = '00:00';
+            clearInterval(timerInterval);
+            const tw = originalImg.width / size, th = originalImg.height / size;
+            for (let r = 0; r < size; r++) {
+                for (let c = 0; c < size; c++) {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 200; canvas.height = 200;
+                    const ctx = canvas.getContext('2d');
+                    if (r === size - 1 && c === size - 1) {
+                        tiles.push({ canvas: null, r, c, curR: r, curC: c });
+                        emptySlot = { row: r, col: c };
+                    } else {
+                        ctx.drawImage(originalImg, c * tw, r * th, tw, th, 0, 0, 200, 200);
+                        tiles.push({ canvas, r, c, curR: r, curC: c });
+                    }
+                }
+            }
+            shuffleTiles(); renderBoard(); startTimer();
+        }
+
+        function shuffleTiles() {
+            const size = parseInt(gridSizeSelect.value);
+            for(let i=0; i<size*size*30; i++) {
+                const neighbors = getNeighbors(emptySlot.row, emptySlot.col, size);
+                const rand = neighbors[Math.floor(Math.random() * neighbors.length)];
+                swap(emptySlot.row, emptySlot.col, rand.row, rand.col);
+            }
+            moves = 0;
+        }
+
+        function getNeighbors(r, c, size) {
+            const res = [];
+            if(r > 0) res.push({row: r-1, col: c});
+            if(r < size - 1) res.push({row: r+1, col: c});
+            if(c > 0) res.push({row: r, col: c-1});
+            if(c < size - 1) res.push({row: r, col: c+1});
+            return res;
+        }
+
+        function swap(r1, c1, r2, c2) {
+            const t1 = tiles.find(t => t.curR === r1 && t.curC === c1), t2 = tiles.find(t => t.curR === r2 && t.curC === c2);
+            t1.curR = r2; t1.curC = c2; t2.curR = r1; t2.curC = c1;
+            if(!t1.canvas) emptySlot = {row: r2, col: c2}; if(!t2.canvas) emptySlot = {row: r1, col: c1};
+        }
+
+        function renderBoard() {
+            puzzleBoard.innerHTML = ''; const size = parseInt(gridSizeSelect.value);
+            const sorted = [...tiles].sort((a,b) => (a.curR * size + a.curC) - (b.curR * size + b.curC));
+            sorted.forEach(tile => {
+                const div = document.createElement('div');
+                if (tile.canvas) {
+                    div.className = "puzzle-tile w-full h-full bg-white cursor-pointer";
+                    const img = document.createElement('img'); img.src = tile.canvas.toDataURL(); img.className = "w-full h-full object-cover";
+                    div.appendChild(img); div.onclick = () => handleTileClick(tile.curR, tile.curC);
+                } else {
+                    div.className = "empty-slot w-full h-full";
+                }
+                puzzleBoard.appendChild(div);
+            });
+        }
+
+        function handleTileClick(r, c) {
+            if(isSolved) return;
+            if(Math.abs(r - emptySlot.row) + Math.abs(c - emptySlot.col) === 1) {
+                swap(r, c, emptySlot.row, emptySlot.col);
+                moves++; moveCountText.innerText = moves; renderBoard(); checkWin();
+            }
+        }
+
+        function checkWin() {
+            if(tiles.every(t => t.r === t.curR && t.c === t.curC)) {
+                isSolved = true; clearInterval(timerInterval);
+                Utils.toast(`恭喜！用时${timerText.innerText}，步数${moves}。`, 'success');
+                tiles.forEach(t => {
+                    if(!t.canvas) {
+                        const size = parseInt(gridSizeSelect.value);
+                        const canvas = document.createElement('canvas'); canvas.width = 200; canvas.height = 200;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(originalImg, (size-1)*(originalImg.width/size), (size-1)*(originalImg.height/size), originalImg.width/size, originalImg.height/size, 0, 0, 200, 200);
+                        t.canvas = canvas;
+                    }
+                });
+                renderBoard();
+            }
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                seconds++;
+                const m = Math.floor(seconds/60).toString().padStart(2,'0'), s = (seconds%60).toString().padStart(2,'0');
+                timerText.innerText = `${m}:${s}`;
+            }, 1000);
+        }
+
+        shuffleBtn.onclick = () => initGame();
+        resetBtn.onclick = () => { location.reload(); };
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

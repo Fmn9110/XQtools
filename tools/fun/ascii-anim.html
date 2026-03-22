@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ASCII动画播放器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🎬 ASCII <span class="gradient-text">动画播放器</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">用文字符号编织出的动态艺术，重温复古极客情怀。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            <div class="bg-gray-900 rounded-[2rem] p-6 md:p-8 mb-8 overflow-hidden shadow-2xl relative border-4 border-gray-800">
+                <div class="absolute top-2 right-4 flex gap-1">
+                    <div class="w-2 h-2 rounded-full bg-red-400"></div>
+                    <div class="w-2 h-2 rounded-full bg-yellow-400"></div>
+                    <div class="w-2 h-2 rounded-full bg-green-400"></div>
+                </div>
+                <pre id="screen" class="text-pink-400 font-mono text-[10px] md:text-sm whitespace-pre text-center leading-tight flex items-center justify-center min-h-[300px]"></pre>
+            </div>
+            
+            <div class="flex gap-3 flex-wrap justify-center mb-8">
+                <button onclick="playAnim('cat')" class="px-6 py-3 rounded-2xl bg-pink-50 text-pink-500 font-bold hover:bg-pink-100 transition-all border border-pink-100 flex items-center gap-2">🐱 呆萌猫咪</button>
+                <button onclick="playAnim('fish')" class="px-6 py-3 rounded-2xl bg-blue-50 text-blue-500 font-bold hover:bg-blue-100 transition-all border border-blue-100 flex items-center gap-2">🐟 灵动小鱼</button>
+                <button onclick="playAnim('wave')" class="px-6 py-3 rounded-2xl bg-cyan-50 text-cyan-500 font-bold hover:bg-cyan-100 transition-all border border-cyan-100 flex items-center gap-2">🌊 赛博波纹</button>
+                <button onclick="playAnim('fire')" class="px-6 py-3 rounded-2xl bg-orange-50 text-orange-500 font-bold hover:bg-orange-100 transition-all border border-orange-100 flex items-center gap-2">🔥 像素火焰</button>
+                <button onclick="stopAnim()" class="theme-secondary-btn px-6 py-3">⏹ 停止播放</button>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.3s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">📖</span>
+                    科普小知识
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50">
+                    <div class="font-bold text-gray-700 mb-2">什么是ASCII动画？</div>
+                    <p class="text-gray-600 text-sm leading-relaxed">用文字、数字及各种符号组合而成的动画。在早期的计算机世界中，这是极客们展示创意的独特方式。</p>
+                </div>
+            </section>
+            <section class="animate-item" style="animation-delay: 0.4s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">🛠️</span>
+                    使用技巧
+                </h2>
+                <div class="space-y-4">
+                    <div class="bg-white p-6 rounded-2xl border border-pink-50 shadow-sm">
+                        <p class="text-gray-500 text-sm leading-relaxed">点击上方的图标切换不同的动画效果。移动端由于屏幕限制，建议横屏观看以获得最佳视觉体验。</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const screen = document.getElementById('screen');
+        let timer = null;
+        const anims = {
+            cat: [
+`  /\\_/\\  
+ ( o.o ) 
+  > ^ <  
+ /|   |\\`,
+`  /\\_/\\  
+ ( -.- ) 
+  > ^ <  
+ /|   |\\`,
+`  /\\_/\\  
+ ( o.o ) 
+  > w <  
+ /|   |\\`,
+`  /\\_/\\  
+ ( ^.^ ) 
+  > ^ <  
+  |   |  `],
+            fish: [],
+            wave: [],
+            fire: []
+        };
+        // 动态生成鱼动画帧
+        for (let f = 0; f < 8; f++) {
+            const pad = ' '.repeat(f * 3);
+            anims.fish.push(`${pad}       ><(((º>\n${' '.repeat(24 - f*3)}><(((º>\n${pad}    ><(((º>`);
+        }
+        // 生成海浪帧
+        for (let f = 0; f < 6; f++) {
+            let line = '';
+            for (let i = 0; i < 30; i++) {
+                line += Math.sin((i + f * 2) * 0.5) > 0 ? '~' : '-';
+            }
+            let line2 = '';
+            for (let i = 0; i < 30; i++) {
+                line2 += Math.sin((i + f * 2 + 3) * 0.5) > 0 ? '~' : '_';
+            }
+            anims.wave.push(`${line}\n${line2}\n${line}\n${line2}`);
+        }
+        // 生成火焰帧
+        const fireChars = [' ','.',':','*','#','@'];
+        for (let f = 0; f < 6; f++) {
+            let frame = '';
+            for (let y = 0; y < 8; y++) {
+                let row = '';
+                for (let x = 0; x < 20; x++) {
+                    const dist = Math.abs(x - 10) + y;
+                    const intensity = Math.max(0, 5 - dist + Math.floor(Math.random()*3) + (f%2));
+                    row += fireChars[Math.min(5, Math.max(0, intensity))];
+                }
+                frame += row + '\n';
+            }
+            anims.fire.push(frame);
+        }
+
+        function playAnim(name) {
+            stopAnim();
+            const frames = anims[name];
+            let i = 0;
+            screen.textContent = frames[0];
+            timer = setInterval(() => {
+                i = (i + 1) % frames.length;
+                screen.textContent = frames[i];
+            }, 400);
+            Utils.toast('正在播放: ' + name, 'info');
+        }
+
+        function stopAnim() { if (timer) { clearInterval(timer); timer = null; Utils.toast('播放停止', 'info'); } }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+            playAnim('cat');
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

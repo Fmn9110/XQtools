@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>身份证校验 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body>
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white/80 backdrop-blur-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 transition-transform hover:rotate-0">
+                    Q
+                </div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <div class="hidden md:flex space-x-6 text-gray-500 text-sm font-semibold">
+                <a href="../../index.html" class="hover:text-pink-500 transition-colors">首页</a>
+                <a href="../../categories.html" class="hover:text-pink-500 transition-colors">全部分类</a>
+                <a href="../../tools.html" class="hover:text-pink-500 transition-colors">所有工具</a>
+            </div>
+            <div class="md:hidden">
+                <a href="../../tools.html" class="text-gray-400 hover:text-pink-500 transition-colors">
+                    <span class="text-2xl">🛠️</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-2xl text-center">
+        <header class="mb-12 animate-item">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 text-gradient">身份证校验器</h1>
+            <p class="text-gray-500 italic text-sm md:text-base">基于加权因子与校验码算法，快速验证居民身份证号码的真实性。🛂</p>
+        </header>
+
+            <input type="text" id="idInput" maxlength="18" class="w-full p-6 bg-white border-2 border-pink-50 rounded-3xl text-2xl font-black text-center outline-none focus:border-pink-200 mb-8 transition-all" placeholder="输入18位身份证号">
+            
+            <div id="resBox" class="hidden p-6 rounded-2xl transition-all">
+                 <p id="resMsg" class="font-bold text-sm"></p>
+                 <div id="resDetail" class="mt-4 text-[10px] text-gray-400 space-y-1"></div>
+            </div>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const input = document.getElementById('idInput');
+        const box = document.getElementById('resBox');
+        const msg = document.getElementById('resMsg');
+        const detail = document.getElementById('resDetail');
+
+        const city = {11:"北京",12:"天津",13:"河北",14:"山西",15:"内蒙古",21:"辽宁",22:"吉林",23:"黑龙江 ",31:"上海",32:"江苏",33:"浙江",34:"安徽",35:"福建",36:"江西",37:"山东",41:"河南",42:"湖北 ",43:"湖南",44:"广东",45:"广西",46:"海南",50:"重庆",51:"四川",52:"贵州",53:"云南",54:"西藏 ",61:"陕西",62:"甘肃",63:"青海",64:"宁夏",65:"新疆",71:"台湾",81:"香港",82:"澳门",91:"国外 "};
+
+        input.oninput = () => {
+            const code = input.value.trim().toUpperCase();
+            if(code.length < 18) {
+                box.classList.add('hidden');
+                return;
+            }
+
+            box.classList.remove('hidden');
+            let pass = true;
+            let info = "";
+
+            if (!code || !/^\d{6}(18|19|20)?\d{2}(0[1-9]|1[012])(0[1-9]|[12]\d|3[01])\d{3}(\d|X)$/i.test(code)) {
+                pass = false;
+                info = "格式错误";
+            } else if (!city[code.substr(0,2)]) {
+                pass = false;
+                info = "省份代码非法";
+            } else {
+                // Checksum
+                const factor = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];
+                const parity = [1, 0, 'X', 9, 8, 7, 6, 5, 4, 3, 2];
+                let sum = 0;
+                for (let i = 0; i < 17; i++) {
+                    sum += code[i] * factor[i];
+                }
+                if (parity[sum % 11] != code[17]) {
+                    pass = false;
+                    info = "校验码错误";
+                }
+            }
+
+            if(pass) {
+                box.className = "p-6 rounded-2xl bg-green-50 border border-green-100 flex flex-col items-center animate-bounce-subtle";
+                msg.className = "font-bold text-green-600 text-sm";
+                msg.innerText = "✅ 有效身份证号码";
+                const birth = code.substr(6, 4) + "-" + code.substr(10, 2) + "-" + code.substr(12, 2);
+                const sex = code[16] % 2 === 0 ? "女" : "男";
+                detail.innerHTML = `<p>省份：${city[code.substr(0, 2)]}</p><p>生日：${birth}</p><p>性别：${sex}</p>`;
+            } else {
+                box.className = "p-6 rounded-2xl bg-red-50 border border-red-100";
+                msg.className = "font-bold text-red-500 text-sm";
+                msg.innerText = "❌ 解析失败：" + info;
+                detail.innerHTML = "";
+            }
+        };
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

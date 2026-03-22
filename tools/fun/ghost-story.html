@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>鬼故事生成器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">👻 鬼故事 <span class="gradient-text">生成器</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">收集都市传说中的“冷知识”。深夜胆小者请在开灯状态下观看。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white text-center animate-item" style="animation-delay: 0.2s">
+            <div class="flex flex-col items-center mb-12">
+                <div class="w-24 h-24 bg-pink-50 rounded-full flex items-center justify-center text-5xl mb-6 shadow-inner animate-pulse">🎃</div>
+                <button onclick="gen()" class="theme-download-btn w-full max-w-md py-5 text-xl">👻 召唤一段都市传说</button>
+            </div>
+            
+            <div id="storyBox" class="hidden mt-6 animate-item">
+                <div class="bg-gray-900 rounded-[2.5rem] p-8 md:p-12 text-left relative overflow-hidden group">
+                    <!-- Spooky overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-indigo-900/20 to-pink-900/10 pointer-events-none"></div>
+                    <div class="absolute -top-10 -right-10 text-9xl opacity-10 group-hover:-translate-x-5 transition-transform">🕸️</div>
+                    
+                    <p class="text-gray-200 leading-relaxed text-lg md:text-xl font-serif md:font-black relative z-10 whitespace-pre-wrap" id="ghostStory"></p>
+                    
+                    <div class="mt-10 pt-8 border-t border-gray-800 w-full flex justify-between items-center relative z-10">
+                        <span class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Midnight Edition / 午夜版本</span>
+                        <button onclick="copyStory()" class="text-[10px] font-black text-pink-400 hover:text-pink-300 transition-colors uppercase tracking-widest">📋 复制故事</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.5s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">📖</span>
+                    恐惧的魅力
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50 leading-relaxed text-gray-600 text-sm">
+                    <p>怪谈文化是人类想象力在暗处的延伸。它们往往折射出当代社会的焦虑或古老的道德教训。在安全的空间阅读这些故事，能释放压力，触发多巴胺的独特快感。</p>
+                </div>
+            </section>
+            <section class="animate-item" style="animation-delay: 0.6s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">✨</span>
+                    关于“生成”
+                </h2>
+                <div class="bg-white p-6 rounded-2xl border border-pink-50 shadow-sm leading-relaxed text-gray-500 text-sm">
+                    <p>这里的每一个故事都经过精挑细选或算法合成，力求在不过度血腥的前提下，营造一种意料之外的心理悬疑感。祝你阅读愉快——如果你还敢读下一篇的话。💖</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        function pick(a){return a[Math.floor(Math.random()*a.length)];}
+        const stories = [
+            '昨晚加班到很晚，办公楼里只剩我一个人。正准备走的时候，身后传来咔嗒咔嗒的键盘声。我回头看了一眼——所有工位都是空的。但当我转回来，我的屏幕上多了一行字："别回头。"',
+            '搬进新家的第一晚，我数了一下卧室的门：三扇。奇怪，看房的时候明明只有两扇。第二天早上起来，又变回了两扇。但多出的那扇门后面，我看到了什么？我不再敢看。',
+            '小时候玩捉迷藏，我藏在衣柜里。透过缝隙，我看到"找"的那个人数完数走了。衣柜里很暗，我等了很久。然后我感觉到，我身后的墙壁其实是一个冰冷的背。',
+            '我有个习惯，睡前会把拖鞋摆成齐整的一字形。但最近每天早上起来，拖鞋都变成了对着床边缘、像是有人刚穿上走下来的样子。我独居，但我不敢去查监控。',
+            '地铁末班车。车厢里只有我和对面座位的一个人。她一直低着头看手机。到站离开，我回头道别——这时我才发现，她其实是倒坐在椅子上，头转向了背面。',
+            '我家的镜子在半夜会起雾，即便我没洗澡。有一天，雾气上出现了一个极其熟悉的手印，大小和位置，正好对应着我昨晚睡觉时捂着镜子的手。',
+        ];
+
+        function gen() {
+            document.getElementById('ghostStory').innerText = pick(stories);
+            document.getElementById('storyBox').classList.remove('hidden');
+            Utils.toast('故事契约已达成 🕯️', 'success');
+            
+            setTimeout(() => {
+                document.getElementById('storyBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 300);
+        }
+
+        function copyStory() {
+            const text = document.getElementById('ghostStory').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                Utils.toast('故事已复制到剪贴板 🖤', 'success');
+            });
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

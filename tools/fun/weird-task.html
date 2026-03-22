@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>奇葩任务 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🤪 搞怪 <span class="gradient-text">奇葩任务</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">打破平庸的日常。生成一个奇思妙想，让生活增加一点“怪趣”。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white flex flex-col items-center animate-item shadow-2xl" style="animation-delay: 0.2s">
+            
+            <div class="w-full bg-gradient-to-br from-yellow-50/50 to-amber-50/50 rounded-[3rem] p-10 mb-10 border-2 border-yellow-100 min-h-[260px] flex flex-col items-center justify-center relative overflow-hidden group shadow-inner">
+                <div id="emoji" class="text-8xl mb-6 drop-shadow-lg transition-transform group-hover:rotate-12">🤪</div>
+                <p id="task" class="text-2xl md:text-3xl font-black text-gray-800 text-center leading-relaxed relative z-10">
+                    等待任务派发...
+                </p>
+                <div id="acceptBadge" class="hidden absolute top-6 right-6 bg-emerald-500 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg animate-bounce">Accepted</div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 w-full max-w-md">
+                <button onclick="gen()" class="flex-1 py-5 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-2xl shadow-xl shadow-amber-100 transition-all active:scale-95 text-lg">
+                    🔄 换个搞怪
+                </button>
+                <button onclick="accept()" id="accBtn" class="flex-1 py-5 bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-2xl shadow-xl shadow-emerald-100 transition-all active:scale-95 text-lg">
+                    ✅ 接受挑战
+                </button>
+            </div>
+            <p class="mt-8 text-sm font-bold text-emerald-600 h-6" id="msg"></p>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>生活中有时需要一点“不合理”的跳跃。这些任务旨在带给你一秒钟的快乐或是一个会心的微笑。请记住，所有的挑战都是为了让你跳出舒适区。加油完成它，我的朋友！💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const tasks=[
+            {e:'🙃',t:'用左手写自己的名字'},
+            {e:'🤳',t:'给最近的联系人发一句"今天的月亮真圆"'},
+            {e:'🕺',t:'站起来原地转三圈'},
+            {e:'🎵',t:'大声唱出你现在脑海里的第一首歌'},
+            {e:'🤡',t:'做一个鬼脸并保持10秒'},
+            {e:'📞',t:'给一个很久没联系的朋友发条消息'},
+            {e:'🧘',t:'闭眼深呼吸10次'},
+            {e:'🐔',t:'学鸡叫三声'},
+            {e:'💪',t:'做10个俯卧撑'},
+            {e:'🍎',t:'现在就去喝一杯水'},
+            {e:'📖',t:'打开一本书，读第42页的第3行'},
+            {e:'🧹',t:'整理一下你的桌面（真实桌面）'},
+            {e:'🐱',t:'对着镜子学猫叫并自拍一张'},
+            {e:'🦁',t:'学狮子吼一声，要很有气势的那种'}
+        ];
+
+        let idx=0;
+        function shuffle(){for(let i=tasks.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[tasks[i],tasks[j]]=[tasks[j],tasks[i]];}}
+        shuffle();
+
+        function gen(){
+            const out = document.getElementById('task');
+            const em = document.getElementById('emoji');
+            const msg = document.getElementById('msg');
+            const badge = document.getElementById('acceptBadge');
+            
+            out.style.opacity = '0';
+            out.style.transform = 'translateY(10px)';
+            badge.classList.add('hidden');
+            msg.textContent = '';
+            
+            setTimeout(() => {
+                const t = tasks[idx % tasks.length];
+                em.textContent = t.e;
+                out.textContent = t.t;
+                out.style.opacity = '1';
+                out.style.transform = 'translateY(0)';
+                out.style.transition = 'all 0.4s ease-out';
+                idx++;
+                Utils.toast('新任务已派发 ✨', 'info');
+            }, 300);
+        }
+
+        function accept(){
+            document.getElementById('msg').textContent = '🎉 好棒！挑战进行中，加油！';
+            document.getElementById('acceptBadge').classList.remove('hidden');
+            Utils.toast('勇士，祝你好运！💪', 'success');
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+            gen();
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy  -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

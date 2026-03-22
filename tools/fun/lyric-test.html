@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>歌词填空 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🎤 歌词 <span class="gradient-text">填空挑战</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">唤醒你的音乐记忆。补全那些心动的歌词片段。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            <div class="bg-gradient-to-br from-purple-50/50 to-pink-50/50 rounded-3xl p-8 mb-8 border-2 border-purple-100 shadow-inner group relative overflow-hidden">
+                <div class="absolute -top-6 -right-6 text-6xl text-purple-200/20 group-hover:scale-110 transition-transform">🎵</div>
+                <p class="text-[10px] font-black text-purple-300 uppercase tracking-widest mb-2" id="songInfo">加载中...</p>
+                <p class="text-xl md:text-2xl font-black text-gray-700 leading-relaxed" id="lyricQ">正在准备曲库...</p>
+            </div>
+
+            <div class="relative mb-8 group">
+                <input type="text" id="answer" placeholder="请填写缺失的歌词" 
+                    class="w-full p-6 bg-gray-50/50 rounded-2xl border-2 border-transparent focus:border-purple-200 outline-none text-center text-xl font-bold text-gray-700 transition-all shadow-inner">
+                <label class="block text-[10px] font-black text-gray-300 uppercase tracking-widest mt-3 text-center">Fill in the missing part / 填写缺失文案</label>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button onclick="checkAns()" class="w-full py-4 bg-purple-500 hover:bg-purple-600 text-white font-black rounded-2xl shadow-lg shadow-purple-100 transition-all active:scale-95">✅ 提交校验</button>
+                <button onclick="showAns()" class="w-full py-4 bg-white border-2 border-purple-50 text-purple-400 hover:border-purple-200 font-black rounded-2xl transition-all active:scale-95">💡 查看答案</button>
+                <button onclick="nextSong()" class="w-full py-4 bg-indigo-50 text-indigo-500 hover:bg-indigo-100 font-black rounded-2xl transition-all active:scale-95">➡️ 下一题</button>
+            </div>
+
+            <div id="feedback" class="hidden mt-8 rounded-2xl p-6 text-center font-black animate-item"></div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🎧</span>
+                <p>音乐是跨越时空的语言。那些曾让你循环播放的旋律，是否还刻在记忆里？如果遇到答不出来的题目，不妨再去重温一下原曲，或许会有新的感悟。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const songs = [
+            {song:'《晴天》周杰伦',lyric:'从前从前 有个人爱你很久 但____偏偏 风渐渐把距离吹得好远',ans:'偏偏'},
+            {song:'《平凡之路》朴树',lyric:'我曾经跨过山和大海 也穿过____',ans:'人山人海'},
+            {song:'《小幸运》田馥甄',lyric:'我听见雨滴落在青青草地 我听见远方下课____响起',ans:'钟声'},
+            {song:'《体面》于文文',lyric:'来不及回首说一声____',ans:'再见'},
+            {song:'《后来》刘若英',lyric:'后来 我总算学会了如何去____',ans:'爱'},
+            {song:'《起风了》买辣椒也用券',lyric:'我曾将青春翻涌成她 也曾指尖弹出____',ans:'盛夏'},
+            {song:'《消愁》毛不易',lyric:'一杯敬朝阳 一杯敬____',ans:'月光'},
+            {song:'《告白气球》周杰伦',lyric:'亲爱的 爱上你 从那天起 ____是很甜蜜',ans:'幸福'},
+        ];
+
+        let idx = 0;
+        function shuffle(){for(let i=songs.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[songs[i],songs[j]]=[songs[j],songs[i]];}}
+        shuffle();
+
+        function show(){
+            const s = songs[idx % songs.length];
+            const fb = document.getElementById('feedback');
+            
+            fb.classList.add('hidden');
+            fb.style.opacity = '0';
+            fb.style.transform = 'translateY(10px)';
+            
+            document.getElementById('songInfo').textContent = s.song;
+            document.getElementById('lyricQ').textContent = s.lyric;
+            document.getElementById('answer').value = '';
+            document.getElementById('answer').focus();
+        }
+
+        function checkAns(){
+            const userAns = document.getElementById('answer').value.trim();
+            const correct = songs[idx % songs.length].ans;
+            const fb = document.getElementById('feedback');
+            
+            fb.classList.remove('hidden');
+            setTimeout(() => {
+                fb.style.opacity = '1';
+                fb.style.transform = 'translateY(0)';
+            }, 50);
+
+            if(userAns === correct){
+                fb.className = 'mt-8 rounded-2xl p-6 text-center font-black bg-green-50 text-green-600 border border-green-100 shadow-sm transition-all duration-300';
+                fb.innerHTML = '✨ 太棒了！回答正确 🎉';
+                Utils.toast('回答正确！', 'success');
+            } else {
+                fb.className = 'mt-8 rounded-2xl p-6 text-center font-black bg-rose-50 text-rose-600 border border-rose-100 shadow-sm transition-all duration-300';
+                fb.innerHTML = `再想想哦，或者偷偷看答案吧 💡`;
+                Utils.toast('再试一次吧', 'info');
+            }
+        }
+
+        function showAns(){
+            const fb = document.getElementById('feedback');
+            const correct = songs[idx % songs.length].ans;
+            
+            fb.classList.remove('hidden');
+            fb.style.opacity = '1';
+            fb.style.transform = 'translateY(0)';
+            fb.className = 'mt-8 rounded-2xl p-6 text-center font-black bg-indigo-50 text-indigo-600 border border-indigo-100 shadow-sm';
+            fb.innerHTML = `💡 正确答案：<span class="text-xl underline underline-offset-8">${correct}</span>`;
+            Utils.toast('灵光一现 ✨', 'success');
+        }
+
+        function nextSong(){
+            idx++;
+            show();
+            Utils.toast('切歌成功 🎵', 'info');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', show);
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

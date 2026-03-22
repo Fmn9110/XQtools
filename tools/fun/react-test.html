@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>反应力测试 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        .test-box {
+            width: 100%;
+            max-width: 400px;
+            aspect-ratio: 1;
+            border-radius: 3rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            user-select: none;
+            border: 8px solid white;
+            box-shadow: 0 30px 60px -12px rgba(0,0,0,0.1);
+        }
+        .test-box:active {
+            transform: scale(0.95);
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">⚡ 极速 <span class="gradient-text">反应力挑战</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">看到绿色立刻点击！测测你的反应速度是否能超越闪电。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white flex flex-col items-center animate-item shadow-2xl" style="animation-delay: 0.2s">
+            
+            <div id="box" class="test-box bg-rose-400 mb-10" onclick="handleClick()">
+                <div id="boxIcon" class="text-6xl mb-4">🎯</div>
+                <p id="boxText" class="text-white font-black text-xl px-6 text-center">点击这里开始</p>
+            </div>
+
+            <div class="w-full max-w-md">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Recent Records / 最近记录</span>
+                    <button onclick="clearHistory()" class="text-[10px] font-black text-gray-300 hover:text-rose-400 uppercase tracking-widest transition-colors">Reset</button>
+                </div>
+                <div class="grid grid-cols-3 gap-3" id="history">
+                    <!-- history pills -->
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>反应速度受神经传导和生理状态影响。人类平均反应速度约为 250-280 毫秒。如果你能持续进入 200 毫秒以内，那你绝对拥有顶级电竞选手的潜质！请注意：请勿提前预判点击哦。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let state = 'idle'; // idle -> waiting -> ready -> result
+        let timer = null;
+        let startTime = 0;
+        let results = [];
+
+        const box = document.getElementById('box');
+        const text = document.getElementById('boxText');
+        const icon = document.getElementById('boxIcon');
+        const historyCtn = document.getElementById('history');
+
+        function handleClick() {
+            if (state === 'idle' || state === 'result') {
+                state = 'waiting';
+                box.className = 'test-box bg-amber-400';
+                icon.innerText = '⏳';
+                text.textContent = '等待变绿...不要提前点！';
+                
+                timer = setTimeout(() => {
+                    state = 'ready';
+                    box.className = 'test-box bg-emerald-400';
+                    icon.innerText = '⚡';
+                    text.textContent = '立刻点击！';
+                    startTime = Date.now();
+                }, 2000 + Math.random() * 3000);
+            } else if (state === 'waiting') {
+                clearTimeout(timer);
+                state = 'result';
+                box.className = 'test-box bg-rose-500';
+                icon.innerText = '❌';
+                text.textContent = '太早了！点击重试';
+                Utils.toast('别急，少年 ☕', 'warning');
+            } else if (state === 'ready') {
+                const time = Date.now() - startTime;
+                state = 'result';
+                results.unshift(time);
+                if (results.length > 6) results.pop();
+                
+                let color, rank, emoji;
+                if (time < 200) { color='bg-indigo-500'; rank='闪电速度！'; emoji='⚡'; }
+                else if (time < 300) { color='bg-sky-500'; rank='非常优秀！'; emoji='🚀'; }
+                else if (time < 400) { color='bg-emerald-500'; rank='表现不错'; emoji='👍'; }
+                else { color='bg-orange-500'; rank='还可以更快'; emoji='🐢'; }
+                
+                box.className = `test-box ${color}`;
+                icon.innerText = emoji;
+                text.innerHTML = `<span class="text-4xl block mb-2">${time}ms</span><span class="text-sm opacity-80">${rank}</span><br><span class="text-[10px] uppercase tracking-widest mt-2 block">Retry</span>`;
+                
+                renderHistory();
+                Utils.toast(`反应时间: ${time}ms ✨`, 'success');
+            }
+        }
+
+        function renderHistory() {
+            historyCtn.innerHTML = results.map(r => `
+                <div class="bg-gray-50 rounded-xl p-3 text-center border-2 border-transparent hover:border-pink-100 transition-all shadow-inner">
+                    <span class="font-black text-gray-700 text-sm">${r}ms</span>
+                </div>
+            `).join('');
+        }
+
+        function clearHistory() {
+            results = [];
+            renderHistory();
+            state = 'idle';
+            box.className = 'test-box bg-rose-400';
+            icon.innerText = '🎯';
+            text.textContent = '点击这里开始';
+            Utils.toast('记录已重置 ✨', 'info');
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy  -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

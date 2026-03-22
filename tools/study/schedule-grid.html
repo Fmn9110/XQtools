@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>课程表 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        @media print { .no-print { display: none !important; } .cute-card { box-shadow: none !important; padding: 0 !important; } table { border-spacing: 2px !important; } }
+        [contenteditable]:focus { background: #fffcfd; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6 shadow-sm no-print">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-7xl text-center">
+        <header class="mb-10 md:mb-14 no-print">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-800 mb-4 animate-item">彩色学术时间矩阵</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s italic">点击格子即可自由编辑，打造专属于你的学术生产力地图。🗂️</p>
+        </header>
+
+        <section class="cute-card p-4 md:p-10 bg-white shadow-2xl mb-12 overflow-x-auto animate-item" style="animation-delay: 0.2s">
+            <table class="w-full min-w-[900px] border-separate border-spacing-2">
+                <thead>
+                    <tr>
+                        <th class="p-6 bg-pink-50/20 rounded-[2rem] text-[10px] font-black text-pink-300 uppercase tracking-widest w-28">Schedule</th>
+                        <th class="p-6 bg-slate-50/50 rounded-[2rem] font-black text-slate-700 uppercase tracking-tight text-sm">Mon</th>
+                        <th class="p-6 bg-slate-50/50 rounded-[2rem] font-black text-slate-700 uppercase tracking-tight text-sm">Tue</th>
+                        <th class="p-6 bg-slate-50/50 rounded-[2rem] font-black text-slate-700 uppercase tracking-tight text-sm">Wed</th>
+                        <th class="p-6 bg-slate-50/50 rounded-[2rem] font-black text-slate-700 uppercase tracking-tight text-sm">Thu</th>
+                        <th class="p-6 bg-slate-50/50 rounded-[2rem] font-black text-slate-700 uppercase tracking-tight text-sm">Fri</th>
+                        <th class="p-6 bg-slate-50/50 rounded-[2rem] font-black text-slate-700 uppercase tracking-tight text-sm">Sat</th>
+                        <th class="p-6 bg-slate-50/50 rounded-[2rem] font-black text-slate-700 uppercase tracking-tight text-sm text-pink-300">Sun</th>
+                    </tr>
+                </thead>
+                <tbody id="gridBody">
+                    <!-- Dynamic Rows -->
+                </tbody>
+            </table>
+        </section>
+        
+        <div class="flex flex-wrap justify-center gap-4 mb-14 no-print animate-item" style="animation-delay: 0.3s">
+            <button onclick="window.print()" class="px-10 py-5 bg-pink-400 text-white font-black rounded-3xl shadow-xl hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-lg flex items-center gap-3">
+                🖨️ 导出/打印课表 (PRINT)
+            </button>
+            <button onclick="clearAll()" class="px-8 py-5 bg-white border-2 border-pink-50 text-pink-400 font-black rounded-3xl hover:bg-pink-50 transition-all shadow-sm text-sm uppercase tracking-widest">
+                Clear Matrix 🧹
+            </button>
+        </div>
+
+        <footer class="text-gray-300 text-[10px] uppercase font-black tracking-[0.5em] pb-12 animate-item no-print" style="animation-delay: 0.4s">
+            Structured Learning & Time Management Matrix
+        </footer>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const gridBody = document.getElementById('gridBody');
+        const times = ["08:30 - EARLY", "10:30 - MID", "14:00 - AFTER", "16:15 - LATE", "19:00 - NIGHT"];
+        const palette = ['bg-rose-100', 'bg-sky-100', 'bg-violet-100', 'bg-amber-100', 'bg-emerald-100', 'bg-indigo-100', 'bg-pink-100', 'bg-orange-100'];
+
+        // Load data or Init
+        let scheduleData = JSON.parse(localStorage.getItem('qScheduleGrid') || '[]');
+
+        function init() {
+            gridBody.innerHTML = '';
+            times.forEach((t, rowIdx) => {
+                const tr = document.createElement('tr');
+                
+                // Time Column
+                const timeTd = document.createElement('td');
+                timeTd.className = "p-6 bg-pink-50/10 border-2 border-dashed border-pink-50 rounded-[2.5rem] font-mono text-[9px] font-black text-pink-300 flex flex-col items-center justify-center leading-tight h-32";
+                timeTd.innerHTML = `<span>${t.split(' - ')[0]}</span><span class="mt-2 opacity-40">${t.split(' - ')[1]}</span>`;
+                tr.appendChild(timeTd);
+
+                // Day Columns (Mon-Sun: 7 days)
+                for(let colIdx = 0; colIdx < 7; colIdx++) {
+                    const td = document.createElement('td');
+                    td.contentEditable = "true";
+                    td.className = "p-5 bg-slate-50/20 border-2 border-transparent rounded-[2.5rem] min-w-[120px] h-32 outline-none focus:bg-white focus:border-pink-100 focus:shadow-xl focus:scale-[1.03] transition-all text-xs font-black text-slate-700 text-center flex flex-col items-center justify-center relative group overflow-hidden";
+                    
+                    // Saved content
+                    const savedVal = scheduleData.find(d => d.r === rowIdx && d.c === colIdx);
+                    if(savedVal) {
+                        td.innerText = savedVal.v;
+                        if(savedVal.v) applyDecoration(td);
+                    }
+
+                    // Save on input
+                    td.oninput = () => {
+                        saveData(rowIdx, colIdx, td.innerText);
+                        if(td.innerText.trim()) {
+                            applyDecoration(td);
+                        } else {
+                            removeDecoration(td);
+                        }
+                    };
+
+                    tr.appendChild(td);
+                }
+                gridBody.appendChild(tr);
+            });
+        }
+
+        function applyDecoration(el) {
+            if(el.querySelector('.dec-dot')) return;
+            const dot = document.createElement('div');
+            dot.className = "dec-dot absolute top-4 right-4 w-2.5 h-2.5 rounded-full opacity-30 group-hover:opacity-100 transition-opacity " + palette[Math.floor(Math.random() * palette.length)];
+            el.appendChild(dot);
+        }
+
+        function removeDecoration(el) {
+            const dot = el.querySelector('.dec-dot');
+            if(dot) dot.remove();
+        }
+
+        function saveData(r, c, v) {
+            const idx = scheduleData.findIndex(d => d.r === r && d.c === c);
+            if(idx > -1) {
+                scheduleData[idx].v = v;
+            } else {
+                scheduleData.push({r, c, v});
+            }
+            localStorage.setItem('qScheduleGrid', JSON.stringify(scheduleData));
+        }
+
+        function clearAll() {
+            if(confirm('确定要清空整张课表吗？')) {
+                scheduleData = [];
+                localStorage.setItem('qScheduleGrid', JSON.stringify([]));
+                init();
+                Utils.toast('课表已重置 🗃️');
+            }
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    init();
+                }, 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button') || e.target.closest('td')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>公历农历转换 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50"><div class="container mx-auto flex justify-between items-center"><div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'"><div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div><span class="text-2xl font-bold gradient-text">小Q工具箱</span></div><a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a></div></nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">🌙 公历农历转换</h1>
+            <p class="text-gray-500">公历与农历日期互转，查看天干地支和属相</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="max-w-md mx-auto">
+                <label class="block text-xs font-bold text-gray-400 mb-2">选择公历日期</label>
+                <input type="date" id="solarDate" class="w-full p-4 bg-gray-50 rounded-xl border outline-none mb-4">
+                <button onclick="convert()" class="w-full py-4 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl text-lg">🔄 查询农历</button>
+            </div>
+            <div id="result" class="hidden mt-8 text-center">
+                <div class="bg-gradient-to-br from-red-100 to-yellow-100 rounded-3xl p-8">
+                    <p class="text-5xl font-black text-red-600 mb-2" id="rLunar"></p>
+                    <p class="text-lg text-gray-600" id="rTianGan"></p>
+                    <div class="grid grid-cols-2 gap-3 mt-4 max-w-sm mx-auto text-sm">
+                        <div class="bg-white/80 rounded-xl p-3"><span class="text-gray-400">属相</span><p class="text-2xl" id="rZodiac"></p></div>
+                        <div class="bg-white/80 rounded-xl p-3"><span class="text-gray-400">星期</span><p class="font-bold" id="rWeek"></p></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>选择公历日期。</li><li>查看对应的农历日期和属相。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">精确度如何？</div><div class="text-gray-500 text-sm">使用简化算法，适用于1900-2100年，可能与精确农历有1天偏差。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        // 简化农历数据(1900-2100)
+        const lunarInfo = [0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,0x0d950,0x16554,0x056a0,0x09ad0,0x055d2,0x04ae0,0x0a5b6,0x0a4d0,0x0d250,0x1d255,0x0b540,0x0d6a0,0x0ada2,0x095b0,0x14977,0x04970,0x0a4b0,0x0b4b5,0x06a50,0x06d40,0x1ab54,0x02b60,0x09570,0x052f2,0x04970,0x06566,0x0d4a0,0x0ea50,0x06e95,0x05ad0,0x02b60,0x186e3,0x092e0,0x1c8d7,0x0c950,0x0d4a0,0x1d8a6,0x0b550,0x056a0,0x1a5b4,0x025d0,0x092d0,0x0d2b2,0x0a950,0x0b557,0x06ca0,0x0b550,0x15355,0x04da0,0x0a5b0,0x14573,0x052b0,0x0a9a8,0x0e950,0x06aa0,0x0aea6,0x0ab50,0x04b60,0x0aae4,0x0a570,0x05260,0x0f263,0x0d950,0x05b57,0x056a0,0x096d0,0x04dd5,0x04ad0,0x0a4d0,0x0d4d4,0x0d250,0x0d558,0x0b540,0x0b6a0,0x195a6,0x095b0,0x049b0,0x0a974,0x0a4b0,0x0b27a,0x06a50,0x06d40,0x0af46,0x0ab60,0x09570,0x04af5,0x04970,0x064b0,0x074a3,0x0ea50,0x06b58,0x055c0,0x0ab60,0x096d5,0x092e0,0x0c960,0x0d954,0x0d4a0,0x0da50,0x07552,0x056a0,0x0abb7,0x025d0,0x092d0,0x0cab5,0x0a950,0x0b4a0,0x0baa4,0x0ad50,0x055d9,0x04ba0,0x0a5b0,0x15176,0x052b0,0x0a930,0x07954,0x06aa0,0x0ad50,0x05b52,0x04b60,0x0a6e6,0x0a4e0,0x0d260,0x0ea65,0x0d530,0x05aa0,0x076a3,0x096d0,0x04afb,0x04ad0,0x0a4d0,0x1d0b6,0x0d250,0x0d520,0x0dd45,0x0b5a0,0x056d0,0x055b2,0x049b0,0x0a577,0x0a4b0,0x0aa50,0x1b255,0x06d20,0x0ada0,0x14b63,0x09370,0x049f8,0x04970,0x064b0,0x168a6,0x0ea50,0x06b20,0x1a6c4,0x0aae0,0x092e0,0x0d2e3,0x0c960,0x0d557,0x0d4a0,0x0da50,0x05d55,0x056a0,0x0a6d0,0x055d4,0x052d0,0x0a9b8,0x0a950,0x0b4a0,0x0b6a6,0x0ad50,0x055a0,0x0aba4,0x0a5b0,0x052b0,0x0b273,0x06930,0x07337,0x06aa0,0x0ad50,0x14b55,0x04b60,0x0a570,0x054e4,0x0d160,0x0e968,0x0d520,0x0daa0,0x16aa6,0x056d0,0x04ae0,0x0a9d4,0x0a4d0,0x0d150,0x0f252,0x0d520];
+
+        const tianGan = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+        const diZhi = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+        const zodiacEmojis = ['🐭','🐮','🐯','🐰','🐲','🐍','🐴','🐑','🐵','🐔','🐕','🐷'];
+        const lunarMonths = ['正','二','三','四','五','六','七','八','九','十','冬','腊'];
+        const lunarDays = ['','初一','初二','初三','初四','初五','初六','初七','初八','初九','初十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十','廿一','廿二','廿三','廿四','廿五','廿六','廿七','廿八','廿九','三十'];
+        const weekdays = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+
+        function lYearDays(y){let s=348;for(let i=0x8000;i>0x8;i>>=1)s+=(lunarInfo[y-1900]&i)?1:0;return s+leapDays(y);}
+        function leapMonth(y){return lunarInfo[y-1900]&0xf;}
+        function leapDays(y){if(leapMonth(y))return(lunarInfo[y-1900]&0x10000)?30:29;return 0;}
+        function monthDays(y,m){return(lunarInfo[y-1900]&(0x10000>>m))?30:29;}
+
+        function solar2lunar(y,m,d) {
+            let offset = Math.floor((new Date(y,m-1,d) - new Date(1900,0,31)) / 86400000);
+            let ly=1900;
+            for(;ly<2101&&offset>0;ly++){let daysInLY=lYearDays(ly);if(offset<daysInLY)break;offset-=daysInLY;}
+            let lm=1,isLeap=false;const leap=leapMonth(ly);
+            for(;lm<13&&offset>0;lm++){
+                let days;
+                if(leap>0&&lm===(leap+1)&&!isLeap){--lm;isLeap=true;days=leapDays(ly);}
+                else{days=monthDays(ly,lm);}
+                if(isLeap&&lm===(leap+1))isLeap=false;
+                offset-=days;
+            }
+            if(offset===0&&leap>0&&lm===leap+1)if(isLeap){isLeap=false;}else{isLeap=true;--lm;}
+            if(offset<0){offset+=monthDays(ly,lm);--lm;}
+            const ld=offset+1;
+            return {year:ly,month:lm,day:ld,isLeap};
+        }
+
+        function convert() {
+            const dateStr = document.getElementById('solarDate').value;
+            if(!dateStr){alert('请选择日期');return;}
+            const [y,m,d] = dateStr.split('-').map(Number);
+            const lunar = solar2lunar(y,m,d);
+            const tg = tianGan[(lunar.year-4)%10];
+            const dz = diZhi[(lunar.year-4)%12];
+            const zodiacIdx = (lunar.year-4)%12;
+
+            document.getElementById('rLunar').textContent = `${lunarMonths[lunar.month-1]}月${lunarDays[lunar.day]}`;
+            document.getElementById('rTianGan').textContent = `${tg}${dz}年 · 农历${lunar.year}年`;
+            document.getElementById('rZodiac').textContent = zodiacEmojis[zodiacIdx];
+            document.getElementById('rWeek').textContent = weekdays[new Date(y,m-1,d).getDay()];
+            document.getElementById('result').classList.remove('hidden');
+        }
+
+        document.getElementById('solarDate').value = new Date().toISOString().slice(0,10);
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

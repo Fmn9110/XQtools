@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>哲学问题 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🤔 哲学 <span class="gradient-text">思辨之泉</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">于发问中触碰存在的边界。每一次思考都是灵魂的闪光。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-16 mb-12 bg-white animate-item text-center" style="animation-delay: 0.2s">
+            <div class="bg-gray-800 rounded-[3rem] p-10 md:p-20 mb-12 border-4 border-gray-700 shadow-2xl relative group overflow-hidden">
+                <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(white 1px, transparent 1px); background-size: 20px 20px;"></div>
+                
+                <p class="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em] mb-6">Deep Question / 深度拷问</p>
+                <div class="min-h-[120px] flex items-center justify-center">
+                    <p class="text-xl md:text-2xl font-bold text-gray-100 leading-relaxed max-w-xl" id="question">点击下方按钮，开启一场关于宇宙与自我的对话... 🧘‍♂️</p>
+                </div>
+                
+                <div class="mt-8 flex justify-center gap-1 opacity-20">
+                    <div class="w-1.5 h-1.5 bg-white rounded-full"></div>
+                    <div class="w-1.5 h-1.5 bg-white rounded-full"></div>
+                    <div class="w-1.5 h-1.5 bg-white rounded-full"></div>
+                </div>
+            </div>
+
+            <div class="flex justify-center">
+                <button onclick="genQ()" class="w-full max-w-sm py-5 bg-gray-900 hover:bg-black text-white font-black rounded-[2rem] shadow-xl shadow-gray-200 transition-all active:scale-95 text-xl flex items-center justify-center gap-2">
+                    💭 探寻下一个命题
+                </button>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>哲学并不是高悬在象牙塔里的学问，它是关于生活方式、价值判断和意义探寻的终极指南。当你开始怀疑、开始发问，你就已经踏上了智慧的旅途。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const questions = [
+            '如果一棵树在森林里倒下，但周围没有人听到，它是否发出了声音？',
+            '你如何证明你不是在做梦？也许此刻的一切都是虚幻的。',
+            '如果你能预知未来，你还有自由意志吗？',
+            '如果全世界的人都说谎，"诚实"还有意义吗？',
+            '你是因为快乐而微笑，还是因为微笑而快乐？',
+            '如果一艘船上的每一块木板都被替换过，它还是原来的那艘船吗？（忒修斯之船）',
+            '如果你可以成为任何人，你还会选择做自己吗？为什么？',
+            '时间真的存在，还是只是人类发明的概念？',
+            '如果整个宇宙只是更高维度存在的模拟，你会如何看待生命的意义？',
+            '语言是帮助我们思考的工具，还是限制我们思维的牢笼？',
+            '一个人如果失去了所有记忆，他还是他自己吗？',
+            '善恶是客观存在的，还是人为定义的？',
+            '如果机器人拥有了意识和情感，它们是否应该拥有权利？',
+            '你害怕死亡本身，还是害怕不存在的感觉？',
+            '美是客观的还是主观的？为什么人们对美的感受如此不同？',
+        ];
+        
+        let idx = 0;
+        function genQ() {
+            const out = document.getElementById('question');
+            
+            if(idx === 0) {
+                for(let i = questions.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [questions[i], questions[j]] = [questions[j], questions[i]];
+                }
+            }
+            
+            out.style.opacity = '0';
+            out.style.transform = 'translateY(10px)';
+            
+            setTimeout(() => {
+                out.textContent = questions[idx % questions.length];
+                idx++;
+                out.style.opacity = '1';
+                out.style.transform = 'translateY(0)';
+                out.style.transition = 'all 0.5s ease-out';
+                Utils.toast('已开启新命题 ✨', 'info');
+            }, 300);
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

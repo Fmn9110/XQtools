@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>键盘码查询 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body>
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white/80 backdrop-blur-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 transition-transform hover:rotate-0">
+                    Q
+                </div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <div class="hidden md:flex space-x-6 text-gray-500 text-sm font-semibold">
+                <a href="../../index.html" class="hover:text-pink-500 transition-colors">首页</a>
+                <a href="../../categories.html" class="hover:text-pink-500 transition-colors">全部分类</a>
+                <a href="../../tools.html" class="hover:text-pink-500 transition-colors">所有工具</a>
+            </div>
+            <div class="md:hidden">
+                <a href="../../tools.html" class="text-gray-400 hover:text-pink-500 transition-colors">
+                    <span class="text-2xl">🛠️</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-12 animate-item">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 text-gradient">键盘码捕获器</h1>
+            <p class="text-gray-500 italic text-sm md:text-base">按下任意键，实时查看其 keyCode、which、key 等系统映射属性。⌨️</p>
+        </header>
+
+            <div id="mainDisplay" class="text-[120px] font-black text-pink-500 mb-4">?</div>
+            <p id="keyName" class="text-2xl font-bold text-slate-800 mb-10">请按键...</p>
+            
+            <div class="grid grid-cols-2 gap-8 w-full max-w-md text-left">
+                 <div class="p-4 bg-gray-50 rounded-2xl">
+                     <p class="text-[10px] text-gray-400 font-bold uppercase mb-1">Code</p>
+                     <p id="code" class="text-xs font-mono font-bold text-slate-700">-</p>
+                 </div>
+                 <div class="p-4 bg-gray-50 rounded-2xl">
+                     <p class="text-[10px] text-gray-400 font-bold uppercase mb-1">Which</p>
+                     <p id="which" class="text-xs font-mono font-bold text-slate-700">-</p>
+                 </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        window.addEventListener('keydown', (e) => {
+            e.preventDefault();
+            document.getElementById('mainDisplay').innerText = e.keyCode;
+            document.getElementById('keyName').innerText = e.key === " " ? "Space" : e.key;
+            document.getElementById('code').innerText = e.code;
+            document.getElementById('which').innerText = e.which;
+            
+            Utils.toast('已捕捉：' + e.key, 'success');
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

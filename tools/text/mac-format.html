@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MAC地址清洗 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen pb-20 md:pb-0">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-2xl">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4">MAC 地址格式化</h1>
+            <p class="text-gray-500">自动整理混乱的 MAC 地址，统一为冒号、划线或点分隔。🌐</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 bg-white shadow-xl mb-12">
+            <div class="mb-6">
+                <label class="block text-sm font-bold text-gray-400 uppercase mb-3 ml-2">输入 MAC 地址</label>
+                <textarea id="macInput" class="w-full h-32 p-6 bg-pink-50/30 border-2 border-pink-50 rounded-3xl text-sm font-mono outline-none focus:border-pink-200 mb-6 transition-all" placeholder="粘贴 MAC 地址 (例如: 00-11-22-33-44-55)"></textarea>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-3 md:gap-4 mb-8">
+                 <button onclick="format(':')" class="theme-secondary-btn py-3 px-1 text-xs md:text-sm font-bold">冒号 ( : )</button>
+                 <button onclick="format('-')" class="theme-secondary-btn py-3 px-1 text-xs md:text-sm font-bold">横线 ( - )</button>
+                 <button onclick="format('')" class="theme-secondary-btn py-3 px-1 text-xs md:text-sm font-bold">无分隔</button>
+            </div>
+
+            <div class="relative group">
+                <label class="block text-sm font-bold text-gray-400 uppercase mb-3 ml-2">格式化结果</label>
+                <input type="text" id="macOutput" readonly class="w-full p-4 bg-pink-50/50 border border-pink-100 rounded-2xl text-sm font-mono text-center text-pink-600 group-hover:border-pink-200 transition-colors" placeholder="结果将在此显示...">
+                <button onclick="copyResult()" class="absolute right-3 top-[42px] text-pink-400 hover:text-pink-600 p-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- 底部说明 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+            <div class="bg-white/60 backdrop-blur-sm p-6 rounded-3xl border border-pink-50">
+                <h3 class="font-bold text-gray-700 mb-2">💡 使用技巧</h3>
+                <p class="text-sm text-gray-500 leading-relaxed">工具会自动提取输入文本中的所有十六进制字符，并尝试将其格式化为标准的 12 位 MAC 地址。</p>
+            </div>
+            <div class="bg-white/60 backdrop-blur-sm p-6 rounded-3xl border border-pink-50">
+                <h3 class="font-bold text-gray-700 mb-2">📋 支持格式</h3>
+                <p class="text-sm text-gray-500 leading-relaxed">支持处理带分隔符（-、: 或点）或不带分隔符的原始 MAC 地址字符串。</p>
+            </div>
+        </div>
+    </main>
+
+
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        window.format = (sep) => {
+             const val = document.getElementById('macInput').value.replace(/[^0-9a-fA-F]/g, '');
+             if(val.length !== 12) {
+                 Utils.toast('无效的 MAC 地址（应包含12个十六进制字符）', 'warning');
+                 return;
+             }
+             
+             let res = "";
+             for(let i=0; i<12; i+=2) {
+                 res += val.substr(i, 2).toUpperCase() + (i < 10 ? sep : "");
+             }
+             document.getElementById('macOutput').value = res;
+             Utils.toast('格式化成功', 'success');
+        };
+
+        function copyResult() {
+            const output = document.getElementById('macOutput');
+            if (!output.value) return;
+            navigator.clipboard.writeText(output.value).then(() => {
+                Utils.toast('已复制到剪贴板', 'success');
+            });
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

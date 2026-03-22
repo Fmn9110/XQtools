@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>盒子阴影生成 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+        input[type=range] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: #FFE4E9;
+            height: 6px;
+            border-radius: 3px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            background: #FF6B8B;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 107, 139, 0.3);
+            border: 2px solid white;
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen pb-20 md:pb-0">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-5xl">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4">CSS 盒子阴影生成器</h1>
+            <p class="text-gray-500 italic">可视化调节阴影参数，完美适配现代 UI 设计。🎨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 bg-white shadow-xl mb-12 grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div class="flex flex-col items-center justify-center bg-pink-50/20 rounded-[3rem] p-12 border border-pink-50 min-h-[300px] shadow-inner">
+                 <div id="target" class="w-32 h-32 md:w-40 md:h-40 bg-white rounded-3xl transition-all border border-pink-50/50" style="box-shadow: 0 10px 30px rgba(255,107,139,0.1);"></div>
+                 <p class="mt-8 text-[10px] font-bold text-pink-300 uppercase tracking-widest">预览区域</p>
+            </div>
+            
+            <div class="space-y-8 text-left">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <label class="block text-[10px] font-bold text-pink-300 mb-3 uppercase tracking-widest">X 轴偏移 (<span id="xVal">0</span>px)</label>
+                        <input type="range" id="x" min="-100" max="100" value="0" class="w-full">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-pink-300 mb-3 uppercase tracking-widest">Y 轴偏移 (<span id="yVal">10</span>px)</label>
+                        <input type="range" id="y" min="-100" max="100" value="10" class="w-full">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <label class="block text-[10px] font-bold text-pink-300 mb-3 uppercase tracking-widest">模糊半径 (<span id="blurVal">30</span>px)</label>
+                        <input type="range" id="blur" min="0" max="100" value="30" class="w-full">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-pink-300 mb-3 uppercase tracking-widest">扩展半径 (<span id="spreadVal">0</span>px)</label>
+                        <input type="range" id="spread" min="-50" max="50" value="0" class="w-full">
+                    </div>
+                </div>
+                
+                <div class="mt-10 relative group">
+                    <div class="absolute -top-3 left-4 bg-white px-2 text-[10px] font-bold text-pink-400 uppercase tracking-widest z-10">CSS Code</div>
+                    <div class="p-6 bg-gray-900 rounded-3xl shadow-2xl overflow-x-auto">
+                        <code id="cssCode" class="text-pink-300 text-xs md:text-sm font-mono whitespace-nowrap">box-shadow: 0px 10px 30px 0px rgba(255, 107, 139, 0.1);</code>
+                    </div>
+                    <button onclick="copyCode()" class="mt-4 w-full theme-secondary-btn py-3 text-xs font-bold uppercase tracking-widest border-2">复 制 代 码</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const target = document.getElementById('target');
+        const code = document.getElementById('cssCode');
+        const controls = ['x', 'y', 'blur', 'spread'];
+
+        function update() {
+            const x = document.getElementById('x').value;
+            const y = document.getElementById('y').value;
+            const b = document.getElementById('blur').value;
+            const s = document.getElementById('spread').value;
+            
+            document.getElementById('xVal').innerText = x;
+            document.getElementById('yVal').innerText = y;
+            document.getElementById('blurVal').innerText = b;
+            document.getElementById('spreadVal').innerText = s;
+            
+            const shadow = `${x}px ${y}px ${b}px ${s}px rgba(255, 107, 139, 0.2)`;
+            target.style.boxShadow = shadow;
+            code.innerText = `box-shadow: ${shadow};`;
+        }
+
+        controls.forEach(id => document.getElementById(id).oninput = update);
+        
+        function copyCode() {
+            navigator.clipboard.writeText(code.innerText).then(() => {
+                Utils.toast('CSS 代码已复制', 'success');
+            });
+        }
+
+        update();
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

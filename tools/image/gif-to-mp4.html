@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GIF转MP4 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Required Libraries -->
+    <script src="../../assets/lib/gif-frames.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/gif-frames@1.0.1/dist/gif-frames.min.js';"></script>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fffafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 transition-transform hover:rotate-0">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-4 md:py-8 px-4 max-w-6xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold mb-4 animate-item gradient-text">GIF 转 视频</h1>
+            <p class="text-gray-500 animate-item" style="animation-delay: 0.1s">逐帧重绘，将灵动的 GIF 转化为流畅的视频格式。📹</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-8 mb-12 animate-item" style="animation-delay: 0.2s">
+            <div id="upload-stage" class="text-center">
+                <div id="drop-zone" class="w-full border-4 border-dashed border-pink-100 rounded-3xl p-8 md:p-16 hover:border-pink-300 transition-all cursor-pointer bg-white group">
+                    <input type="file" id="fileInput" accept="image/gif" class="hidden">
+                    <div class="text-7xl mb-6 group-hover:scale-110 transition-transform">🛰️</div>
+                    <p class="text-xl font-bold text-gray-700">上传 GIF 进行转换</p>
+                    <p class="text-pink-400 mt-2 text-sm italic">纯前端模拟录制技术</p>
+                </div>
+            </div>
+
+            <div id="editor-stage" class="hidden flex flex-col lg:flex-row gap-8 lg:gap-12 animate-fade-in">
+                <!-- Controls -->
+                <div class="flex-1 space-y-6">
+                    <div class="bg-pink-50/30 p-6 md:p-8 rounded-3xl space-y-8">
+                        <h3 class="font-bold text-gray-800 flex items-center">
+                            <span class="w-1.5 h-6 bg-pink-400 rounded-full mr-3"></span>
+                            输出环境
+                        </h3>
+                        
+                        <div class="bg-white/60 p-6 rounded-2xl border border-white space-y-4">
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest pl-1">文件格式</label>
+                            <div class="flex gap-4">
+                                <div class="flex-1 p-4 bg-white border-2 border-pink-500 rounded-2xl flex flex-col items-center gap-2 shadow-lg shadow-pink-100 relative overflow-hidden">
+                                    <div class="absolute top-0 right-0 px-2 py-0.5 bg-pink-500 text-white text-[8px] font-bold rounded-bl-lg tracking-widest uppercase">Best</div>
+                                    <span class="text-2xl">📽️</span>
+                                    <span class="font-black text-gray-700">WebM</span>
+                                </div>
+                                <div class="flex-1 p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl flex flex-col items-center gap-2 opacity-50 grayscale italic">
+                                    <span class="text-2xl">📁</span>
+                                    <span class="font-bold text-gray-400">MP4 (Coming)</span>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2 pt-2">
+                                <span class="text-pink-400 text-xs">💡</span>
+                                <p class="text-[10px] text-gray-500 italic leading-relaxed font-medium">WebM 拥有更佳的清晰度与更小的体积，深度契合现代移动端与桌面浏览器浏览需求。</p>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 flex flex-col sm:flex-row gap-4">
+                            <button id="startBtn" class="cute-button flex-1 theme-download-btn px-6 py-4 rounded-full font-bold flex items-center justify-center gap-3">
+                                <span id="btn-text">开始精准转换</span>
+                                <div id="btn-loader" class="hidden w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            </button>
+                            <button onclick="location.reload()" class="theme-secondary-btn py-4 px-8 rounded-full text-xs font-bold">更换素材</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview -->
+                <div class="w-full lg:w-96 space-y-6">
+                    <h3 class="font-bold text-gray-800 pl-2">实时效果</h3>
+                    <div class="bg-white rounded-[2.5rem] p-6 border border-pink-50 shadow-sm flex flex-col items-center justify-center min-h-[300px] relative overflow-hidden">
+                        <div class="absolute inset-0 bg-[radial-gradient(#fff1f2_1px,transparent_1px)] [background-size:20px_20px] opacity-40"></div>
+                        <video id="video-preview" class="max-w-full max-h-[250px] object-contain rounded-2xl shadow-lg relative z-10 hidden" controls autoplay loop muted></video>
+                        <canvas id="record-canvas" class="hidden"></canvas>
+                        <div id="preview-placeholder" class="text-center z-10">
+                            <div class="w-20 h-20 bg-pink-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-pink-100">
+                                <span class="text-4xl">🎬</span>
+                            </div>
+                            <p class="text-xs text-gray-400 font-medium italic">转换完成后将在此展现成果</p>
+                        </div>
+                    </div>
+                    <button id="downloadBtn" class="w-full py-5 bg-gray-50 text-gray-300 rounded-[1.5rem] font-black cursor-not-allowed border border-gray-100 transition-all" disabled>保存这段视频</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.3s">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">🎯</span>
+                核心亮点
+            </h2>
+            <div class="bg-white rounded-3xl p-8 shadow-sm border border-pink-50 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-full blur-3xl -mr-10 -mt-10 opacity-50"></div>
+                <ul class="space-y-4 text-gray-600 font-medium text-sm relative z-10">
+                    <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 bg-pink-400 rounded-full"></span> 零成本导出：不依赖笨重的 FFmpeg 视频库，极速渲染。</li>
+                    <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 bg-pink-400 rounded-full"></span> 帧率同步：为您保留 GIF 原始的时序逻辑，平滑过渡。</li>
+                    <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 bg-pink-400 rounded-full"></span> 安全可靠：全程在浏览器中运行，素材绝不触网。</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-10 text-center text-gray-400 text-xs border-t border-pink-50 mt-12 bg-white/50">
+        © 2026 小Q工具箱 · 纯前端离线实验室 💖
+    </footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadStage = document.getElementById('upload-stage');
+        const editorStage = document.getElementById('editor-stage');
+        const startBtn = document.getElementById('startBtn');
+        const btnText = document.getElementById('btn-text');
+        const btnLoader = document.getElementById('btn-loader');
+        const videoPreview = document.getElementById('video-preview');
+        const previewPlaceholder = document.getElementById('preview-placeholder');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const canvas = document.getElementById('record-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let frames = [], videoUrl = null;
+
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.getElementById('drop-zone').onclick = () => fileInput.click();
+        fileInput.onchange = async (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            uploadStage.classList.add('hidden');
+            editorStage.classList.remove('hidden');
+            startBtn.disabled = true;
+            btnText.innerText = '正在预热解析...';
+            
+            try {
+                const frameData = await gifFrames({ url: URL.createObjectURL(file), frames: 'all', outputType: 'canvas' });
+                frames = frameData.map(f => ({
+                    canvas: f.getImage(),
+                    delay: f.frameInfo ? f.frameInfo.delay * 10 : 100
+                }));
+                canvas.width = frames[0].canvas.width;
+                canvas.height = frames[0].canvas.height;
+                startBtn.disabled = false;
+                btnText.innerText = '开始精准转换';
+                Utils.toast('准备就绪！', 'success');
+            } catch (err) {
+                Utils.toast('GIF 解析失败', 'error');
+                location.reload();
+            }
+        };
+
+        startBtn.onclick = async () => {
+            if (!frames.length) return;
+            startBtn.disabled = true;
+            btnText.innerText = '正在转换录制...';
+            btnLoader.classList.remove('hidden');
+
+            const stream = canvas.captureStream(30);
+            const mediaRecorder = new MediaRecorder(stream, {
+                mimeType: 'video/webm;codecs=vp9',
+                videoBitsPerSecond: 5000000 
+            });
+
+            const chunks = [];
+            mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'video/webm' });
+                videoUrl = URL.createObjectURL(blob);
+                videoPreview.src = videoUrl;
+                videoPreview.classList.remove('hidden');
+                previewPlaceholder.classList.add('hidden');
+                downloadBtn.disabled = false;
+                downloadBtn.className = 'w-full py-5 bg-pink-500 text-white rounded-[1.5rem] font-black shadow-lg shadow-pink-100 hover:bg-pink-600 transition-all';
+                startBtn.disabled = false;
+                btnText.innerText = '再次转换';
+                btnLoader.classList.add('hidden');
+                Utils.toast('转换完成！', 'success');
+            };
+
+            mediaRecorder.start();
+            let frameIndex = 0;
+            function nextFrame() {
+                if (frameIndex >= frames.length) { mediaRecorder.stop(); return; }
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(frames[frameIndex].canvas, 0, 0);
+                const currentDelay = frames[frameIndex].delay;
+                frameIndex++;
+                setTimeout(nextFrame, currentDelay);
+            }
+            nextFrame();
+        };
+
+        downloadBtn.onclick = () => {
+            if (!videoUrl) return;
+            Utils.downloadFile(videoUrl, `q_video_${Date.now()}.webm`, 'video/webm');
+            Utils.toast('已保存！', 'success');
+        };
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

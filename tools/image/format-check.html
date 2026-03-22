@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>图片格式检测 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fffafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 transition-transform hover:rotate-0">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-4 md:py-8 px-4 max-w-6xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold mb-4 animate-item gradient-text">深度格式检测</h1>
+            <p class="text-gray-500 animate-item" style="animation-delay: 0.1s">拨开后缀名的迷雾，通过读取二进制特征识别图片的真实身份。🔍</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-8 mb-12 animate-item" style="animation-delay: 0.2s">
+            <div id="upload-stage" class="text-center">
+                <div id="drop-zone" class="w-full border-4 border-dashed border-pink-100 rounded-3xl p-8 md:p-16 hover:border-pink-300 transition-all cursor-pointer bg-white group">
+                    <input type="file" id="fileInput" class="hidden">
+                    <div class="text-7xl mb-6 group-hover:scale-110 transition-transform">🔍</div>
+                    <p class="text-xl font-bold text-gray-700">将文件拖入此处进行深度分析</p>
+                    <p class="text-pink-400 mt-2 text-sm italic">识破假后缀，探寻 Magic Numbers</p>
+                </div>
+            </div>
+
+            <div id="result-stage" class="hidden flex flex-col lg:flex-row gap-8 lg:gap-12 animate-fade-in">
+                <!-- Data Display -->
+                <div class="flex-1 space-y-6">
+                    <div class="bg-gray-50 p-6 md:p-8 rounded-[2rem] border border-gray-100 shadow-inner flex flex-col md:flex-row gap-8 items-center">
+                        <div id="preview-box" class="w-40 h-40 bg-white rounded-2xl border border-gray-100 flex items-center justify-center p-2 shadow-sm overflow-hidden flex-shrink-0">
+                            <img id="image-preview" class="max-w-full max-h-full">
+                        </div>
+                        <div class="flex-1 space-y-4 text-center md:text-left">
+                            <div class="flex items-center justify-center md:justify-start gap-2">
+                                <span id="format-tag" class="px-4 py-1.5 bg-pink-500 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-pink-100">LOADING</span>
+                                <span id="mime-tag" class="text-gray-400 font-mono text-[10px]">image/---</span>
+                            </div>
+                            <h3 id="file-name" class="text-2xl font-black text-gray-800 break-all leading-tight">filename.png</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-white/60 p-3 rounded-2xl border border-white">
+                                    <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">物理尺寸</p>
+                                    <p id="image-dims" class="text-sm font-mono font-bold text-gray-700">-</p>
+                                </div>
+                                <div class="bg-white/60 p-3 rounded-2xl border border-white">
+                                    <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">文件大小</p>
+                                    <p id="file-size" class="text-sm font-mono font-bold text-gray-700">-</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-pink-50/20 p-6 md:p-8 rounded-[2rem] border border-pink-50 space-y-4">
+                        <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center">
+                            <span class="w-1.5 h-1.5 rounded-full bg-pink-400 mr-2"></span>
+                            二进制特征码 (Magic Numbers)
+                        </h4>
+                        <div id="hex-view" class="p-6 bg-gray-900 text-pink-300 rounded-3xl font-mono text-sm shadow-inner overflow-x-auto leading-relaxed"></div>
+                        <div class="flex items-start gap-3 p-4 bg-white/50 rounded-2xl border border-pink-50">
+                            <span class="text-pink-400 text-sm">💡</span>
+                            <p id="format-desc" class="text-xs text-gray-500 leading-relaxed font-medium italic"></p>
+                        </div>
+                    </div>
+                    
+                    <button onclick="location.reload()" class="w-full theme-secondary-btn py-4 rounded-full text-sm font-bold">分析另一份文件</button>
+                </div>
+
+                <!-- Legend -->
+                <div class="w-full lg:w-72 space-y-6">
+                    <h3 class="font-bold text-gray-800 pl-2">指纹参考库</h3>
+                    <div class="space-y-3" id="legend-list">
+                        <!-- 由 JS 动态填充 -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-10 text-center text-gray-400 text-xs border-t border-pink-50 mt-12 bg-white/50">
+        © 2026 小Q工具箱 · 纯前端安全分析 💖
+    </footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadStage = document.getElementById('upload-stage');
+        const resultStage = document.getElementById('result-stage');
+        const dropZone = document.getElementById('drop-zone');
+        
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+
+            const legendList = document.getElementById('legend-list');
+            if (legendList) {
+                legendList.innerHTML = [
+                    {n:'JPEG', v:'FF D8 FF E0'},
+                    {n:'PNG', v:'89 50 4E 47'},
+                    {n:'GIF', v:'47 49 46 38'},
+                    {n:'WEBP', v:'52 49 46 46'}
+                ].map(item => `
+                    <div class="bg-white p-4 rounded-2xl border border-pink-50 shadow-sm flex justify-between items-center group hover:border-pink-300 transition-colors">
+                        <span class="font-black text-xs text-gray-600">${item.n}</span>
+                        <code class="text-[10px] bg-pink-50 text-pink-500 px-2 py-1 rounded-lg group-hover:bg-pink-500 group-hover:text-white transition-all">${item.v}</code>
+                    </div>
+                `).join('');
+            }
+        });
+
+        dropZone.onclick = () => fileInput.click();
+        fileInput.onchange = (e) => handleFile(e.target.files[0]);
+
+        async function handleFile(file) {
+            if (!file) return;
+            uploadStage.classList.add('hidden');
+            resultStage.classList.remove('hidden');
+
+            document.getElementById('file-name').innerText = file.name;
+            document.getElementById('file-size').innerText = Utils.formatSize(file.size);
+
+            const headerBuffer = await file.slice(0, 16).arrayBuffer();
+            const headerArr = new Uint8Array(headerBuffer);
+            document.getElementById('hex-view').innerText = Array.from(headerArr).map(b => b.toString(16).padStart(2, '0').toUpperCase()).join(' ');
+
+            const info = detect(headerArr);
+            document.getElementById('format-tag').innerText = info.ext;
+            document.getElementById('mime-tag').innerText = info.mime;
+            document.getElementById('format-desc').innerText = info.desc;
+
+            const url = URL.createObjectURL(file);
+            const img = document.getElementById('image-preview');
+            img.src = url;
+            img.onload = () => {
+                document.getElementById('image-dims').innerText = `${img.naturalWidth} x ${img.naturalHeight}`;
+            };
+        }
+
+        function detect(arr) {
+            const hex = Array.from(arr).map(b => b.toString(16).padStart(2, '0').toUpperCase()).join('');
+            if (hex.startsWith('89504E47')) return { ext: 'PNG', mime: 'image/png', desc: '无损压缩格式，网站 UI、透明图标的首选方案。' };
+            if (hex.startsWith('FFD8FF')) return { ext: 'JPEG', mime: 'image/jpeg', desc: '经典有损压缩格式，最适合保存风景及人像照片。' };
+            if (hex.startsWith('47494638')) return { ext: 'GIF', mime: 'image/gif', desc: '动图鼻祖，虽色彩深度有限但兼容性极强。' };
+            if (hex.includes('57454250')) return { ext: 'WEBP', mime: 'image/webp', desc: '现代网络格式，在保持高质量的同时体积惊人地小。' };
+            if (hex.startsWith('424D')) return { ext: 'BMP', mime: 'image/bmp', desc: 'Windows 位图，通常未经压缩，追求原始细节。' };
+            return { ext: 'UNKNOWN', mime: 'binary/file', desc: '未能识别此文件的图片特征，请检查是否为受保护的加密格式或非图片文件。' };
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

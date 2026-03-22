@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>假邮件生成器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">📧 虚拟 <span class="gradient-text">邮件生成</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">生成搞笑的虚构邮件，给无聊的生活加点料。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            <div class="grid md:grid-cols-2 gap-6 mb-8 animate-item" style="animation-delay: 0.3s">
+                <div>
+                    <label class="block text-[10px] font-black text-pink-300 uppercase tracking-widest mb-2">邮件剧本</label>
+                    <select id="emailType" class="w-full p-4 bg-pink-50/30 rounded-2xl border-2 border-transparent focus:border-pink-200 outline-none text-sm font-bold text-gray-700 transition-all cursor-pointer">
+                        <option>老板加薪通知</option>
+                        <option>中奖通知</option>
+                        <option>外星人来信</option>
+                        <option>时间旅行者警告</option>
+                        <option>猫咪统治世界</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-pink-300 uppercase tracking-widest mb-2">收件人尊号</label>
+                    <input type="text" id="recipient" placeholder="或者是你想调侃的朋友" class="w-full p-4 bg-pink-50/30 rounded-2xl border-2 border-transparent focus:border-pink-200 outline-none text-sm font-bold text-gray-700 transition-all">
+                </div>
+            </div>
+
+            <button onclick="genEmail()" class="theme-download-btn w-full py-5 text-xl mb-10">📨 投递这封快乐</button>
+
+            <div id="emailPreview" class="hidden animate-item">
+                <div class="bg-white rounded-[2rem] border-2 border-pink-100/50 shadow-2xl shadow-pink-100/20 overflow-hidden group">
+                    <!-- Email Header Overlay -->
+                    <div class="bg-gradient-to-r from-pink-50 to-indigo-50 px-8 py-8 border-b border-pink-100/30 relative">
+                        <div class="absolute top-4 right-6 text-4xl opacity-10 group-hover:scale-110 transition-transform">✉️</div>
+                        <div class="space-y-2">
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">FROM / 发件人</p>
+                            <p id="eFrom" class="text-sm font-bold text-pink-500"></p>
+                        </div>
+                        <div class="mt-4 space-y-2">
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">TO / 收件人</p>
+                            <p id="eTo" class="text-sm font-bold text-gray-800"></p>
+                        </div>
+                        <div class="mt-6">
+                            <h2 class="text-lg md:text-xl font-black text-gray-800 tracking-tight" id="eSubject"></h2>
+                        </div>
+                    </div>
+                    <!-- Email Body -->
+                    <div class="px-8 py-10 md:py-12 bg-white flex flex-col items-center">
+                        <div class="w-full max-w-2xl text-gray-600 text-sm md:text-base leading-relaxed whitespace-pre-wrap font-medium" id="eBody"></div>
+                        <div class="mt-12 pt-8 border-t border-gray-50 w-full text-center">
+                            <p class="text-[10px] text-gray-300 font-bold uppercase tracking-[0.3em]">-- This message is generated for fun --</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-6">
+                    <button onclick="window.print()" class="text-xs font-black text-indigo-400 hover:text-indigo-600 transition-colors uppercase tracking-widest">🖨️ 打印/保存为PDF</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const templates = {
+            '老板加薪通知': {
+                from: 'CEO办公室 <ceo@dream-corp.com>',
+                subject: '【紧急】关于您的薪资调整通知',
+                body: name => `亲爱的${name}：\n\n经公司董事会一致决议，鉴于您在过去一年中的卓越表现和对公司的巨大贡献（包括但不限于：每天按时上班、偶尔加班、经常微笑），我们决定：\n\n📈 将您的薪资上调 300%！\n🏠 额外赠送公司附近豪华公寓一套。\n🚗 配备专属特斯拉一辆。\n\n请于本周五携带您的好心情前来签收。\n\n此致敬礼\nCEO 马老板\n\n（温馨提示：本邮件纯属虚构，如有雷同，那就是你做梦了 😂）`
+            },
+            '中奖通知': {
+                from: '宇宙彩票中心 <lottery@universe.space>',
+                subject: '🎉🎉🎉 恭喜您中了99999999元大奖！！！',
+                body: name => `尊敬的${name}：\n\n经过我们在平行宇宙中的严格抽奖，您已经中了本期超级宇宙大奖：\n\n💰 奖金：99999999元（人民币/银河币均可）\n🏝️ 附赠：马尔代夫小岛一座\n🚀 VIP奖励：太空旅行往返票一张\n\n请回复您的银行卡号... 等等，这种话连鬼都不信！🤣\n\n友情提示：天上不会掉馅饼，请警惕各类诈骗！\n\n宇宙彩票中心\n（这是一封娱乐邮件，不要当真哦）`
+            },
+            '外星人来信': {
+                from: '仙女座星系大使 <ambassador@andromeda.galaxy>',
+                subject: '来自仙女座的友好问候 👽',
+                body: name => `地球人${name}你好：\n\n我叫噗噗星人·呜呜呜·叽叽喳喳三世，来自仙女座星系第七行星。\n\n我们已经观察你们地球人很久了。说实话：\n\n🌍 你们的食物看起来很好吃（尤其是火锅）\n📱 你们花在手机上的时间比我们研究虫洞还多\n🐱 你们最聪明的生物似乎是猫\n\n我们计划明年来地球旅游，请问你们有七星级酒店吗？\n\n此致银河礼 🛸\n噗噗星人·呜呜呜·叽叽喳喳三世`
+            },
+            '时间旅行者警告': {
+                from: '2099年的你 <future-you@time.travel>',
+                subject: '⚠️ 来自未来的紧急警告',
+                body: name => `亲爱的${name}（过去的自己）：\n\n我是2099年的你，通过量子纠缠发送这封邮件。有几件重要的事告诉你：\n\n1️⃣ 今天晚上一定要早睡！（相信我）\n2️⃣ 那个你犹豫要不要买的东西——买！\n3️⃣ 多吃蔬菜，少吃零食\n4️⃣ 2025年的某一天，你会很感谢现在的自己\n\n最重要的是：不要担心未来，一切都会好的。\n\n来自2099年的你\n\nP.S. 我不能告诉你彩票号码，时间线会崩塌的 😅`
+            },
+            '猫咪统治世界': {
+                from: '猫咪世界议会 <council@meow-nation.cat>',
+                subject: '🐱 关于接管世界的通知',
+                body: name => `人类${name}：\n\n经猫咪世界议会第999次全体大会决议，我们正式宣布：\n\n🐾 猫咪将于下周一正式接管世界\n🐟 人类的主要职责将调整为：开罐头、铲猫砂、揉肚皮\n😺 全球统一作息：白天睡觉18小时，晚上跑酷6小时\n📦 所有纸箱归猫咪所有，不得异议\n\n请做好配合准备。反抗是没有用的，因为你根本抵抗不了我们的可爱。\n\n喵～\n猫咪世界议会主席 橘座大人`
+            },
+        };
+
+        function genEmail() {
+            const type = document.getElementById('emailType').value;
+            const name = document.getElementById('recipient').value.trim() || '亲爱的朋友';
+            const tpl = templates[type];
+            document.getElementById('eFrom').textContent = tpl.from;
+            document.getElementById('eTo').textContent = name;
+            document.getElementById('eSubject').textContent = tpl.subject;
+            document.getElementById('eBody').innerText = tpl.body(name);
+            document.getElementById('emailPreview').classList.remove('hidden');
+            Utils.toast('邮件已生成 📮', 'success');
+            
+            // Auto scroll to preview
+            setTimeout(() => {
+                document.getElementById('emailPreview').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 300);
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

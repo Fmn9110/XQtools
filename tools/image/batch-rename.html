@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>图片批量重命名 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fffafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 transition-transform hover:rotate-0">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-4 md:py-8 px-4 max-w-6xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold mb-4 animate-item gradient-text">图片批量重命名</h1>
+            <p class="text-gray-500 animate-item" style="animation-delay: 0.1s">整理图片素材的利器，支持前缀补全与自动计数，一键打包。📦</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-8 mb-12 animate-item" style="animation-delay: 0.2s">
+            <div id="upload-stage" class="text-center">
+                <div id="drop-zone" class="w-full border-4 border-dashed border-pink-100 rounded-3xl p-8 md:p-16 hover:border-pink-300 transition-all cursor-pointer bg-white group">
+                    <input type="file" id="file-input" class="hidden" multiple accept="image/*">
+                    <div class="text-7xl mb-6 group-hover:scale-110 transition-transform">📁</div>
+                    <p class="text-xl font-bold text-gray-700">将多张图片拖入这里</p>
+                    <p class="text-pink-400 mt-2 text-sm italic">或者点击选择多个文件</p>
+                </div>
+            </div>
+
+            <div id="process-stage" class="hidden flex flex-col lg:flex-row gap-8 lg:gap-12 items-start animate-fade-in">
+                <div class="w-full lg:w-80 space-y-6">
+                    <div class="bg-pink-50/30 p-6 md:p-8 rounded-3xl space-y-6">
+                        <h3 class="font-bold text-gray-800 flex items-center">
+                            <span class="w-1.5 h-6 bg-pink-400 rounded-full mr-3"></span>
+                            重命名配置
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">文件名前缀</label>
+                                <input type="text" id="prefix" value="img_" class="cute-input w-full px-4 py-3 bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">起始编号</label>
+                                <input type="number" id="start-index" value="1" class="cute-input w-full px-4 py-3 bg-white font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">编号位数</label>
+                                <select id="padding" class="cute-input w-full px-4 py-3 bg-white">
+                                    <option value="1">1 (1, 2...)</option>
+                                    <option value="2">2 (01, 02...)</option>
+                                    <option value="3" selected>3 (001, 002...)</option>
+                                    <option value="4">4 (0001, 0002...)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 space-y-3">
+                            <button id="download-zip-btn" class="cute-button w-full theme-download-btn px-6 py-4 rounded-full font-bold">打包下载 ZIP</button>
+                            <button id="download-direct-btn" class="w-full theme-secondary-btn py-3 rounded-full text-sm font-bold">逐个下载</button>
+                            <button onclick="location.reload()" class="w-full text-gray-400 text-xs hover:text-pink-400 transition-colors py-2">重新上传</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-1 w-full space-y-4">
+                    <div class="flex justify-between items-center px-2">
+                        <h3 class="font-bold text-gray-800">即将重命名的列表 (<span id="file-count" class="text-pink-500">0</span>)</h3>
+                    </div>
+                    <div id="file-list" class="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar p-1">
+                        <!-- 动态列表 -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    
+        <div class="grid md:grid-cols-2 gap-8 mb-12 animate-item" style="animation-delay: 0.3s">
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">🎯</span>
+                    功能亮点
+                </h2>
+                <div class="bg-white rounded-3xl p-8 shadow-sm border border-pink-50 relative overflow-hidden h-full">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-full blur-3xl -mr-10 -mt-10 opacity-50"></div>
+                    <ul class="space-y-4 text-gray-600 list-decimal list-inside text-sm leading-relaxed relative z-10 font-medium">
+                        <li>自动提取原扩展名，确保重命名后文件仍可正常预览。</li>
+                        <li>智能补零填充，方便在文件夹中按逻辑顺序排列。</li>
+                        <li>一键打包 ZIP 下载，避免浏览器弹出多个单独下载确认。</li>
+                    </ul>
+                </div>
+            </section>
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">💬</span>
+                    命名小贴士
+                </h2>
+                <div class="space-y-4 h-full">
+                    <div class="bg-white p-5 rounded-2xl border border-pink-50 shadow-sm hover:border-pink-200 transition-colors">
+                        <div class="font-bold text-gray-700 mb-2 flex items-center">
+                            <span class="w-1.5 h-1.5 rounded-full bg-pink-400 mr-2"></span>
+                            最佳命名建议
+                        </div>
+                        <div class="text-gray-500 text-sm leading-relaxed pl-3.5">
+                            为了更好的跨系统兼容，建议使用英文、数字或下划线。避免使用特殊字符如 `* : < > ? |` 等，系统会自动过滤不规范的输入。
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-10 text-center text-gray-400 text-xs border-t border-pink-50 mt-12 bg-white/50">
+        © 2026 小Q工具箱 · 纯前端离线实验室 · 保护隐私 💖
+    </footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const uploadStage = document.getElementById('upload-stage');
+        const processStage = document.getElementById('process-stage');
+        const fileListContainer = document.getElementById('file-list');
+        const downloadZipBtn = document.getElementById('download-zip-btn');
+        const downloadDirectBtn = document.getElementById('download-direct-btn');
+
+        let currentFiles = [];
+
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        dropZone.onclick = () => fileInput.click();
+        dropZone.ondragover = e => { e.preventDefault(); dropZone.classList.add('border-pink-300'); };
+        dropZone.ondragleave = () => dropZone.classList.remove('border-pink-300');
+        dropZone.ondrop = e => {
+            e.preventDefault();
+            handleFiles(e.dataTransfer.files);
+        };
+
+        fileInput.onchange = e => handleFiles(e.target.files);
+
+        function handleFiles(files) {
+            const list = Array.from(files).filter(f => f.type.startsWith('image/'));
+            if (list.length === 0) {
+                Utils.toast('请选择图片文件', 'error');
+                return;
+            }
+
+            currentFiles = list;
+            renderPreview();
+            uploadStage.classList.add('hidden');
+            processStage.classList.remove('hidden');
+        }
+
+        ['prefix', 'start-index', 'padding'].forEach(id => {
+            document.getElementById(id).oninput = renderPreview;
+        });
+
+        function renderPreview() {
+            const prefix = document.getElementById('prefix').value;
+            const start = parseInt(document.getElementById('start-index').value) || 0;
+            const padding = parseInt(document.getElementById('padding').value);
+
+            document.getElementById('file-count').textContent = currentFiles.length;
+            fileListContainer.innerHTML = '';
+
+            currentFiles.forEach((file, index) => {
+                const ext = file.name.split('.').pop();
+                const num = (start + index).toString().padStart(padding, '0');
+                const newName = `${prefix}${num}.${ext}`;
+
+                const item = document.createElement('div');
+                item.className = 'flex items-center justify-between p-4 bg-white rounded-2xl border border-pink-50 hover:border-pink-200 transition-all animate-fade-in group';
+                item.innerHTML = `
+                    <div class="flex items-center space-x-4">
+                        <div class="w-8 h-8 bg-pink-50 flex items-center justify-center rounded-lg text-xs text-pink-500 font-bold group-hover:bg-pink-100 transition-colors">${index + 1}</div>
+                        <div class="text-xs truncate max-w-[120px] md:max-w-[200px] text-gray-400 font-medium">${file.name}</div>
+                    </div>
+                    <div class="text-pink-500 font-mono font-bold select-all text-sm md:text-base">➜ ${newName}</div>
+                `;
+                fileListContainer.appendChild(item);
+            });
+        }
+
+        downloadZipBtn.onclick = async () => {
+            if (currentFiles.length === 0) return;
+
+            const zip = new JSZip();
+            const prefix = document.getElementById('prefix').value;
+            const start = parseInt(document.getElementById('start-index').value) || 0;
+            const padding = parseInt(document.getElementById('padding').value);
+
+            downloadZipBtn.disabled = true;
+            downloadZipBtn.textContent = '📦 正在打包...';
+
+            try {
+                for (let i = 0; i < currentFiles.length; i++) {
+                    const file = currentFiles[i];
+                    const ext = file.name.split('.').pop();
+                    const num = (start + i).toString().padStart(padding, '0');
+                    const newName = `${prefix}${num}.${ext}`;
+                    zip.file(newName, file);
+                }
+
+                const content = await zip.generateAsync({ type: "blob" });
+                Utils.downloadFile(content, `${prefix}batch_rename.zip`, "application/zip");
+                Utils.toast(`成功打包 ${currentFiles.length} 张图片`, 'success');
+            } catch (err) {
+                Utils.toast('打包失败，请重试', 'error');
+            } finally {
+                downloadZipBtn.disabled = false;
+                downloadZipBtn.textContent = '打包下载 ZIP';
+            }
+        };
+
+        downloadDirectBtn.onclick = () => {
+            if (currentFiles.length === 0) return;
+
+            const prefix = document.getElementById('prefix').value;
+            const start = parseInt(document.getElementById('start-index').value) || 0;
+            const padding = parseInt(document.getElementById('padding').value);
+
+            Utils.toast('开始逐张下载...', 'info');
+            currentFiles.forEach((file, i) => {
+                setTimeout(() => {
+                    const ext = file.name.split('.').pop();
+                    const num = (start + i).toString().padStart(padding, '0');
+                    const newName = `${prefix}${num}.${ext}`;
+                    Utils.downloadFile(file, newName, file.type);
+                }, i * 300);
+            });
+        };
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>色轮生成器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        #color-wheel-canvas {
+            cursor: crosshair;
+            border-radius: 50%;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            background: white;
+            transition: transform 0.3s ease;
+        }
+        #color-wheel-canvas:hover {
+            transform: scale(1.02);
+        }
+        .color-preview-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 2rem;
+            border: 6px solid white;
+            box-shadow: 0 15px 30px -5px rgba(0,0,0,0.1);
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fffafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 transition-transform hover:rotate-0">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-4 md:py-8 px-4 max-w-6xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold mb-4 animate-item gradient-text">色轮生成器</h1>
+            <p class="text-gray-500 animate-item" style="animation-delay: 0.1s">交互式探寻色彩奥秘，为你捕捉每一个瞬间的视觉灵感。🎡</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 animate-item" style="animation-delay: 0.2s">
+            <div class="flex flex-col lg:flex-row gap-8 lg:gap-16 items-center">
+                <div class="flex-1 flex justify-center w-full">
+                    <canvas id="color-wheel-canvas" width="400" height="400" class="max-w-full aspect-square"></canvas>
+                </div>
+
+                <div class="w-full lg:w-96 space-y-8">
+                    <div class="bg-pink-50/30 p-8 rounded-3xl space-y-8">
+                        <div class="flex items-center space-x-6">
+                            <div id="selected-color-box" class="color-preview-large" style="background: #ff8b94;"></div>
+                            <div class="flex-1 overflow-hidden">
+                                <h2 id="color-hex" class="text-4xl font-black text-gray-800 uppercase tracking-tight">#FF8B94</h2>
+                                <p id="color-rgb" class="text-gray-400 font-mono mt-1 text-sm">rgb(255, 139, 148)</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-white/80 p-4 rounded-2xl border border-pink-50 transition-all hover:bg-white hover:shadow-sm">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">HSL</label>
+                                <p id="color-hsl" class="text-sm font-mono text-gray-600 font-medium">355°, 100%, 77%</p>
+                            </div>
+                            <div class="bg-white/80 p-4 rounded-2xl border border-pink-50 transition-all hover:bg-white hover:shadow-sm">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">亮度</label>
+                                <p id="color-light" class="text-sm font-mono text-gray-600 font-medium">77%</p>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 space-y-3">
+                            <button id="copy-btn" class="cute-button w-full theme-download-btn px-6 py-4 rounded-full font-bold">复制 HEX 代码</button>
+                            <p class="text-xs text-gray-400 italic text-center leading-relaxed">提示：在色轮上滑动或点击。越靠近中心颜色越淡，外圈代表高饱和度的原色。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    
+        <div class="grid md:grid-cols-2 gap-8 mb-12 animate-item" style="animation-delay: 0.3s">
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">🎨</span>
+                    色彩心理学
+                </h2>
+                <div class="bg-white rounded-3xl p-8 shadow-sm border border-pink-50 relative overflow-hidden h-full">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-full blur-3xl -mr-10 -mt-10 opacity-50"></div>
+                    <ul class="space-y-4 text-gray-600 list-decimal list-inside text-sm leading-relaxed relative z-10 font-medium">
+                        <li>红色：充满活力、激情与温暖。</li>
+                        <li>蓝色：象征平静、信任与专业。</li>
+                        <li>绿色：代表自然、平衡与新鲜感。</li>
+                    </ul>
+                </div>
+            </section>
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">💬</span>
+                    常见答疑
+                </h2>
+                <div class="space-y-4 h-full">
+                    <div class="bg-white p-5 rounded-2xl border border-pink-50 shadow-sm hover:border-pink-200 transition-colors">
+                        <div class="font-bold text-gray-700 mb-2 flex items-center">
+                            <span class="w-1.5 h-1.5 rounded-full bg-pink-400 mr-2"></span>
+                            如何选取互补色？
+                        </div>
+                        <div class="text-gray-500 text-sm leading-relaxed pl-3.5">
+                            互补色通常位于色轮的对角线上。通过我们的交互式色轮，您可以直观地寻找视觉对比最强烈、最和谐的色彩组合。
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-10 text-center text-gray-400 text-xs border-t border-pink-50 mt-12 bg-white/50">
+        © 2026 小Q工具箱 · 纯前端离线实验室 · 保护隐私 💖
+    </footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const canvas = document.getElementById('color-wheel-canvas');
+        const ctx = canvas.getContext('2d');
+        const hexDisp = document.getElementById('color-hex');
+        const rgbDisp = document.getElementById('color-rgb');
+        const hslDisp = document.getElementById('color-hsl');
+        const lightDisp = document.getElementById('color-light');
+        const colorBox = document.getElementById('selected-color-box');
+        const copyBtn = document.getElementById('copy-btn');
+
+        const radius = canvas.width / 2;
+
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+            drawWheel();
+        });
+
+        function drawWheel() {
+            for (let y = 0; y < canvas.height; y++) {
+                for (let x = 0; x < canvas.width; x++) {
+                    const dx = x - radius;
+                    const dy = y - radius;
+                    const d = Math.sqrt(dx * dx + dy * dy);
+
+                    if (d <= radius) {
+                        const angle = Math.atan2(dy, dx);
+                        const hue = (angle + Math.PI) / (Math.PI * 2) * 360;
+                        const sat = d / radius * 100;
+                        ctx.fillStyle = `hsl(${hue}, ${sat}%, 50%)`;
+                        ctx.fillRect(x, y, 1, 1);
+                    }
+                }
+            }
+        }
+
+        function pickColor(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = Math.floor((e.clientX - rect.left) * (canvas.width / rect.width));
+            const y = Math.floor((e.clientY - rect.top) * (canvas.height / rect.height));
+            
+            const dx = x - radius;
+            const dy = y - radius;
+            const d = Math.sqrt(dx * dx + dy * dy);
+            
+            if (d <= radius) {
+                const pixel = ctx.getImageData(x, y, 1, 1).data;
+                const r = pixel[0], g = pixel[1], b = pixel[2];
+                const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()}`;
+                updateUI(hex, r, g, b);
+            }
+        }
+
+        function updateUI(hex, r, g, b) {
+            hexDisp.textContent = hex;
+            rgbDisp.textContent = `rgb(${r}, ${g}, ${b})`;
+            colorBox.style.background = hex;
+            
+            const hsl = rgbToHsl(r, g, b);
+            hslDisp.textContent = `${Math.round(hsl[0]*360)}°, ${Math.round(hsl[1]*100)}%, ${Math.round(hsl[2]*100)}%`;
+            lightDisp.textContent = `${Math.round(hsl[2]*100)}%`;
+        }
+
+        function rgbToHsl(r, g, b) {
+            r /= 255, g /= 255, b /= 255;
+            const max = Math.max(r, g, b), min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+            if (max == min) { h = s = 0; }
+            else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+            return [h, s, l];
+        }
+
+        canvas.onmousedown = (e) => {
+            pickColor(e);
+            window.onmousemove = pickColor;
+        };
+        window.onmouseup = () => window.onmousemove = null;
+
+        copyBtn.onclick = () => {
+            navigator.clipboard.writeText(hexDisp.textContent);
+            Utils.toast('已复制到剪贴板！', 'success');
+        };
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

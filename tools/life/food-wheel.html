@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>"今天吃什么"随机大转盘 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div>
+                <span class="text-2xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">🍽️ 今天吃什么？</h1>
+            <p class="text-gray-500">终极选择困难症解决方案！让转盘决定你今天的美食</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="flex justify-center mb-8">
+                <div class="relative">
+                    <canvas id="wheel" width="340" height="340"></canvas>
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-t-[20px] border-t-red-500 z-10"></div>
+                </div>
+            </div>
+            <div class="text-center mb-6">
+                <p class="text-3xl font-black text-pink-500 mb-2" id="resultText">🍽️ 转起来吧！</p>
+            </div>
+            <button onclick="spin()" id="spinBtn" class="w-full py-4 bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white font-bold rounded-xl text-lg transition-all">🎰 开始转！</button>
+            <div class="mt-6">
+                <label class="block text-xs font-bold text-gray-400 uppercase mb-2">自定义选项（每行一个）</label>
+                <textarea id="options" rows="4" class="w-full p-4 bg-gray-50 rounded-xl border border-pink-100 outline-none text-sm" placeholder="每行写一个选项">火锅
+烧烤
+麻辣烫
+沙拉
+米线
+面条
+饺子
+披萨
+炒饭
+汉堡
+寿司
+拉面</textarea>
+                <button onclick="updateWheel()" class="mt-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-xl text-sm text-gray-600">更新转盘</button>
+            </div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center"><span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">!</span>使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>点击"开始转"按钮让转盘旋转。</li><li>可以自定义选项，每行一个。</li><li>转盘会随机停在一个选项上。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">转盘结果公平吗？</div><div class="text-gray-500 text-sm">完全随机，每个选项概率相同。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let items = [];
+        let currentAngle = 0;
+        let spinning = false;
+        const colors = ['#FF6B6B','#FECA57','#48DBFB','#FF9FF3','#54A0FF','#5F27CD','#01A3A4','#FF6348','#2ED573','#FFA502','#3742FA','#A4B0BE'];
+
+        function getItems() {
+            return document.getElementById('options').value.split('\n').map(s => s.trim()).filter(Boolean);
+        }
+
+        function drawWheel(angle) {
+            const canvas = document.getElementById('wheel');
+            const ctx = canvas.getContext('2d');
+            const cx = 170, cy = 170, r = 160;
+            ctx.clearRect(0, 0, 340, 340);
+
+            if (items.length === 0) return;
+            const arc = (Math.PI * 2) / items.length;
+
+            items.forEach((item, i) => {
+                const startAngle = angle + i * arc;
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, r, startAngle, startAngle + arc);
+                ctx.fillStyle = colors[i % colors.length];
+                ctx.fill();
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // 文字
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.rotate(startAngle + arc / 2);
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 13px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(item.length > 5 ? item.slice(0,5)+'…' : item, r * 0.6, 5);
+                ctx.restore();
+            });
+
+            // 中心圆
+            ctx.beginPath();
+            ctx.arc(cx, cy, 25, 0, Math.PI * 2);
+            ctx.fillStyle = '#fff';
+            ctx.fill();
+            ctx.strokeStyle = '#eee';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        function updateWheel() {
+            items = getItems();
+            drawWheel(currentAngle);
+        }
+
+        function spin() {
+            if (spinning) return;
+            items = getItems();
+            if (items.length < 2) { alert('至少需要2个选项'); return; }
+            spinning = true;
+            document.getElementById('spinBtn').disabled = true;
+            document.getElementById('resultText').textContent = '🎰 转转转...';
+
+            const totalRotation = Math.PI * 2 * (5 + Math.random() * 5); // 5-10圈
+            const duration = 4000;
+            const startAngle = currentAngle;
+            const startTime = performance.now();
+
+            function animate(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(1, elapsed / duration);
+                // 缓出效果
+                const eased = 1 - Math.pow(1 - progress, 3);
+                currentAngle = startAngle + totalRotation * eased;
+                drawWheel(currentAngle);
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    spinning = false;
+                    document.getElementById('spinBtn').disabled = false;
+                    // 计算结果 - 指针在顶部(3π/2方向)
+                    const arc = (Math.PI * 2) / items.length;
+                    const normalizedAngle = ((2 * Math.PI - (currentAngle % (2 * Math.PI))) + 2 * Math.PI) % (2 * Math.PI);
+                    const idx = Math.floor(normalizedAngle / arc) % items.length;
+                    document.getElementById('resultText').textContent = '🎉 今天吃 ' + items[idx] + '！';
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        updateWheel();
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>生理期估算 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50"><div class="container mx-auto flex justify-between items-center"><div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'"><div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div><span class="text-2xl font-bold gradient-text">小Q工具箱</span></div><a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a></div></nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">🌸 生理期/排卵期估算</h1>
+            <p class="text-gray-500">根据上次月经日期和周期长度，估算未来3个月的生理期和排卵期</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div><label class="block text-xs font-bold text-gray-400 uppercase mb-2">上次月经第一天</label><input type="date" id="lastPeriod" class="w-full p-4 bg-gray-50 rounded-xl border border-pink-100 outline-none"></div>
+                <div><label class="block text-xs font-bold text-gray-400 uppercase mb-2">月经周期 (天)</label><input type="number" id="cycle" value="28" class="w-full p-4 bg-gray-50 rounded-xl border border-pink-100 outline-none"></div>
+            </div>
+            <button onclick="calc()" class="w-full py-4 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl text-lg">🌙 开始计算</button>
+            <div id="result" class="hidden mt-8 space-y-4"></div>
+            <div class="mt-6 bg-yellow-50 rounded-xl p-4 text-xs text-gray-500">⚠️ 本工具仅做参考估算，排卵期因人而异，不可作为医学依据或避孕方法。</div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center"><span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">!</span>使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>输入上次月经第一天和周期天数。</li><li>查看未来3个月的预测日期。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">排卵日怎么算？</div><div class="text-gray-500 text-sm">大约在下次月经前14天，排卵期为排卵日前5天至后4天。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        function fmt(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+        function calc() {
+            const lastStr = document.getElementById('lastPeriod').value;
+            if (!lastStr) { alert('请选择日期'); return; }
+            const cycle = parseInt(document.getElementById('cycle').value);
+            const last = new Date(lastStr);
+            let html = '';
+            for (let i = 0; i < 3; i++) {
+                const periodStart = new Date(last);
+                periodStart.setDate(periodStart.getDate() + cycle * (i + 1));
+                const periodEnd = new Date(periodStart);
+                periodEnd.setDate(periodEnd.getDate() + 4);
+                // 排卵日 = 下次月经 - 14天
+                const ovulDay = new Date(periodStart);
+                ovulDay.setDate(ovulDay.getDate() - 14);
+                const ovulStart = new Date(ovulDay);
+                ovulStart.setDate(ovulStart.getDate() - 5);
+                const ovulEnd = new Date(ovulDay);
+                ovulEnd.setDate(ovulEnd.getDate() + 4);
+
+                html += `<div class="bg-pink-50/50 rounded-2xl p-5 border border-pink-100">
+                    <p class="font-bold text-gray-700 mb-3">第${i+1}个周期</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="bg-white rounded-xl p-3">
+                            <p class="text-xs text-pink-400 font-bold mb-1">🩸 预计月经期</p>
+                            <p class="text-sm text-gray-600">${fmt(periodStart)} ~ ${fmt(periodEnd)}</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-3">
+                            <p class="text-xs text-purple-400 font-bold mb-1">🥚 预计排卵期</p>
+                            <p class="text-sm text-gray-600">${fmt(ovulStart)} ~ ${fmt(ovulEnd)}</p>
+                            <p class="text-xs text-gray-400">排卵日约 ${fmt(ovulDay)}</p>
+                        </div>
+                    </div>
+                </div>`;
+            }
+            document.getElementById('result').innerHTML = html;
+            document.getElementById('result').classList.remove('hidden');
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

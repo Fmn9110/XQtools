@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>几何体头像生成 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .avatar-container {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            background: white;
+            position: relative;
+        }
+        #avatarCanvas {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🎨 几何体 <span class="gradient-text">头像生成</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">不喜欢放真人照片？用随机的抽象艺术几何体作为你的个性头像吧！✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white flex flex-col items-center animate-item" style="animation-delay: 0.2s">
+            
+            <div class="avatar-container mb-8" id="canvasWrapper">
+                <canvas id="avatarCanvas" width="400" height="400"></canvas>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-4 w-full max-w-lg mb-6">
+                <!-- palettes -->
+                <select id="paletteSelect" class="flex-1 rounded-2xl border-2 border-pink-50 focus:border-pink-300 focus:ring-0 text-gray-600 font-bold py-3 px-4 outline-none transition-all">
+                    <option value="pastel">马卡龙梦境</option>
+                    <option value="vaporwave">蒸汽波霓虹</option>
+                    <option value="retro">复古大地色</option>
+                    <option value="monochrome">极致黑白灰</option>
+                </select>
+                <button onclick="generateAvatar()" class="theme-secondary-btn flex-1 flex justify-center items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    重新生成
+                </button>
+            </div>
+
+            <button onclick="downloadAvatar()" class="theme-download-btn w-full max-w-lg px-6 py-4 flex items-center justify-center gap-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                下载高清头像 (PNG)
+            </button>
+
+        </section>
+
+        <!-- 说明与FAQ -->
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.3s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">!</span>
+                    使用说明
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50">
+                    <ul class="space-y-3 text-gray-600 list-inside text-sm">
+                        <li class="flex items-start gap-2"><span>1.</span><span>选择您喜欢的色彩风格（马卡龙、复古等）。</span></li>
+                        <li class="flex items-start gap-2"><span>2.</span><span>点击“重新生成”，系统会自动堆加各种几何体。</span></li>
+                        <li class="flex items-start gap-2"><span>3.</span><span>看到满意的组合，直接点击下方下载按钮保存即可。</span></li>
+                        <li class="flex items-start gap-2"><span>4.</span><span>生成的图片为圆形裁剪边框的 400x400 分辨率 PNG 文件。</span></li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const canvas = document.getElementById('avatarCanvas');
+        const ctx = canvas.getContext('2d');
+        const paletteSelect = document.getElementById('paletteSelect');
+
+        const palettes = {
+            pastel: ['#fbcfe8', '#f9a8d4', '#bef264', '#86efac', '#93c5fd', '#a78bfa', '#fde047', '#f87171', '#fbbf24'],
+            vaporwave: ['#ff00ff', '#00ffff', '#0000ff', '#ff0000', '#ffff00', '#ff00aa', '#00aaff'],
+            retro: ['#d97736', '#324b4c', '#e2c598', '#9d3a43', '#1e2c3a', '#c34120', '#6f7051'],
+            monochrome: ['#111827', '#374151', '#6b7280', '#9ca3af', '#d1d5db', '#f3f4f6', '#000000', '#ffffff']
+        };
+
+        function randomRange(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function generateAvatar() {
+            const size = canvas.width;
+            ctx.clearRect(0, 0, size, size);
+
+            const style = paletteSelect.value;
+            const colors = palettes[style];
+            
+            // Draw background
+            ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
+            ctx.fillRect(0, 0, size, size);
+
+            const numShapes = Math.floor(randomRange(5, 15));
+
+            for(let i=0; i<numShapes; i++) {
+                const shapeType = Math.floor(Math.random() * 3); // 0: circle, 1: rect, 2: triangle
+                const x = randomRange(-50, size + 50);
+                const y = randomRange(-50, size + 50);
+                const s = randomRange(50, 250);
+                
+                ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
+                ctx.globalAlpha = randomRange(0.5, 0.9);
+
+                ctx.beginPath();
+                if(shapeType === 0) {
+                    ctx.arc(x, y, s/2, 0, Math.PI * 2);
+                } else if(shapeType === 1) {
+                    // add random rotation
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.rotate(randomRange(0, Math.PI * 2));
+                    ctx.rect(-s/2, -s/2, s, s);
+                    ctx.restore();
+                } else {
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.rotate(randomRange(0, Math.PI * 2));
+                    ctx.moveTo(0, -s/2);
+                    ctx.lineTo(s/2, s/2);
+                    ctx.lineTo(-s/2, s/2);
+                    ctx.closePath();
+                    ctx.restore();
+                }
+                ctx.fill();
+            }
+
+            // reset alpha just in case
+            ctx.globalAlpha = 1;
+        }
+
+        function downloadAvatar() {
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            const tCtx = tempCanvas.getContext('2d');
+            
+            const r = tempCanvas.width / 2;
+            tCtx.beginPath();
+            tCtx.arc(r, r, r, 0, Math.PI*2);
+            tCtx.closePath();
+            tCtx.clip();
+            tCtx.drawImage(canvas, 0, 0);
+
+            const dataURL = tempCanvas.toDataURL('image/png');
+            Utils.downloadFile(dataURL, 'abstract_avatar.png', 'image/png');
+            Utils.toast('头像已生成并开始下载', 'success');
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    generateAvatar();
+                }, 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

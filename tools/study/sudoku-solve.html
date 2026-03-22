@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>数独解题 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .sudoku-grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 2px; background: #e2e8f0; padding: 4px; border-radius: 1.5rem; overflow: hidden; box-shadow: 0 20px 50px -10px rgba(0,0,0,0.1); }
+        .sudoku-cell { width: 100%; aspect-ratio: 1; border: none; outline: none; text-align: center; font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.25rem; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); background: white; }
+        .sudoku-cell:focus { background: #fdf2f8; transform: scale(1.1); z-index: 10; box-shadow: 0 0 15px rgba(244, 114, 182, 0.3); border-radius: 0.5rem; }
+        .sudoku-cell.preset { color: #1e293b; background: #fafafa; }
+        .sudoku-cell.solved { color: #f472b6; animation: pop-in 0.4s ease-out forwards; }
+        @keyframes pop-in { 0% { opacity: 0; transform: scale(0.5); } 100% { opacity: 1; transform: scale(1); } }
+        /* 3x3 Group Highlighting */
+        .sudoku-grid > :nth-child(n+1):nth-child(-n+27):nth-child(3n+1), 
+        .sudoku-grid > :nth-child(n+1):nth-child(-n+27):nth-child(3n+2),
+        .sudoku-grid > :nth-child(n+1):nth-child(-n+27):nth-child(3n+3) { background: #fcfcfc; }
+        
+        .sudoku-grid div:nth-child(9n+1), .sudoku-grid div:nth-child(9n+2), .sudoku-grid div:nth-child(9n+3),
+        .sudoku-grid div:nth-child(9n+7), .sudoku-grid div:nth-child(9n+8), .sudoku-grid div:nth-child(9n+9) {
+            background: #fafafa;
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6 shadow-sm no-print">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-14">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-800 mb-4 animate-item">数独递归回溯求解器</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s italic italic">填入残局难题，瞬时计算最优解。🧩</p>
+        </header>
+
+        <section class="cute-card p-4 md:p-14 mb-12 bg-white shadow-2xl animate-item flex flex-col items-center" style="animation-delay: 0.2s">
+            <div class="max-w-[480px] w-full mb-12">
+                <div class="sudoku-grid bg-slate-200 border-4 border-slate-200" id="grid">
+                    <!-- 81 Cells -->
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 w-full max-w-2xl no-print">
+                 <button onclick="solve()" class="py-5 bg-pink-400 text-white font-black rounded-3xl shadow-xl hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-xl flex items-center justify-center gap-3">
+                    🧩 暴力破解 (SOLVE)
+                 </button>
+                 <button onclick="loadExample()" class="py-5 bg-slate-50 text-slate-400 font-bold rounded-3xl hover:bg-slate-100 transition-all border border-slate-100 text-xs uppercase tracking-widest">
+                    📋 加载经典案例
+                 </button>
+                 <button onclick="clearGrid()" class="py-5 bg-slate-50 text-slate-300 font-bold rounded-3xl hover:bg-rose-50 hover:text-rose-400 transition-all text-sm">
+                    Reset 🧹
+                 </button>
+            </div>
+        </section>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 animate-item" style="animation-delay: 0.3s">
+            <div class="p-8 bg-white rounded-[2.5rem] border border-pink-50 text-left flex items-start gap-5">
+                <div class="w-14 h-14 bg-pink-50 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0">⚙️</div>
+                <div>
+                    <h3 class="text-pink-400 font-extrabold mb-1 uppercase tracking-tight text-sm">回溯算法原理</h3>
+                    <p class="text-[11px] text-slate-400 leading-relaxed font-medium">使用深度优先搜索（DFS）遍历所有分支，自动在无效路径处回退，直至找到符合规则的唯一解。</p>
+                </div>
+            </div>
+            <div class="p-8 bg-white rounded-[2.5rem] border border-pink-50 text-left flex items-start gap-5">
+                <div class="w-14 h-14 bg-sky-50 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0">⚡</div>
+                <div>
+                    <h3 class="text-sky-400 font-extrabold mb-1 uppercase tracking-tight text-sm">实时校验引擎</h3>
+                    <p class="text-[11px] text-slate-400 leading-relaxed font-medium">在每一步填入时，系统会自动验证行、列及3x3宫格的唯一性，确保逻辑严密。</p>
+                </div>
+            </div>
+        </div>
+
+        <p class="text-[10px] text-gray-300 font-bold uppercase tracking-[0.5em] pb-12">Universal Sudoku Computational Engine & Heuristic Solver</p>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        function createGrid() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    const cell = document.createElement('input');
+                    cell.type = 'text';
+                    cell.maxLength = 1;
+                    cell.id = `c${r}${c}`;
+                    
+                    // Highlighting Logic
+                    const isInG1 = (Math.floor(r/3) + Math.floor(c/3)) % 2 === 0;
+                    cell.className = `sudoku-cell ${isInG1 ? 'bg-white' : 'bg-slate-50/70'} border border-slate-100/30`;
+                    
+                    cell.oninput = (e) => {
+                        const v = cell.value.replace(/[^1-9]/, '');
+                        cell.value = v;
+                        cell.className = `sudoku-cell ${v ? 'preset' : (isInG1 ? 'bg-white' : 'bg-slate-50/70')} border border-slate-100/30`;
+                        if(v) cell.dataset.user = "true";
+                        else cell.dataset.user = "false";
+                    };
+
+                    cell.onkeydown = (e) => {
+                        let tr = r, tc = c;
+                        if(e.key === 'ArrowUp') tr--;
+                        if(e.key === 'ArrowDown') tr++;
+                        if(e.key === 'ArrowLeft') tc--;
+                        if(e.key === 'ArrowRight') tc++;
+                        if(tr >= 0 && tr < 9 && tc >= 0 && tc < 9) document.getElementById(`c${tr}${tc}`).focus();
+                    };
+
+                    grid.appendChild(cell);
+                }
+            }
+        }
+
+        function getGrid() {
+            const g = [];
+            for (let r = 0; r < 9; r++) {
+                g[r] = [];
+                for (let c = 0; c < 9; c++) {
+                    const v = parseInt(document.getElementById(`c${r}${c}`).value);
+                    g[r][c] = isNaN(v) ? 0 : v;
+                }
+            }
+            return g;
+        }
+
+        function setGrid(g) {
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    const el = document.getElementById(`c${r}${c}`);
+                    if (g[r][c]) {
+                        if (el.dataset.user !== "true") {
+                            el.value = g[r][c];
+                            el.classList.add('solved');
+                            el.style.animationDelay = `${ (r*9+c)*0.005 }s`;
+                        }
+                    } else el.value = '';
+                }
+            }
+        }
+
+        function check(g, r, c, n) {
+            for (let i = 0; i < 9; i++) if (g[r][i] === n || g[i][c] === n) return false;
+            const br = Math.floor(r / 3) * 3, bc = Math.floor(c / 3) * 3;
+            for (let i = br; i < br + 3; i++) for (let j = bc; j < bc + 3; j++) if (g[i][j] === n) return false;
+            return true;
+        }
+
+        function solver(g) {
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    if (g[r][c] === 0) {
+                        for (let n = 1; n <= 9; n++) {
+                            if (check(g, r, c, n)) {
+                                g[r][c] = n;
+                                if (solver(g)) return true;
+                                g[r][c] = 0;
+                            }
+                        }
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        function solve() {
+            const g = getGrid();
+            if (solver(g)) {
+                setGrid(g);
+                Utils.toast('数独已完美解开 🎯', 'success');
+            } else {
+                Utils.toast('无法求解，请确认题目输入是否有误。', 'error');
+            }
+        }
+
+        function clearGrid() {
+            createGrid();
+            Utils.toast('网格已清空 🧹', 'info');
+        }
+
+        function loadExample() {
+            createGrid();
+            const ex = [[5, 3, 0, 0, 7, 0, 0, 0, 0], [6, 0, 0, 1, 9, 5, 0, 0, 0], [0, 9, 8, 0, 0, 0, 0, 6, 0], [8, 0, 0, 0, 6, 0, 0, 0, 3], [4, 0, 0, 8, 0, 3, 0, 0, 1], [7, 0, 0, 0, 2, 0, 0, 0, 6], [0, 6, 0, 0, 0, 0, 2, 8, 0], [0, 0, 0, 4, 1, 9, 0, 0, 5], [0, 0, 0, 0, 8, 0, 0, 7, 9]];
+            ex.forEach((row, r) => {
+                row.forEach((v, c) => {
+                    if (v) {
+                        const el = document.getElementById(`c${r}${c}`);
+                        el.value = v;
+                        el.dataset.user = "true";
+                        el.classList.add('preset');
+                    }
+                });
+            });
+            Utils.toast('经典残局已加载', 'info');
+        }
+
+        // Init
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    createGrid();
+                }, 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button') || e.target.closest('input')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

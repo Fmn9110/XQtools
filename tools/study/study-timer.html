@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>学习计时 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .timer-display { font-variant-numeric: tabular-nums; text-shadow: 0 0 30px rgba(244, 114, 182, 0.2); }
+        .progress-glow { box-shadow: 0 0 15px rgba(99, 102, 241, 0.3); }
+        @keyframes subtle-pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.02); } 100% { opacity: 1; transform: scale(1); } }
+        .focusing-text { animation: subtle-pulse 3s infinite ease-in-out; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6 shadow-sm no-print">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-14">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-800 mb-4 animate-item">深度专注：时光沙漏</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s italic italic">感知时间的流动，定义专注的深度。⏳</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-14 mb-12 bg-white shadow-2xl animate-item flex flex-col items-center" style="animation-delay: 0.2s">
+            <div class="max-w-md w-full">
+                <!-- Subject Picker -->
+                <div class="relative group mb-10">
+                    <select id="subject" class="w-full p-5 bg-slate-50 rounded-[2rem] border-2 border-slate-50 outline-none appearance-none cursor-pointer text-center font-black text-slate-600 focus:bg-white focus:border-pink-50 focus:shadow-xl transition-all text-xl tabular-nums shadow-inner">
+                        <option>📚 语文 (CHINESE)</option>
+                        <option>📐 数学 (MATH)</option>
+                        <option>🇬🇧 英语 (ENGLISH)</option>
+                        <option>⚛️ 物理 (PHYSICS)</option>
+                        <option>🧪 化学 (CHEMISTRY)</option>
+                        <option>🧬 生物 (BIOLOGY)</option>
+                        <option>✨ 其他 (OTHERS)</option>
+                    </select>
+                    <div class="absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none text-slate-300">⌄</div>
+                </div>
+
+                <!-- Timer Core -->
+                <div class="relative py-14 mb-12 bg-slate-50/30 rounded-[4rem] border border-slate-50/50 overflow-hidden group">
+                    <p class="focusing-text text-8xl font-black text-slate-100 absolute inset-0 flex items-center justify-center opacity-30 uppercase tracking-tighter select-none pointer-events-none">Focusing</p>
+                    <p class="timer-display text-7xl md:text-8xl font-black text-pink-400 font-mono relative tracking-tight drop-shadow-sm" id="display">00:00:00</p>
+                </div>
+
+                <!-- Primary Controls -->
+                <div class="flex gap-4 mb-12">
+                    <button onclick="toggle()" id="btn" class="flex-[2] py-6 bg-pink-400 text-white font-black rounded-3xl shadow-xl hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-xl flex items-center justify-center gap-3">
+                        <span id="btnIcon">▶️</span> <span id="btnText">开始专注 (FLOW)</span>
+                    </button>
+                    <button onclick="saveAndReset()" class="flex-1 py-6 bg-slate-50 text-slate-400 font-bold rounded-3xl hover:bg-slate-100 transition-all text-sm uppercase tracking-widest border border-slate-100 shadow-sm">
+                        💾 存档记录
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard / History -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 w-full border-t border-slate-100 pt-12">
+                <div class="text-left">
+                    <h3 class="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em] mb-6 flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-pink-300 rounded-full"></span>
+                        Today's Intervals Log
+                    </h3>
+                    <div class="space-y-4 max-h-[360px] overflow-y-auto pr-4 scrollbar-hide" id="today">
+                        <!-- History items dynamic -->
+                        <p class="text-center py-10 text-slate-300 font-bold text-[10px] uppercase tracking-widest italic">Ready for your first session?</p>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col justify-between">
+                    <div class="bg-indigo-50/30 p-10 rounded-[3rem] border border-indigo-50/50 text-left relative overflow-hidden group">
+                        <div class="absolute -right-10 -bottom-10 text-9xl opacity-5 pointer-events-none group-hover:rotate-12 transition-transform duration-700">⏱️</div>
+                        <p class="text-[10px] font-black text-indigo-300 uppercase tracking-[0.3em] mb-3">Daily Accumulation Meta</p>
+                        <p class="text-5xl font-black text-indigo-500 tracking-tighter tabular-nums" id="totalToday">0 <span class="text-base font-black text-slate-300 ml-1">MIN</span></p>
+                        
+                        <div class="mt-8">
+                             <div class="flex justify-between items-center mb-2">
+                                 <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Progress to Daily Goal (2h)</span>
+                                 <span id="progressPercent" class="text-[9px] font-black text-indigo-400">0%</span>
+                             </div>
+                             <div class="w-full bg-white h-3 rounded-full overflow-hidden shadow-inner">
+                                <div class="h-full bg-indigo-400 rounded-full w-0 transition-all duration-1000 progress-glow" id="progressBar"></div>
+                             </div>
+                        </div>
+                    </div>
+                    
+                    <p class="mt-8 text-[10px] text-slate-400 font-medium leading-relaxed italic text-left pl-4 border-l-2 border-pink-100">
+                        "专注的深度决定了思考的高度。每一次计时的开启，都是对自我的庄严承诺。"
+                    </p>
+                </div>
+            </div>
+        </section>
+        
+        <footer class="text-gray-300 text-[10px] uppercase font-black tracking-[0.5em] pb-12 animate-item" style="animation-delay: 0.3s">
+            High-Performance Study Timer & Productivity Analytics Infrastructure
+        </footer>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let elapsed = 0, running = false, interval;
+        const todayKey = 'qStudyTimer_' + new Date().toISOString().slice(0, 10);
+        let todayData = JSON.parse(localStorage.getItem(todayKey) || '[]');
+
+        function fmt(s) {
+            const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
+            return [h, m, sec].map(v => String(v).padStart(2, '0')).join(':');
+        }
+
+        function toggle() {
+            const btn = document.getElementById('btn');
+            const btnText = document.getElementById('btnText');
+            const btnIcon = document.getElementById('btnIcon');
+            const display = document.getElementById('display');
+
+            if (running) {
+                clearInterval(interval);
+                running = false;
+                btnText.textContent = '恢复专注 (RESUME)';
+                btnIcon.textContent = '▶️';
+                btn.className = 'flex-[2] py-6 bg-emerald-400 text-white font-black rounded-3xl shadow-xl hover:bg-emerald-500 transition-all transform hover:-translate-y-1 active:scale-95 text-xl flex items-center justify-center gap-3';
+                display.classList.remove('animate-pulse');
+            } else {
+                interval = setInterval(() => {
+                    elapsed++;
+                    display.textContent = fmt(elapsed);
+                }, 1000);
+                running = true;
+                btnText.textContent = '深度专注中 (PAUSE)';
+                btnIcon.textContent = '⏸️';
+                btn.className = 'flex-[2] py-6 bg-amber-400 text-white font-black rounded-3xl shadow-xl hover:bg-amber-500 transition-all transform hover:-translate-y-1 active:scale-95 text-xl flex items-center justify-center gap-3';
+                display.classList.add('animate-pulse');
+            }
+        }
+
+        function saveAndReset() {
+            if (!elapsed) {
+                Utils.toast('还未开始计时呢 ✨', 'info');
+                return;
+            }
+            if (running) toggle();
+            
+            const subjectInput = document.getElementById('subject').value;
+            todayData.push({ 
+                subject: subjectInput.split(' ')[1] || subjectInput, 
+                seconds: elapsed, 
+                time: fmt(elapsed), 
+                timestamp: new Date().getTime() 
+            });
+            localStorage.setItem(todayKey, JSON.stringify(todayData));
+            
+            elapsed = 0;
+            document.getElementById('display').textContent = '00:00:00';
+            document.getElementById('btnText').textContent = '开始专注 (FLOW)';
+            document.getElementById('btnIcon').textContent = '▶️';
+            document.getElementById('btn').className = 'flex-[2] py-6 bg-pink-400 text-white font-black rounded-3xl shadow-xl hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-xl flex items-center justify-center gap-3';
+            
+            renderToday();
+            Utils.toast('今日专注记录已存入档案 ✨', 'success');
+        }
+
+        function renderToday() {
+            const total = todayData.reduce((s, d) => s + d.seconds, 0);
+            const totalMin = Math.round(total / 60);
+            document.getElementById('totalToday').innerHTML = `${totalMin} <span class="text-base font-black text-slate-300 ml-1">MIN</span>`;
+            
+            // Progress bar (goal 2 hours = 7200s)
+            const progress = Math.min(100, (total / 7200) * 100);
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressPercent').textContent = Math.round(progress) + '%';
+
+            document.getElementById('today').innerHTML = todayData.length ? todayData.slice().reverse().map(d => `
+                <div class="p-5 bg-slate-50/50 rounded-[1.8rem] flex justify-between items-center border border-slate-100 group hover:bg-pink-50/30 transition-all">
+                    <div class="flex flex-col">
+                        <span class="text-[8px] font-black text-slate-300 uppercase tracking-widest mb-1">Subject Instance</span>
+                        <span class="font-black text-sm text-slate-700 tracking-tight">${d.subject}</span>
+                    </div>
+                    <div class="flex flex-col items-end">
+                        <span class="text-[8px] font-black text-slate-300 uppercase tracking-widest mb-1">Duration</span>
+                        <span class="text-xs font-black text-pink-400 bg-white px-4 py-1.5 rounded-full shadow-sm">${d.time}</span>
+                    </div>
+                </div>
+            `).join('') : '<p class="text-center py-10 text-slate-300 font-bold text-[10px] uppercase tracking-widest italic">Ready for your first session?</p>';
+        }
+
+        // Init phase
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    renderToday();
+                }, 500);
+            }
+        });
+
+        // Click aesthetics
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button') || e.target.closest('select')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

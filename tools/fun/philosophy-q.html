@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>哲学终极思考 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;600;900&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .galaxy-bg {
+            background: radial-gradient(circle at center, #1e1b4b 0%, #0f172a 100%);
+            position: relative;
+            overflow: hidden;
+            border-radius: 40px;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            text-align: center;
+            box-shadow: 0 40px 100px -20px rgba(15, 23, 42, 0.4);
+            border: 2px solid #312e81;
+        }
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle infinite ease-in-out;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        .q-text {
+            font-family: 'Noto Serif SC', serif;
+            color: #e0e7ff;
+            font-size: clamp(1.2rem, 5vw, 2.2rem);
+            line-height: 1.6;
+            text-shadow: 0 0 20px rgba(255,255,255,0.1);
+            z-index: 10;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .q-text.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🌌 宇宙 <span class="gradient-text">终极拷问</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">凝视星空，拷问灵魂。在永恒的尺度上寻找意义。✨</p>
+        </header>
+
+        <section class="mb-12 animate-item" style="animation-delay: 0.2s">
+            <div class="galaxy-bg mb-12" id="galaxyBox">
+                <div class="q-text" id="qText">
+                    点击下方按钮<br>开启一场直击灵魂的哲学拷问
+                </div>
+            </div>
+
+            <div class="flex justify-center px-4">
+                <button onclick="askQuestion()" id="askBtn" class="w-full max-w-sm py-5 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-[2rem] shadow-2xl shadow-pink-100 transition-all active:scale-95 text-xl flex items-center justify-center gap-2 border-b-4 border-pink-700">
+                    🌠 凝视星空，开启发问
+                </button>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>康德曾说：“有两件事我愈加思考，愈觉神奇——头顶的星空和内心的道德律。”在这个碎片化的时代，我们需要片刻的宁静，去思考那些比生活琐碎更远、更深的事情。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const questions = [
+            "如果你发现自己只是别人梦里的一个角色，你会改变现在的生活方式吗？",
+            "如果能预知未来，但无法改变它，预知还有意义吗？",
+            "“我” 是我的身体，还是我的意识？如果把我的记忆下载到机器里，那台机器是我吗？",
+            "如果没有人记得你的存在，你还算真正存在过吗？",
+            "宇宙是有边界的吗？如果它有边界，边界的外面又是什么？",
+            "如果快乐可以被注射，我们还需要去经历痛苦的奋斗吗？",
+            "我们是为了生活而工作，还是为了工作而生活？",
+            "什么是“现在”？当你意识到“现在”的时候，它已经变成了“过去”。",
+            "如果每个人生来就是注定好的，自由意志真的存在吗？",
+            "一块石头有意识吗？如果有，它怎么表达？如果没有，那构成我们的原子为什么有意识？",
+            "如果我们是宇宙中唯一的智慧生物，这更可怕，还是宇宙中有一堆我们不知道的智慧生物更可怕？"
+        ];
+
+        const galaxyBox = document.getElementById('galaxyBox');
+        const qText = document.getElementById('qText');
+        
+        // Generate stars
+        for(let i=0; i<60; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 3;
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 5 + 's';
+            galaxyBox.appendChild(star);
+        }
+
+        // initial show
+        setTimeout(() => qText.classList.add('show'), 500);
+
+        function askQuestion() {
+            qText.classList.remove('show');
+            Utils.toast('正在触碰星空... ✨', 'success');
+            
+            setTimeout(() => {
+                const q = questions[Math.floor(Math.random() * questions.length)];
+                qText.innerHTML = q;
+                qText.classList.add('show');
+            }, 800); 
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('#askBtn')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

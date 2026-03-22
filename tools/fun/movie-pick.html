@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>电影挑选 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🎬 今晚看 <span class="gradient-text">什么电影</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">治愈选择困难症。随机挑选一部值得一看的好片。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            <div class="flex flex-wrap gap-2 justify-center mb-10 border-b border-pink-50 pb-8">
+                <button onclick="setGenre('')" class="mv-cat px-6 py-2 rounded-full font-black text-xs uppercase tracking-widest bg-pink-500 text-white shadow-md shadow-pink-100 transition-all active:scale-95" id="mv-all">All / 全部</button>
+                <button onclick="setGenre('动作')" class="mv-cat px-6 py-2 rounded-full font-black text-xs uppercase tracking-widest bg-gray-50 text-gray-400 hover:bg-pink-50 hover:text-pink-500 transition-all active:scale-95">🔥 Action / 动作</button>
+                <button onclick="setGenre('喜剧')" class="mv-cat px-6 py-2 rounded-full font-black text-xs uppercase tracking-widest bg-gray-50 text-gray-400 hover:bg-pink-50 hover:text-pink-500 transition-all active:scale-95">😂 Comedy / 喜剧</button>
+                <button onclick="setGenre('科幻')" class="mv-cat px-6 py-2 rounded-full font-black text-xs uppercase tracking-widest bg-gray-50 text-gray-400 hover:bg-pink-50 hover:text-pink-500 transition-all active:scale-95">🚀 Sci-Fi / 科幻</button>
+                <button onclick="setGenre('爱情')" class="mv-cat px-6 py-2 rounded-full font-black text-xs uppercase tracking-widest bg-gray-50 text-gray-400 hover:bg-pink-50 hover:text-pink-500 transition-all active:scale-95">💕 Romance / 爱情</button>
+                <button onclick="setGenre('动画')" class="mv-cat px-6 py-2 rounded-full font-black text-xs uppercase tracking-widest bg-gray-50 text-gray-400 hover:bg-pink-50 hover:text-pink-500 transition-all active:scale-95">🎨 Animation / 动画</button>
+            </div>
+
+            <div class="flex justify-center mb-12">
+                <button onclick="pickMovie()" class="w-full max-w-sm py-4 bg-indigo-500 hover:bg-indigo-600 text-white font-black rounded-2xl shadow-xl shadow-indigo-100 transition-all active:scale-95 flex items-center justify-center gap-2 text-xl">
+                    🎲 开启好电影盲盒
+                </button>
+            </div>
+
+            <div id="movieCard" class="hidden bg-gradient-to-br from-indigo-50/50 to-purple-50/50 rounded-[3rem] p-10 md:p-16 border-2 border-indigo-100 shadow-inner group relative overflow-hidden text-center animate-item">
+                <div class="absolute -top-10 -left-10 text-9xl text-indigo-500/10 opacity-30 group-hover:rotate-12 transition-transform">🎬</div>
+                <div class="relative z-10">
+                    <p class="text-4xl mb-4 float-animation">🍿</p>
+                    <h2 class="text-2xl md:text-3xl font-black text-gray-800 mb-2" id="mvTitle"></h2>
+                    <p class="text-[10px] font-black text-indigo-400 uppercase tracking-[0.4em] mb-6" id="mvMeta"></p>
+                    
+                    <div class="bg-white/60 backdrop-blur-md rounded-3xl p-6 border border-white shadow-sm text-center max-w-md mx-auto">
+                        <p class="text-gray-600 font-bold leading-relaxed text-sm" id="mvDesc"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>电影是每秒24帧的谎言，但却是通往他人生活的捷径。有时候，一部电影能帮我们找回丢失的勇气，或者在某个平凡的夜晚，带我们进行一场说走就走的思维旅行。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const movies = [
+            {genre:'动作',title:'疯狂的麦克斯：狂暴之路',year:2015,desc:'末世公路追逐的视觉盛宴，全程肾上腺素飙升。'},
+            {genre:'动作',title:'黑暗骑士',year:2008,desc:'诺兰蝙蝠侠三部曲最佳，希斯·莱杰的小丑堪称影史经典。'},
+            {genre:'动作',title:'碟中谍系列',year:2023,desc:'汤姆·克鲁斯亲身上阵的极限特技，停不下来。'},
+            {genre:'喜剧',title:'夏洛特烦恼',year:2015,desc:'穿越回学生时代的爆笑喜剧，笑中带泪。'},
+            {genre:'喜剧',title:'功夫',year:2004,desc:'周星驰的经典之作，无厘头喜剧的巅峰。'},
+            {genre:'喜剧',title:'超级坏',year:2007,desc:'青春喜剧经典，三个高中生的疯狂毕业夜。'},
+            {genre:'科幻',title:'星际穿越',year:2014,desc:'穿越虫洞探索宇宙的视觉奇观，父女情感动人心。'},
+            {genre:'科幻',title:'盗梦空间',year:2010,desc:'多层梦境的烧脑之旅，看完你会质疑现实。'},
+            {genre:'科幻',title:'流浪地球',year:2019,desc:'中国科幻里程碑，带着地球一起流浪。'},
+            {genre:'爱情',title:'怦然心动',year:2010,desc:'最纯真的校园爱情，从两个视角讲述同一个故事。'},
+            {genre:'爱情',title:'你的名字',year:2016,desc:'新海诚的唯美爱情动画，跨越时空的邂逅。'},
+            {genre:'爱情',title:'泰坦尼克号',year:1997,desc:'永恒的经典爱情，Jack和Rose的故事。'},
+            {genre:'动画',title:'千与千寻',year:2001,desc:'宫崎骏最佳，一段奇幻世界的成长旅程。'},
+            {genre:'动画',title:'寻梦环游记',year:2017,desc:'皮克斯催泪炸弹，关于梦想和亲情。'},
+            {genre:'动画',title:'疯狂动物城',year:2016,desc:'创意满满的动物世界，每个角色都讨人喜欢。'},
+        ];
+
+        let currentGenre = '';
+
+        function setGenre(g) {
+            currentGenre = g;
+            document.querySelectorAll('.mv-cat').forEach(b => {
+                b.classList.remove('bg-pink-500', 'text-white', 'shadow-md', 'shadow-pink-100');
+                b.classList.add('bg-gray-50', 'text-gray-400');
+            });
+            
+            const selected = g ? event.target : document.getElementById('mv-all');
+            selected.classList.remove('bg-gray-50', 'text-gray-400');
+            selected.classList.add('bg-pink-500', 'text-white', 'shadow-md', 'shadow-pink-100');
+            Utils.toast(g ? `已筛选：${g}` : '显示全部', 'info');
+        }
+
+        function pickMovie() {
+            const card = document.getElementById('movieCard');
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(10px)';
+            
+            setTimeout(() => {
+                const pool = currentGenre ? movies.filter(m=>m.genre===currentGenre) : movies;
+                const m = pool[Math.floor(Math.random()*pool.length)];
+                document.getElementById('mvTitle').textContent = m.title;
+                document.getElementById('mvMeta').textContent = `${m.genre} · ${m.year}`;
+                document.getElementById('mvDesc').textContent = m.desc;
+                
+                card.classList.remove('hidden');
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 50);
+                Utils.toast('已选定电影 ✨', 'success');
+            }, 300);
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

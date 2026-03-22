@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>表情包配文 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🖼️ 表情包 <span class="gradient-text">配文生成器</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">简单的文字，不凡的灵魂。一键生成你的专属梗图。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="space-y-6 animate-item" style="animation-delay: 0.3s">
+                    <div>
+                        <label class="block text-[10px] font-black text-pink-300 uppercase tracking-widest mb-3">TOP TEXT / 上方文字</label>
+                        <input type="text" id="topText" placeholder="在此输入顶部金句..." class="w-full p-4 bg-pink-50/30 rounded-2xl border-2 border-transparent focus:border-pink-100 outline-none text-gray-600 font-bold transition-all" oninput="render()">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-pink-300 uppercase tracking-widest mb-3">BOTTOM TEXT / 下方文字</label>
+                        <input type="text" id="bottomText" placeholder="在此输入底部槽点..." class="w-full p-4 bg-pink-50/30 rounded-2xl border-2 border-transparent focus:border-pink-100 outline-none text-gray-600 font-bold transition-all" oninput="render()">
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-black text-pink-300 uppercase tracking-widest mb-3">STYLE / 配色方案</label>
+                            <div class="flex gap-2">
+                                <input type="color" id="bgColor" value="#ffeb3b" class="w-full h-12 rounded-xl cursor-pointer border-none outline-none appearance-none" onchange="render()">
+                                <input type="color" id="textColor" value="#000000" class="w-full h-12 rounded-xl cursor-pointer border-none outline-none appearance-none" onchange="render()">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-pink-300 uppercase tracking-widest mb-3">SIZE / 文本字号</label>
+                            <input type="range" id="fontSize" min="20" max="80" value="40" class="w-full h-12 accent-pink-400" oninput="render()">
+                        </div>
+                    </div>
+                    
+                    <button onclick="download()" class="theme-download-btn w-full py-5 text-xl font-bold">📥 保存这张表情包</button>
+                    <p class="text-[10px] text-gray-300 text-center uppercase tracking-widest">Supports PNG auto-download</p>
+                </div>
+                
+                <div class="flex flex-col items-center justify-center animate-item" style="animation-delay: 0.4s">
+                    <div class="bg-gradient-to-br from-pink-50/50 to-orange-50/50 p-4 md:p-8 rounded-[2.5rem] border-2 border-pink-100/50 shadow-inner w-full max-w-[400px]">
+                        <div class="bg-white rounded-[1.5rem] shadow-2xl overflow-hidden aspect-square flex items-center justify-center relative border-4 border-white">
+                            <canvas id="memeCanvas" width="500" height="500" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+                    <p class="mt-6 text-xs text-pink-300 font-black uppercase tracking-widest">LIVE PREVIEW / 实时预览</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.5s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">📖</span>
+                    表情精髓
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50">
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        一个伟大的表情包，往往不在于其画质，而在于那一句精准的灵魂配文。试着调整背景色，黄色配黑色通常是经典的梗图风格。
+                    </p>
+                </div>
+            </section>
+            <section class="animate-item" style="animation-delay: 0.6s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">✨</span>
+                    创作建议
+                </h2>
+                <div class="bg-white p-6 rounded-2xl border border-pink-50 shadow-sm leading-relaxed">
+                    <p class="text-gray-500 text-sm">文字越短，力量越大。尽量控制在两行以内，让笑点一目了然。</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const canvas = document.getElementById('memeCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function render() {
+            const top = document.getElementById('topText').value;
+            const bottom = document.getElementById('bottomText').value;
+            const bg = document.getElementById('bgColor').value;
+            const color = document.getElementById('textColor').value;
+            const size = parseInt(document.getElementById('fontSize').value);
+
+            ctx.fillStyle = bg;
+            ctx.fillRect(0, 0, 500, 500);
+
+            ctx.fillStyle = color;
+            ctx.font = `bold ${size}px sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 4;
+
+            if (top) {
+                ctx.strokeText(top, 250, size + 40);
+                ctx.fillText(top, 250, size + 40);
+            }
+            if (bottom) {
+                ctx.strokeText(bottom, 250, 460 - 40);
+                ctx.fillText(bottom, 250, 460 - 40);
+            }
+            
+            // 中间默认大emoji
+            ctx.font = '160px sans-serif';
+            ctx.fillText('🐶', 250, 250);
+        }
+
+        function download() {
+            const link = document.createElement('a');
+            link.download = `meme_${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            Utils.toast('表情包保存成功！', 'success');
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+            render();
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

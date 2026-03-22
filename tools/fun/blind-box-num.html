@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>数字盲盒 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">📦 数字 <span class="gradient-text">盲盒</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">设置范围，开启属于你的幸运数字盲盒！✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            <div class="grid grid-cols-2 gap-4 max-w-md mx-auto mb-10">
+                <div class="animate-item" style="animation-delay: 0.3s">
+                    <label class="block text-[10px] font-black text-pink-300 uppercase tracking-widest mb-2 text-center">最小值</label>
+                    <input type="number" id="minVal" value="1" class="w-full p-4 bg-pink-50/30 rounded-2xl border-2 border-transparent focus:border-pink-100 outline-none text-center font-bold text-gray-600 transition-all">
+                </div>
+                <div class="animate-item" style="animation-delay: 0.4s">
+                    <label class="block text-[10px] font-black text-pink-300 uppercase tracking-widest mb-2 text-center">最大值</label>
+                    <input type="number" id="maxVal" value="100" class="w-full p-4 bg-pink-50/30 rounded-2xl border-2 border-transparent focus:border-pink-100 outline-none text-center font-bold text-gray-600 transition-all">
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-pink-50/50 to-orange-50/30 rounded-[2.5rem] p-10 mb-10 border-2 border-pink-100/50 shadow-inner group relative overflow-hidden">
+                <div id="box" class="w-32 h-32 md:w-40 md:h-40 mx-auto bg-white rounded-[2rem] shadow-xl flex items-center justify-center cursor-pointer hover:rotate-3 active:scale-95 transition-all duration-300 border-4 border-pink-50/50 group-hover:shadow-pink-200/50" onclick="openBox()">
+                    <span class="text-6xl md:text-7xl drop-shadow-sm" id="boxContent">🎁</span>
+                </div>
+                <div id="resultLayer" class="mt-6 h-12 flex items-center justify-center">
+                    <p class="text-5xl md:text-6xl font-black gradient-text tracking-tighter opacity-0 scale-50 transition-all duration-500" id="numResult"></p>
+                </div>
+            </div>
+
+            <button onclick="openBox()" class="theme-download-btn w-full max-w-md mx-auto block py-5 text-xl mb-10">🎲 立即开盒！</button>
+
+            <div class="pt-8 border-t border-pink-50">
+                <p class="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-6 text-center">抽取历史</p>
+                <div class="flex flex-wrap justify-center gap-2" id="history">
+                    <div class="text-[10px] text-gray-300 italic">暂无开启记录</div>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.5s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">📖</span>
+                    玩法说明
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50">
+                    <ul class="space-y-4 text-gray-600 text-sm">
+                        <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full bg-pink-50 text-pink-400 flex items-center justify-center text-[10px] font-bold">1</span> 在上方输入框中设定随机数的产生范围。</li>
+                        <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full bg-pink-50 text-pink-400 flex items-center justify-center text-[10px] font-bold">2</span> 点击礼物盒或“立即开盒”按钮开始抽取。</li>
+                        <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full bg-pink-50 text-pink-400 flex items-center justify-center text-[10px] font-bold">3</span> 歷史記錄會自動保存最近 10 次的幸運數字。</li>
+                    </ul>
+                </div>
+            </section>
+            <section class="animate-item" style="animation-delay: 0.6s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">✨</span>
+                    适用场景
+                </h2>
+                <div class="bg-white p-6 rounded-2xl border border-pink-50 shadow-sm leading-relaxed">
+                    <p class="text-gray-500 text-sm">无论是平时玩桌游抽签、随机决定午餐、老师课堂提问，还是简单的决策小游戏，数字盲盒都是你的趣味好帮手。</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const hist = [];
+        let isOpening = false;
+
+        function openBox() {
+            if (isOpening) return;
+            const min = parseInt(document.getElementById('minVal').value) || 0;
+            const max = parseInt(document.getElementById('maxVal').value) || 100;
+            if (min >= max) { Utils.toast('最小值必须小于最大值', 'info'); return; }
+            
+            isOpening = true;
+            const num = Math.floor(Math.random() * (max - min + 1)) + min;
+            const boxEl = document.getElementById('boxContent');
+            const numEl = document.getElementById('numResult');
+            
+            // 动画效果
+            boxEl.textContent = '✨';
+            numEl.classList.add('opacity-0', 'scale-50');
+            numEl.classList.remove('opacity-100', 'scale-100');
+            
+            setTimeout(() => {
+                boxEl.textContent = '🎉';
+                numEl.textContent = num;
+                numEl.classList.remove('opacity-0', 'scale-50');
+                numEl.classList.add('opacity-100', 'scale-100');
+                
+                hist.unshift(num);
+                if (hist.length > 10) hist.pop();
+                document.getElementById('history').innerHTML = hist.map(h => `<div class="px-4 py-1.5 bg-pink-50 text-pink-400 rounded-full text-xs font-bold border border-pink-100/50">${h}</div>`).join('');
+                
+                isOpening = false;
+                Utils.toast('开启成功！你的数字是 ' + num, 'success');
+            }, 500);
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

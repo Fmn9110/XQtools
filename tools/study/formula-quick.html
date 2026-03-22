@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>公式速查 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">基础公式速查</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">常用数学、物理、化学公式一网打尽，备考好帮手。</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 mb-12 bg-white shadow-2xl animate-item" style="animation-delay: 0.2s">
+            <div class="relative mb-6">
+                <input type="text" id="search" placeholder="🔍 搜索公式 (如: 勾股定理, P=UI...)" class="w-full p-4 pl-12 bg-gray-50 rounded-2xl border border-pink-50 outline-none focus:border-pink-200 transition-all text-sm shadow-inner" oninput="filter()">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-pink-300">🔍</span>
+            </div>
+            
+            <div class="flex gap-2 overflow-x-auto pb-4 mb-6 custom-scrollbar" id="cats">
+                <!-- Categories will be generated here -->
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="formulas">
+                <!-- Formulas will be generated here -->
+            </div>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const data = [
+            {cat: '数学', name: '勾股定理', formula: 'a² + b² = c²', desc: '直角三角形三边关系'},
+            {cat: '数学', name: '一元二次方程求根公式', formula: 'x = (-b ± √(b²-4ac)) / 2a', desc: 'ax² + bx + c = 0 的根'},
+            {cat: '数学', name: '圆面积公式', formula: 'S = πr²', desc: 'r 为圆半径'},
+            {cat: '数学', name: '球体体积公式', formula: 'V = (4/3)πr³', desc: 'r 为球半径'},
+            {cat: '数学', name: '等差数列求和', formula: 'Sn = n(a₁ + an) / 2', desc: 'n 为项数'},
+            {cat: '物理', name: '牛顿第二定律', formula: 'F = ma', desc: '力 = 质量 × 加速度'},
+            {cat: '物理', name: '万有引力公式', formula: 'F = G · (m₁m₂ / r²)', desc: 'G 为万有引力常数'},
+            {cat: '物理', name: '欧姆定律', formula: 'I = U / R', desc: '电流 = 电压 / 电阻'},
+            {cat: '物理', name: '动能公式', formula: 'Ek = ½mv²', desc: 'm 为质量，v 为速度'},
+            {cat: '化学', name: '理想气体状态方程', formula: 'PV = nRT', desc: 'P 压强, V 体积, n 物质的量'},
+            {cat: '化学', name: '摩尔质量', formula: 'M = m / n', desc: '摩尔质量 = 质量 / 物质的量'}
+        ];
+
+        const cats = [...new Set(data.map(d => d.cat))];
+        let activeCat = '';
+
+        function renderCats() {
+            document.getElementById('cats').innerHTML = `
+                <button onclick="activeCat=''; filter()" class="whitespace-nowrap px-6 py-2 rounded-xl text-xs font-black transition-all ${activeCat === '' ? 'bg-pink-400 text-white shadow-md' : 'bg-pink-50 text-pink-400 hover:bg-pink-100'}">🎨 全部</button>
+            ` + cats.map(c => `
+                <button onclick="activeCat='${c}'; filter()" class="whitespace-nowrap px-6 py-2 rounded-xl text-xs font-black transition-all ${activeCat === c ? 'bg-pink-400 text-white shadow-md' : 'bg-pink-50 text-pink-400 hover:bg-pink-100'}">${c}</button>
+            `).join('');
+        }
+
+        function filter() {
+            const q = document.getElementById('search').value.toLowerCase();
+            const filtered = data.filter(d => (!activeCat || d.cat === activeCat) && (!q || d.name.toLowerCase().includes(q) || d.formula.toLowerCase().includes(q)));
+            
+            document.getElementById('formulas').innerHTML = filtered.map(d => `
+                <div class="p-6 bg-pink-50/20 rounded-3xl border border-pink-50 hover:border-pink-200 transition-all group animate-fade-in shadow-sm">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="px-3 py-1 bg-pink-100 text-pink-500 rounded-full text-[10px] font-black">${d.cat}</span>
+                        <span class="text-[10px] font-bold text-gray-300 opacity-60 uppercase">Formula</span>
+                    </div>
+                    <p class="font-black text-slate-700 mb-3 group-hover:text-pink-500 transition-colors">${d.name}</p>
+                    <div class="p-4 bg-white rounded-2xl border border-pink-50 text-base md:text-lg font-mono text-pink-400 font-black mb-3 shadow-inner text-center">
+                        ${d.formula}
+                    </div>
+                    <p class="text-xs text-gray-400 font-bold italic">💡 ${d.desc}</p>
+                </div>
+            `).join('');
+            renderCats();
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    filter();
+                }, 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

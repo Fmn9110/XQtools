@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>艺术横幅制作 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        #canvas {
+            width: 100%;
+            height: auto;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            background: white;
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fffafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 transition-transform hover:rotate-0">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-4 md:py-8 px-4 max-w-6xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold mb-4 animate-item gradient-text">艺术横幅制作</h1>
+            <p class="text-gray-500 animate-item" style="animation-delay: 0.1s">快速制作精美的文字横幅，适用于社交平台封面或通告。🎨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-8 mb-12 animate-item" style="animation-delay: 0.2s">
+            <div class="flex flex-col lg:flex-row gap-8 lg:gap-12">
+                <div class="flex-1 space-y-6">
+                    <div class="bg-gray-50 rounded-3xl p-4 flex items-center justify-center min-h-[200px]">
+                        <canvas id="canvas" width="1200" height="630"></canvas>
+                    </div>
+                    <p class="text-xs text-center text-gray-400">实时预览区域 · 画布比例自动适配预设</p>
+                </div>
+
+                <div class="w-full lg:w-96 space-y-6">
+                    <div class="bg-pink-50/30 p-6 md:p-8 rounded-3xl space-y-6">
+                        <h3 class="font-bold text-gray-800 flex items-center">
+                            <span class="w-1.5 h-6 bg-pink-400 rounded-full mr-3"></span>
+                            样式编辑
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">主标题</label>
+                                <input type="text" id="title" value="Hello World" class="cute-input w-full px-4 py-3 bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">副标题</label>
+                                <input type="text" id="subtitle" value="这是一个艺术横幅" class="cute-input w-full px-4 py-3 bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">尺寸预设</label>
+                                <select id="preset" class="cute-input w-full px-4 py-3 bg-white" onchange="render()">
+                                    <option value="1200x630">Facebook (1200×630)</option>
+                                    <option value="1500x500">Twitter (1500×500)</option>
+                                    <option value="1080x1080">Instagram (1080×1080)</option>
+                                    <option value="820x312">FB 封面 (820×312)</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">背景色1</label>
+                                    <input type="color" id="bgColor" value="#ff8b94" class="w-full h-10 rounded-xl border-0 cursor-pointer p-0 bg-transparent" onchange="render()">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">背景色2</label>
+                                    <input type="color" id="bgColor2" value="#ffdac1" class="w-full h-10 rounded-xl border-0 cursor-pointer p-0 bg-transparent" onchange="render()">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">文字颜色</label>
+                                <input type="color" id="textColor" value="#ffffff" class="w-full h-10 rounded-xl border-0 cursor-pointer p-0 bg-transparent" onchange="render()">
+                            </div>
+                        </div>
+
+                        <div class="pt-4 space-y-3">
+                            <button onclick="render()" class="w-full theme-secondary-btn py-3 rounded-full text-sm font-bold flex items-center justify-center gap-2">
+                                <span>🔄</span> 生成预览
+                            </button>
+                            <button onclick="dl()" class="cute-button w-full theme-download-btn px-6 py-4 rounded-full font-bold">下载横幅图片</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    
+        <div class="grid md:grid-cols-2 gap-8 mb-12 animate-item" style="animation-delay: 0.3s">
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">🎯</span>
+                    使用小贴士
+                </h2>
+                <div class="bg-white rounded-3xl p-8 shadow-sm border border-pink-50 relative overflow-hidden h-full">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-full blur-3xl -mr-10 -mt-10 opacity-50"></div>
+                    <ul class="space-y-4 text-gray-600 list-decimal list-inside text-sm leading-relaxed relative z-10 font-medium">
+                        <li>通过设置两个背景颜色，可以生成精致的线性渐变效果。</li>
+                        <li>系统内置了自动圆点装饰，让背景不再单调。</li>
+                        <li>建议根据具体的社交平台需求选择对应的比例预设。</li>
+                    </ul>
+                </div>
+            </section>
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">💬</span>
+                    常见答疑
+                </h2>
+                <div class="space-y-4 h-full">
+                    <div class="bg-white p-5 rounded-2xl border border-pink-50 shadow-sm hover:border-pink-200 transition-colors">
+                        <div class="font-bold text-gray-700 mb-2 flex items-center">
+                            <span class="w-1.5 h-1.5 rounded-full bg-pink-400 mr-2"></span>
+                            图片清晰度如何？
+                        </div>
+                        <div class="text-gray-500 text-sm leading-relaxed pl-3.5">
+                            我们采用高分辨率 Canvas 绘制，下载后的图片根据预设尺寸精准导出，完全能胜任社交平台的高质量封面要求。
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-10 text-center text-gray-400 text-xs border-t border-pink-50 mt-12 bg-white/50">
+        © 2026 小Q工具箱 · 纯前端离线实验室 · 保护隐私 💖
+    </footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+            render();
+        });
+
+        function render(){
+            const [w,h] = document.getElementById('preset').value.split('x').map(Number);
+            canvas.width = w;
+            canvas.height = h;
+            
+            // 渐变背景
+            const grad = ctx.createLinearGradient(0,0,w,h);
+            grad.addColorStop(0, document.getElementById('bgColor').value);
+            grad.addColorStop(1, document.getElementById('bgColor2').value);
+            ctx.fillStyle = grad;
+            ctx.fillRect(0,0,w,h);
+
+            // 装饰圆点
+            ctx.globalAlpha = 0.1;
+            for(let i=0; i<20; i++){
+                ctx.beginPath();
+                ctx.arc(Math.random()*w, Math.random()*h, Math.random()*80+20, 0, Math.PI*2);
+                ctx.fillStyle = '#fff';
+                ctx.fill();
+            }
+            ctx.globalAlpha = 1;
+
+            // 文字
+            const tc = document.getElementById('textColor').value;
+            ctx.fillStyle = tc;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // 主标题
+            ctx.font = `bold ${Math.min(w*0.08, 80)}px 'Outfit', sans-serif`;
+            ctx.fillText(document.getElementById('title').value, w/2, h/2 - 20);
+            
+            // 副标题
+            ctx.font = `${Math.min(w*0.035, 36)}px 'Outfit', sans-serif`;
+            ctx.globalAlpha = 0.8;
+            ctx.fillText(document.getElementById('subtitle').value, w/2, h/2 + 40);
+            ctx.globalAlpha = 1;
+
+            if (window.Utils && Utils.toast) {
+                // 不在每次输入时触发，仅通过按钮点击调用时考虑
+            }
+        }
+
+        function dl(){
+            Utils.downloadFile(canvas.toDataURL(), 'banner_' + Date.now() + '.png', 'image/png');
+            Utils.toast('保存成功！', 'success');
+        }
+
+        // 监听所有输入实时更新
+        document.querySelectorAll('input').forEach(el => el.oninput = render);
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

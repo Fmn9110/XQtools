@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>学分统计 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">学期末学分核对统筹</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">输入课程成绩，自动计算加权平均绩点</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 mb-8 bg-white animate-item" style="animation-delay: 0.2s">
+            <div id="courses" class="space-y-3 mb-6"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button onclick="addCourse()" class="w-full py-4 px-6 bg-pink-50 text-pink-500 font-bold rounded-2xl border border-pink-100 hover:bg-pink-100 transition-all">+ 添加单门课程</button>
+                <button onclick="calc()" class="cute-button w-full py-4 px-6 bg-pink-400 text-white font-bold rounded-2xl shadow-lg">📊 即刻计算 GPA</button>
+            </div>
+            
+            <div id="result" class="hidden mt-8 bg-pink-50/30 rounded-3xl p-8 text-center border border-pink-50 animate-fade-in">
+                <p class="text-xs md:text-sm text-pink-300 font-bold uppercase tracking-widest mb-2">加权平均 GPA</p>
+                <p class="text-6xl md:text-7xl font-black text-pink-500 tabular-nums" id="gpa">0.00</p>
+                <div class="mt-4 flex justify-center gap-4 text-xs font-bold text-gray-400" id="detail"></div>
+            </div>
+        </section>
+
+        <section class="cute-card p-6 mb-12 bg-white animate-item" style="animation-delay: 0.3s">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <span class="w-2 h-6 bg-pink-400 rounded-full"></span>
+                📘 GPA 对照基准
+            </h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-[10px] md:text-xs">
+                <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">A/A+ (90-100) = 4.0</div>
+                <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">A- (85-89) = 3.7</div>
+                <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">B+ (82-84) = 3.3</div>
+                <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">B (78-81) = 3.0</div>
+                <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">B- (75-77) = 2.7</div>
+                <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">C+ (72-74) = 2.3</div>
+                <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">C (68-71) = 2.0</div>
+                <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">D (60-67) = 1.0</div>
+            </div>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let courseId = 0;
+        function addCourse() {
+            courseId++;
+            const div = document.createElement('div');
+            div.className = 'grid grid-cols-1 md:grid-cols-4 gap-2 p-4 bg-gray-50 rounded-2xl border border-pink-50/30 animate-item';
+            div.id = 'c' + courseId;
+            div.innerHTML = `
+                <input type="text" placeholder="课程名称" class="md:col-span-2 p-3 bg-white rounded-xl border border-gray-100 outline-none focus:border-pink-200 text-sm transition-all">
+                <input type="number" placeholder="学分" class="p-3 bg-white rounded-xl border border-gray-100 outline-none focus:border-pink-200 text-sm transition-all">
+                <div class="flex gap-2">
+                    <input type="number" placeholder="分数" class="flex-1 p-3 bg-white rounded-xl border border-gray-100 outline-none focus:border-pink-200 text-sm transition-all">
+                    <button onclick="removeCourse('c${courseId}')" class="text-gray-300 hover:text-pink-400 p-2 transition-colors">🗑️</button>
+                </div>`;
+            document.getElementById('courses').appendChild(div);
+        }
+
+        function removeCourse(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        function scoreToGPA(s) {
+            if (s >= 90) return 4.0; if (s >= 85) return 3.7; if (s >= 82) return 3.3; if (s >= 78) return 3.0;
+            if (s >= 75) return 2.7; if (s >= 72) return 2.3; if (s >= 68) return 2.0; if (s >= 60) return 1.0; return 0;
+        }
+
+        function calc() {
+            const rows = document.getElementById('courses').children;
+            let totalCredit = 0, totalPoint = 0;
+            Array.from(rows).forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                const credit = parseFloat(inputs[1].value) || 0;
+                const score = parseFloat(inputs[2].value) || 0;
+                totalCredit += credit; totalPoint += credit * scoreToGPA(score);
+            });
+            if (!totalCredit) { Utils.toast('请先添加至少一门课程', 'warning'); return; }
+            const gpa = (totalPoint / totalCredit).toFixed(2);
+            document.getElementById('gpa').textContent = gpa;
+            document.getElementById('detail').innerHTML = `<span>总学分: ${totalCredit}</span> <span class="text-pink-100">|</span> <span>加权总绩点: ${totalPoint.toFixed(1)}</span>`;
+            document.getElementById('result').classList.remove('hidden');
+            Utils.toast('GPA 计算成功', 'success');
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+
+        // 默认三个空行
+        addCourse(); addCourse(); addCourse();
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

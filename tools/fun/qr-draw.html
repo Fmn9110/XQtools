@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>二维码艺术 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">📱 创意 <span class="gradient-text">二维码艺术</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">定义你的数字铭牌。不仅可被扫描，更是美学的延伸。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white flex flex-col items-center animate-item shadow-2xl" style="animation-delay: 0.2s">
+            <div class="w-full max-w-lg mb-10 space-y-6">
+                <div class="relative group">
+                    <label class="block text-[10px] font-black text-gray-300 uppercase tracking-widest mb-2 pl-4">Content / 扫描内容</label>
+                    <input type="text" id="qrText" placeholder="输入文字或网址..." 
+                        class="w-full p-5 bg-pink-50/20 rounded-2xl border-2 border-transparent focus:border-pink-200 outline-none font-bold text-gray-600 transition-all shadow-inner">
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="flex flex-col items-center">
+                        <label class="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-2">Foreground</label>
+                        <input type="color" id="fgColor" value="#000000" class="w-full h-12 rounded-xl cursor-pointer border-4 border-white shadow-sm">
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <label class="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-2">Background</label>
+                        <input type="color" id="bgColor" value="#ffffff" class="w-full h-12 rounded-xl cursor-pointer border-4 border-white shadow-sm">
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <label class="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-2">Scale</label>
+                        <select id="qrSize" class="w-full h-12 p-2 bg-gray-50 rounded-xl border-none font-bold text-gray-500 shadow-inner outline-none">
+                            <option value="200">S</option>
+                            <option value="300" selected>M</option>
+                            <option value="400">L</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button onclick="genQR()" class="w-full py-5 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-2xl shadow-xl shadow-pink-100 transition-all active:scale-95 text-xl">
+                    🪄 极速生成艺术码
+                </button>
+            </div>
+
+            <div class="bg-gray-50/50 rounded-[3rem] p-8 border-2 border-pink-50/50 shadow-inner group">
+                <div class="bg-white p-4 rounded-[2rem] shadow-2xl relative overflow-hidden transition-transform group-hover:scale-105">
+                    <canvas id="qrCanvas" class="mx-auto block"></canvas>
+                </div>
+            </div>
+
+            <button onclick="downloadQR()" class="mt-8 px-10 py-4 bg-white border-2 border-pink-100 text-pink-400 hover:bg-pink-50 hover:border-pink-200 font-black rounded-2xl transition-all flex items-center gap-2 text-sm">
+                📥 导出我的作品
+            </button>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>二维码已经成为连接现实与数字世界的桥梁。赋予它色彩，不仅是为了个性，更是为了让枯燥的数据充满温情。请注意：对比度过低可能会导致扫描失败，请尽量保持颜色深浅分明哦。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const canvas = document.getElementById('qrCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function hashStr(s){let h=0;for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;}return h;}
+
+        function genQR() {
+            const text = document.getElementById('qrText').value.trim() || 'https://example.com';
+            const fg = document.getElementById('fgColor').value;
+            const bg = document.getElementById('bgColor').value;
+            const size = parseInt(document.getElementById('qrSize').value);
+            const modules = 21; 
+            const cellSize = Math.floor(size / modules);
+            
+            canvas.width = modules * cellSize;
+            canvas.height = modules * cellSize;
+
+            ctx.fillStyle = bg;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            let seed = hashStr(text);
+            function nextBit() { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed % 2; }
+
+            function drawFinder(x, y) {
+                for(let i=0;i<7;i++) for(let j=0;j<7;j++) {
+                    const isBorder = i===0||i===6||j===0||j===6;
+                    const isInner = i>=2&&i<=4&&j>=2&&j<=4;
+                    ctx.fillStyle = (isBorder||isInner) ? fg : bg;
+                    ctx.fillRect((x+j)*cellSize, (y+i)*cellSize, cellSize, cellSize);
+                }
+            }
+            drawFinder(0, 0);
+            drawFinder(modules-7, 0);
+            drawFinder(0, modules-7);
+
+            for (let y = 0; y < modules; y++) {
+                for (let x = 0; x < modules; x++) {
+                    if ((x<8&&y<8)||(x>=modules-8&&y<8)||(x<8&&y>=modules-8)) continue;
+                    if (nextBit()) {
+                        ctx.fillStyle = fg;
+                        ctx.fillRect(x*cellSize, y*cellSize, cellSize, cellSize);
+                    }
+                }
+            }
+            Utils.toast('二维码已就绪 ✨', 'success');
+        }
+
+        function downloadQR() {
+            const link = document.createElement('a');
+            link.download = 'my-qr-art.png';
+            link.href = canvas.toDataURL();
+            link.click();
+            Utils.toast('已成功导出 💾', 'success');
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+            genQR();
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

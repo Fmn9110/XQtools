@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>古诗词填空挑战 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">经典古诗词默写挑战</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">温故而知新，测测你的诗词底蕴储备。</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white shadow-2xl animate-item flex flex-col items-center" style="animation-delay: 0.2s">
+            <!-- Stats -->
+            <div class="w-full flex justify-between items-center mb-10 px-6 py-4 bg-pink-50/30 rounded-[2.5rem] border border-pink-50 max-w-xl shadow-inner">
+                <div class="flex flex-col items-start translate-y-1">
+                    <p class="text-[10px] font-black text-pink-300 uppercase tracking-widest leading-none mb-1">Challenge Progress</p>
+                    <p class="text-2xl font-black text-pink-500 font-mono"><span id="score">0</span> <span class="text-xs text-pink-200">/</span> <span id="total" class="text-slate-400">0</span></p>
+                </div>
+                <button onclick="next()" class="px-8 py-3 bg-white text-pink-400 rounded-2xl text-xs font-black shadow-sm hover:bg-pink-400 hover:text-white transition-all active:scale-95 border-2 border-pink-100 flex items-center gap-2 group">
+                    <span>NEXT CHALLENGE</span> <span class="group-hover:translate-x-1 transition-transform">⏭️</span>
+                </button>
+            </div>
+
+            <!-- Question Area -->
+            <div id="qBox" class="w-full max-w-2xl bg-white p-10 md:p-16 rounded-[4rem] border border-pink-50 mb-10 shadow-sm relative overflow-hidden group">
+                <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-pink-50 rounded-full opacity-40 group-hover:scale-110 transition-transform -z-10"></div>
+                <div class="absolute -left-10 -top-10 text-6xl opacity-5 rotate-12">✒️</div>
+                
+                <p id="poem" class="text-2xl md:text-3xl text-slate-700 leading-loose font-serif font-black italic mb-8 transition-all min-h-[6rem]"></p>
+                <div class="flex justify-center items-center gap-3">
+                    <span class="w-4 h-0.5 bg-pink-100"></span>
+                    <p id="source" class="text-[11px] text-pink-300 font-black uppercase tracking-[0.3em]">--</p>
+                    <span class="w-4 h-0.5 bg-pink-100"></span>
+                </div>
+            </div>
+
+            <!-- Interaction -->
+            <div class="w-full max-w-md space-y-6">
+                <div class="relative">
+                    <input type="text" id="answer" placeholder="输入缺失的诗句.." class="w-full p-6 bg-slate-50 rounded-3xl border-2 border-slate-50 outline-none focus:border-pink-200 focus:bg-white transition-all text-center text-xl font-black text-slate-700 shadow-inner" onkeydown="if(event.key==='Enter')check()">
+                    <div id="statusDot" class="absolute right-6 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-transparent transition-colors"></div>
+                </div>
+                
+                <button onclick="check()" id="submitBtn" class="w-full py-5 bg-pink-400 text-white font-black rounded-3xl shadow-lg hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-lg leading-none">
+                    🚀 <span>提交答案 (VERIFY)</span>
+                </button>
+            </div>
+            
+            <!-- Result Toast for this question -->
+            <div id="feedback" class="mt-10 min-h-[2.5em] transition-all duration-500 transform scale-95 opacity-0">
+                <p class="text-sm font-black flex items-center justify-center gap-2"></p>
+            </div>
+        </section>
+
+        <footer class="text-gray-300 text-[10px] uppercase font-black tracking-[0.5em] pb-12 animate-item" style="animation-delay: 0.3s">
+            Classical Poetry & Intelligence Lab
+        </footer>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const poems = [
+            {lines:['床前明月光','疑是地上霜','举头望明月','低头思故乡'], blank:2, src:'李白《静夜思》'},
+            {lines:['白日依山尽','黄河入海流','欲穷千里目','更上一层楼'], blank:3, src:'王之涣《登鹳雀楼》'},
+            {lines:['春眠不觉晓','处处闻啼鸟','夜来风雨声','花落知多少'], blank:0, src:'孟浩然《春晓》'},
+            {lines:['锄禾日当午','汗滴禾下土','谁知盘中餐','粒粒皆辛苦'], blank:3, src:'李绅《悯农》'},
+            {lines:['离离原上草','一岁一枯荣','野火烧不尽','春风吹又生'], blank:2, src:'白居易《赋得古原草送别》'},
+            {lines:['红豆生南国','春来发几枝','愿君多采撷','此物最相思'], blank:3, src:'王维《相思》'},
+            {lines:['千山鸟飞绝','万径人踪灭','孤舟蓑笠翁','独钓寒江雪'], blank:1, src:'柳宗元《江雪》'},
+            {lines:['两个黄鹂鸣翠柳','一行白鹭上青天','窗含西岭千秋雪','门泊东吴万里船'], blank:0, src:'杜甫《绝句》'},
+            {lines:['飞流直下三千尺','疑是银河落九天'], blank:1, src:'李白《望庐山瀑布》'},
+            {lines:['但愿人长久','千里共婵娟'], blank:1, src:'苏轼《水调歌头》'},
+        ];
+
+        let score = 0, totalCount = 0, currentIdx = -1;
+
+        function next(){
+            currentIdx = Math.floor(Math.random() * poems.length);
+            const p = poems[currentIdx];
+            const display = p.lines.map((l, i) => i === p.blank ? '______' : l).join('\n');
+            
+            const poemEl = document.getElementById('poem');
+            poemEl.classList.add('opacity-0', 'scale-95');
+            
+            setTimeout(() => {
+                poemEl.textContent = display;
+                document.getElementById('source').textContent = p.src;
+                document.getElementById('answer').value = '';
+                document.getElementById('answer').className = "w-full p-6 bg-slate-50 rounded-3xl border-2 border-slate-50 outline-none focus:border-pink-200 focus:bg-white transition-all text-center text-xl font-black text-slate-700 shadow-inner";
+                document.getElementById('statusDot').className = "absolute right-6 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-transparent transition-colors";
+                
+                const fb = document.getElementById('feedback');
+                fb.classList.add('opacity-0', 'scale-95');
+                
+                poemEl.classList.remove('opacity-0', 'scale-95');
+                document.getElementById('answer').focus();
+            }, 300);
+            
+            Utils.toast('新挑战已就绪 ✨');
+        }
+
+        function check(){
+            const ansInput = document.getElementById('answer');
+            const feedback = document.getElementById('feedback');
+            const dot = document.getElementById('statusDot');
+            const val = ansInput.value.trim();
+            
+            if(!val) return;
+
+            const p = poems[currentIdx];
+            const correct = p.lines[p.blank];
+            totalCount++;
+            
+            feedback.classList.remove('opacity-0', 'scale-95');
+            feedback.classList.add('opacity-100', 'scale-100');
+
+            if(val === correct){
+                score++;
+                feedback.innerHTML = `<p class="text-pink-500 text-base font-black flex items-center justify-center gap-2 animate-bounce"><span>🕊️ 妙笔生花，回答完全正确！</span></p>`;
+                ansInput.classList.remove('border-slate-50');
+                ansInput.classList.add('border-pink-400');
+                dot.className = "absolute right-6 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-pink-400 shadow-[0_0_10px_#f472b6]";
+                Utils.toast('正确！积分 +1 🍫', 'success');
+                setTimeout(next, 1800);
+            } else {
+                feedback.innerHTML = `<p class="text-rose-400 text-sm font-black flex flex-col items-center gap-1"><span>📜 差一点点，正确答案是：</span><span class="text-pink-500 text-lg">『${correct}』</span></p>`;
+                ansInput.classList.remove('border-slate-50');
+                ansInput.classList.add('border-rose-400');
+                dot.className = "absolute right-6 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-rose-400";
+                Utils.toast('再接再厉！⚡', 'warning');
+            }
+            
+            document.getElementById('score').textContent = score;
+            document.getElementById('total').textContent = totalCount;
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    next();
+                }, 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

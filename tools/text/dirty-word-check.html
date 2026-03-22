@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>敏感词检测 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .highlight-word { background-color: #fce7f3; color: #be185d; padding: 0 4px; border-radius: 4px; font-weight: bold; border-bottom: 2px solid #ec4899; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body>
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white/80 backdrop-blur-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 transition-transform hover:rotate-0">
+                    Q
+                </div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <div class="hidden md:flex space-x-6 text-gray-500 text-sm font-semibold">
+                <a href="../../index.html" class="hover:text-pink-500 transition-colors">首页</a>
+                <a href="../../categories.html" class="hover:text-pink-500 transition-colors">全部分类</a>
+                <a href="../../tools.html" class="hover:text-pink-500 transition-colors">所有工具</a>
+            </div>
+            <div class="md:hidden">
+                <a href="../../tools.html" class="text-gray-400 hover:text-pink-500 transition-colors">
+                    <span class="text-2xl">🛠️</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-12 animate-item">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4">敏感词检测</h1>
+            <p class="text-gray-500 italic text-sm md:text-base">基于本地基础库的敏感词过滤与高亮，保护文案合规性。🛡️</p>
+        </header>
+
+            <textarea id="textInput" class="w-full h-80 p-8 bg-red-50/10 border-2 border-red-50 rounded-3xl text-sm outline-none focus:border-red-100 transition-all resize-none mb-8" placeholder="在此粘贴需要检测的文字..."></textarea>
+            
+            <div class="flex gap-4 justify-center">
+                <button id="checkBtn" class="theme-download-btn px-12 py-4">立即检测</button>
+                <div id="statusInfo" class="hidden flex items-center gap-2 text-sm text-gray-400">
+                    <span id="foundCount" class="font-bold text-red-400">0</span> 个可疑词汇
+                </div>
+            </div>
+        </section>
+
+        <section id="resultArea" class="hidden cute-card p-8 bg-white shadow-lg text-left max-w-2xl mx-auto animate-fade-in mb-12">
+             <h3 class="font-bold text-gray-800 mb-4">高亮结果：</h3>
+             <div id="highlightText" class="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap"></div>
+        </section>
+
+        <section class="cute-card p-8 bg-white shadow-lg text-left max-w-2xl mx-auto">
+             <div class="flex items-center gap-3 mb-4">
+                 <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">🚩</div>
+                 <h3 class="font-bold text-gray-800">关于库</h3>
+             </div>
+             <p class="text-xs text-gray-400">目前库包含一些常见的基础限制性词汇。您可以根据需要在输入框中自行测试。</p>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        // Basic list for demonstration
+        const dirtyLibrary = ["敏感", "垃圾", "测试", "坏蛋", "笨蛋", "傻瓜"]; 
+        
+        const input = document.getElementById('textInput');
+        const checkBtn = document.getElementById('checkBtn');
+        const resultArea = document.getElementById('resultArea');
+        const highlightText = document.getElementById('highlightText');
+        const foundCount = document.getElementById('foundCount');
+        const statusInfo = document.getElementById('statusInfo');
+
+        checkBtn.onclick = () => {
+             const val = input.value;
+             if (!val) {
+                 Utils.toast('请输入内容', 'warning');
+                 return;
+             }
+             
+             let found = 0;
+             let html = Utils.escapeHtml(val);
+             
+             dirtyLibrary.forEach(word => {
+                 const regex = new RegExp(word, 'g');
+                 const matches = val.match(regex);
+                 if (matches) {
+                     found += matches.length;
+                     html = html.replace(new RegExp(Utils.escapeHtml(word), 'g'), `<span class="highlight-word">${word}</span>`);
+                 }
+             });
+             
+             highlightText.innerHTML = html;
+             foundCount.innerText = found;
+             statusInfo.classList.remove('hidden');
+             resultArea.classList.remove('hidden');
+             
+             if(found > 0) {
+                 Utils.toast(`检测到 ${found} 处敏感词`, 'error');
+             } else {
+                 Utils.toast('未检测到明显敏感词', 'success');
+             }
+        };
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

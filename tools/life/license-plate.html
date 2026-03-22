@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>车牌归属地查询 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50"><div class="container mx-auto flex justify-between items-center"><div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'"><div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div><span class="text-2xl font-bold gradient-text">小Q工具箱</span></div><a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a></div></nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">🚗 车牌归属地查询</h1>
+            <p class="text-gray-500">输入车牌前缀，查看归属省份和城市</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="max-w-md mx-auto mb-6">
+                <label class="block text-xs font-bold text-gray-400 mb-2">输入车牌前2位(如 京A、粤B)</label>
+                <input type="text" id="plate" placeholder="如: 京A" maxlength="2" class="w-full p-4 bg-gray-50 rounded-xl border outline-none text-center text-2xl uppercase" oninput="query()">
+            </div>
+            <div id="result" class="hidden text-center">
+                <div class="bg-blue-100 rounded-3xl p-8">
+                    <p class="text-4xl font-black text-blue-600 mb-2" id="rPlate"></p>
+                    <p class="text-xl text-gray-700" id="rCity"></p>
+                    <p class="text-sm text-gray-500" id="rProvince"></p>
+                </div>
+            </div>
+            <div class="mt-6">
+                <h3 class="text-sm font-bold text-gray-500 mb-3">速查表</h3>
+                <div class="grid grid-cols-4 md:grid-cols-8 gap-2 text-center text-sm" id="quickLookup"></div>
+            </div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>输入车牌前1-2位。</li><li>查看归属城市。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">数据完整吗？</div><div class="text-gray-500 text-sm">覆盖全国31省市的主要车牌代码。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const plates = {
+            '京A':'北京市(城区)','京B':'北京市(出租车)','京C':'北京市(城区)','京D':'北京市(城区)','京E':'北京市(城区)','京F':'北京市(城区)','京G':'北京市(远郊区)',
+            '津A':'天津市','津B':'天津市','津C':'天津市',
+            '沪A':'上海市','沪B':'上海市','沪C':'上海市(郊区)','沪D':'上海市',
+            '渝A':'重庆市(主城区)','渝B':'重庆市(主城区)','渝C':'重庆市(永川)','渝F':'重庆市(万州)',
+            '粤A':'广州','粤B':'深圳','粤C':'珠海','粤D':'汕头','粤E':'佛山','粤F':'韶关','粤G':'湛江','粤H':'肇庆','粤J':'江门','粤L':'惠州','粤S':'东莞',
+            '苏A':'南京','苏B':'无锡','苏C':'徐州','苏D':'常州','苏E':'苏州','苏F':'南通','苏G':'连云港','苏H':'淮安','苏J':'盐城','苏K':'扬州',
+            '浙A':'杭州','浙B':'宁波','浙C':'温州','浙D':'绍兴','浙E':'湖州','浙F':'嘉兴','浙G':'金华','浙H':'衢州',
+            '鲁A':'济南','鲁B':'青岛','鲁C':'淄博','鲁D':'枣庄','鲁E':'东营','鲁F':'烟台','鲁G':'潍坊','鲁H':'济宁',
+            '豫A':'郑州','豫B':'开封','豫C':'洛阳','豫D':'平顶山','豫E':'安阳','豫H':'焦作',
+            '川A':'成都','川B':'绵阳','川C':'自贡','川D':'攀枝花','川E':'泸州',
+            '湘A':'长沙','湘B':'株洲','湘C':'湘潭','湘D':'衡阳','湘F':'岳阳',
+            '鄂A':'武汉','鄂B':'黄石','鄂C':'十堰','鄂D':'荆州',
+            '闽A':'福州','闽B':'莆田','闽C':'泉州','闽D':'厦门',
+            '赣A':'南昌','赣B':'赣州','赣C':'宜春',
+            '皖A':'合肥','皖B':'芜湖','皖C':'蚌埠',
+            '桂A':'南宁','桂B':'柳州','桂C':'桂林',
+            '黑A':'哈尔滨','黑B':'齐齐哈尔',
+            '吉A':'长春','吉B':'吉林市',
+            '辽A':'沈阳','辽B':'大连','辽C':'鞍山',
+            '蒙A':'呼和浩特','蒙B':'包头',
+            '藏A':'拉萨','新A':'乌鲁木齐','宁A':'银川','青A':'西宁','甘A':'兰州','陕A':'西安','云A':'昆明','贵A':'贵阳','琼A':'海口',
+        };
+
+        const provinces = {'京':'北京','津':'天津','沪':'上海','渝':'重庆','粤':'广东','苏':'江苏','浙':'浙江','鲁':'山东','豫':'河南','川':'四川','湘':'湖南','鄂':'湖北','闽':'福建','赣':'江西','皖':'安徽','桂':'广西','黑':'黑龙江','吉':'吉林','辽':'辽宁','蒙':'内蒙古','藏':'西藏','新':'新疆','宁':'宁夏','青':'青海','甘':'甘肃','陕':'陕西','云':'云南','贵':'贵州','琼':'海南','冀':'河北','晋':'山西'};
+
+        let quickHtml = '';
+        Object.keys(provinces).forEach(k => {
+            quickHtml += `<button onclick="document.getElementById('plate').value='${k}A';query()" class="p-2 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors font-bold">${k}</button>`;
+        });
+        document.getElementById('quickLookup').innerHTML = quickHtml;
+
+        function query() {
+            const input = document.getElementById('plate').value.trim().toUpperCase();
+            if (input.length < 1) { document.getElementById('result').classList.add('hidden'); return; }
+            const key = input.length >= 2 ? input.substring(0, 2) : input + 'A';
+            const city = plates[key];
+            const prov = provinces[input[0]];
+            if (city || prov) {
+                document.getElementById('rPlate').textContent = key;
+                document.getElementById('rCity').textContent = city || '请输入完整前缀';
+                document.getElementById('rProvince').textContent = prov ? prov + '省' : '';
+                document.getElementById('result').classList.remove('hidden');
+            } else {
+                document.getElementById('result').classList.add('hidden');
+            }
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

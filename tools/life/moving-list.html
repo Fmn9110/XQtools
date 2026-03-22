@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>搬家清单 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50"><div class="container mx-auto flex justify-between items-center"><div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'"><div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div><span class="text-2xl font-bold gradient-text">小Q工具箱</span></div><a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a></div></nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">📦 搬家清单</h1>
+            <p class="text-gray-500">搬家不慌乱，一份完整的搬家待办清单</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="mb-4 flex justify-between items-center"><span class="text-sm text-gray-500">已完成 <strong id="done">0</strong>/<span id="total">0</span></span><button onclick="reset()" class="text-xs text-gray-400 hover:text-red-400 theme-secondary-btn">重置</button></div>
+            <div class="w-full bg-gray-200 rounded-full h-2 mb-4"><div id="bar" class="bg-green-500 h-2 rounded-full transition-all"></div></div>
+            <div class="space-y-4" id="list"></div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>按时间线浏览搬家任务。</li><li>勾选已完成的事项。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">搬家多久前开始准备？</div><div class="text-gray-500 text-sm">建议提前2-4周开始准备，整理和打包需要时间。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const phases = [
+            {phase:'📅 搬家前2-4周',items:['确定搬家日期','对比选择搬家公司','开始整理断舍离','通知物业/房东','准备打包材料(箱子、胶带、气泡膜)']},
+            {phase:'📅 搬家前1周',items:['按房间分类打包','贵重物品单独保管','通知亲友新地址','联系水电燃气过户/报停','联系宽带迁移/注销']},
+            {phase:'📅 搬家前1天',items:['冰箱断电除霜','洗衣机排水','贵重易碎品特殊包装','证件现金随身携带','充电宝充满电']},
+            {phase:'🚚 搬家当天',items:['清点物品数量','监督装车(先大后小)','旧房最后检查(水电关闭)','新房钥匙和门禁准备','拍照记录旧房状态']},
+            {phase:'🏠 搬家后',items:['检查物品是否完好','大件家具归位','更新身份证地址','更新快递默认地址','认识新邻居,了解垃圾分类']},
+        ];
+        const KEY = 'xq_moving_list';
+        let checks = JSON.parse(localStorage.getItem(KEY) || '{}');
+
+        function toggle(id) { checks[id] = !checks[id]; localStorage.setItem(KEY, JSON.stringify(checks)); render(); }
+        function reset() { checks = {}; localStorage.removeItem(KEY); render(); }
+
+        function render() {
+            let all = 0, done = 0;
+            let html = '';
+            phases.forEach(p => {
+                html += `<div class="bg-gray-50 rounded-xl p-4"><h3 class="font-bold text-gray-700 mb-3">${p.phase}</h3><div class="space-y-2">`;
+                p.items.forEach(item => {
+                    const id = p.phase + item;
+                    const checked = checks[id];
+                    all++; if (checked) done++;
+                    html += `<label class="flex items-center gap-3 p-2 rounded-lg cursor-pointer hover:bg-white transition-colors" onclick="toggle('${id.replace(/'/g,"\\'")}')">
+                        <span class="w-5 h-5 rounded border-2 flex items-center justify-center ${checked ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300'}"><span class="text-xs">${checked ? '✓' : ''}</span></span>
+                        <span class="${checked ? 'line-through text-gray-400' : 'text-gray-700'} text-sm">${item}</span>
+                    </label>`;
+                });
+                html += '</div></div>';
+            });
+            document.getElementById('list').innerHTML = html;
+            document.getElementById('done').textContent = done;
+            document.getElementById('total').textContent = all;
+            document.getElementById('bar').style.width = all ? (done/all*100)+'%' : '0%';
+        }
+        render();
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

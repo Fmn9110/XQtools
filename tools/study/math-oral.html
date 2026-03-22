@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>数学口算挑战 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">极速数学口算挑战</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">专注力与速度的双重考验，冲击满分成绩！</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white shadow-2xl animate-item" style="animation-delay: 0.2s">
+            <div id="setup" class="space-y-8 animate-fade-in text-left">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <p class="text-[10px] font-black text-pink-400 uppercase tracking-widest pl-2">Level 难度选择</p>
+                        <div class="relative">
+                            <select id="level" class="w-full p-4 bg-gray-50 rounded-2xl border border-pink-50 outline-none focus:border-pink-200 transition-all font-bold text-slate-700 shadow-inner appearance-none cursor-pointer">
+                                <option value="easy">🍭 简单 (20 以内加减)</option>
+                                <option value="medium">Pro 中等 (100 以内加减)</option>
+                                <option value="hard">Master 困难 (含乘除混合)</option>
+                            </select>
+                            <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-pink-300">▼</div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <p class="text-[10px] font-black text-pink-400 uppercase tracking-widest pl-2">Quantity 题目数量</p>
+                        <div class="relative">
+                            <select id="count" class="w-full p-4 bg-gray-50 rounded-2xl border border-pink-50 outline-none focus:border-pink-200 transition-all font-bold text-slate-700 shadow-inner appearance-none cursor-pointer">
+                                <option value="10">10 道 (Short Rush)</option>
+                                <option value="20">20 道 (Standard)</option>
+                                <option value="50">50 道 (Endurance)</option>
+                            </select>
+                            <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-pink-300">▼</div>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="start()" class="w-full py-5 bg-pink-400 text-white font-black rounded-[2rem] shadow-lg hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-xl">
+                    ▶️ 进入挑战模式
+                </button>
+            </div>
+
+            <div id="quiz" class="hidden animate-fade-in relative pt-4">
+                <div class="flex justify-between items-center mb-10 px-4">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-black text-pink-300 uppercase tracking-widest">Progress</span>
+                        <span class="text-sm font-bold text-slate-400"><span id="qi" class="text-pink-400">1</span> / <span id="qt">10</span></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-black text-pink-300 uppercase tracking-widest">Timer</span>
+                        <span id="timer" class="text-sm font-black text-pink-500 font-mono">0.0s</span>
+                    </div>
+                </div>
+
+                <div class="p-10 md:p-16 bg-pink-50/20 rounded-[3rem] border-2 border-dashed border-pink-100 mb-10 relative overflow-hidden">
+                    <div id="correctRipple" class="absolute inset-0 bg-green-400/10 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+                    <div id="wrongRipple" class="absolute inset-0 bg-pink-400/10 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+                    
+                    <p class="text-5xl md:text-7xl font-black text-slate-700 mb-10 select-none" id="question"></p>
+                    <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                        <input type="number" id="userAns" class="w-full sm:w-48 p-5 bg-white rounded-2xl border-2 border-pink-200 outline-none text-center text-4xl font-black text-pink-500 shadow-lg focus:border-pink-400 transition-all" placeholder="?" onkeydown="if(event.key==='Enter')submitAns()">
+                        <button onclick="submitAns()" class="w-full sm:w-auto px-10 py-5 bg-pink-400 text-white rounded-2xl font-black shadow-lg hover:bg-pink-500 transition-all text-xl">确认</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="result" class="hidden mt-4 animate-fade-in text-left"></div>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let questions=[], answers=[], userAnswers=[], qi=0, startTime=0, timerInterval;
+
+        function genQuestion(level){
+            let a, b, op, ans;
+            if(level==='easy'){
+                a=Math.floor(Math.random()*20)+1; b=Math.floor(Math.random()*20)+1; op=Math.random()>0.5?'+':'-';
+                if(op==='-'&&a<b)[a,b]=[b,a]; ans=op==='+'?a+b:a-b;
+            } else if(level==='medium'){
+                a=Math.floor(Math.random()*100)+1; b=Math.floor(Math.random()*100)+1; op=Math.random()>0.5?'+':'-';
+                if(op==='-'&&a<b)[a,b]=[b,a]; ans=op==='+'?a+b:a-b;
+            } else {
+                const ops=['+','-','×','÷']; op=ops[Math.floor(Math.random()*4)];
+                if(op==='×'){a=Math.floor(Math.random()*12)+2;b=Math.floor(Math.random()*12)+2;ans=a*b;}
+                else if(op==='÷'){b=Math.floor(Math.random()*11)+2;ans=Math.floor(Math.random()*12)+1;a=b*ans;}
+                else{a=Math.floor(Math.random()*100)+1;b=Math.floor(Math.random()*100)+1;if(op==='-'&&a<b)[a,b]=[b,a];ans=op==='+'?a+b:a-b;}
+            }
+            return {text:`${a} ${op} ${b} = `, ans: ans};
+        }
+
+        function start(){
+            const level=document.getElementById('level').value;
+            const count=parseInt(document.getElementById('count').value);
+            questions=[]; answers=[]; userAnswers=[]; qi=0;
+            for(let i=0;i<count;i++){const q=genQuestion(level);questions.push(q.text);answers.push(q.ans);}
+            document.getElementById('setup').classList.add('hidden');
+            document.getElementById('quiz').classList.remove('hidden');
+            document.getElementById('result').classList.add('hidden');
+            document.getElementById('qt').textContent=count;
+            startTime=Date.now();
+            timerInterval=setInterval(()=>{document.getElementById('timer').textContent=((Date.now()-startTime)/1000).toFixed(1)+'s';},100);
+            showQuestion();
+            Utils.toast('开始挑战！🔥');
+        }
+
+        function showQuestion(){
+            document.getElementById('qi').textContent=qi+1;
+            document.getElementById('question').textContent=questions[qi];
+            document.getElementById('userAns').value='';
+            document.getElementById('userAns').focus();
+        }
+
+        function submitAns(){
+            const val = parseInt(document.getElementById('userAns').value);
+            if(isNaN(val)) return;
+            
+            const isCorrect = val === answers[qi];
+            const ripple = isCorrect ? document.getElementById('correctRipple') : document.getElementById('wrongRipple');
+            ripple.style.opacity = '1';
+            setTimeout(() => ripple.style.opacity = '0', 200);
+
+            userAnswers.push(val);
+            qi++;
+            if(qi>=questions.length){finish();return;}
+            showQuestion();
+        }
+
+        function finish(){
+            clearInterval(timerInterval);
+            const elapsed=((Date.now()-startTime)/1000).toFixed(1);
+            let correct=0;
+            let html='';
+            questions.forEach((q,i)=>{
+                const ok=userAnswers[i]===answers[i]; if(ok)correct++;
+                html+=`
+                    <div class="p-4 ${ok?'bg-green-50/50 border-green-100':'bg-pink-50/50 border-pink-100'} rounded-2xl flex justify-between items-center border animate-fade-in" style="animation-delay: ${i*0.05}s">
+                        <span class="font-bold text-slate-700">${q.replace('=', '')}</span>
+                        <div class="flex flex-col items-end">
+                             <span class="${ok?'text-green-500':'text-pink-400'} text-[10px] font-black uppercase">YOU: ${userAnswers[i]}</span>
+                             <span class="text-slate-400 text-[10px] font-black uppercase">ANS: ${answers[i]}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('quiz').classList.add('hidden');
+            document.getElementById('result').innerHTML=`
+                <div class="p-8 bg-gradient-to-br from-pink-400 to-rose-400 rounded-[2.5rem] text-white shadow-xl mb-8 text-center">
+                    <p class="text-6xl font-black mb-2">${correct}/${questions.length}</p>
+                    <p class="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Challenge Completed in ${elapsed}s</p>
+                    <div class="mt-6 w-full h-3 bg-white/20 rounded-full overflow-hidden">
+                        <div class="h-full bg-white shadow-sm transition-all duration-1000" style="width: ${(correct/questions.length*100).toFixed(0)}%"></div>
+                    </div>
+                </div>
+                <div class="space-y-2 max-h-60 overflow-y-auto px-2 custom-scrollbar pr-2 mb-2">${html}</div>
+                <button onclick="document.getElementById('setup').classList.remove('hidden');document.getElementById('result').classList.add('hidden')" class="w-full py-5 bg-pink-50 text-pink-500 font-black rounded-2xl mt-10 hover:bg-pink-100 transition-all border border-pink-100 text-lg">
+                    🔄 再来一次挑战
+                </button>
+            `;
+            document.getElementById('result').classList.remove('hidden');
+            if(correct === questions.length) Utils.toast('🎉 完美通关！✨', 'success');
+            else Utils.toast(`完成了! 对了 ${correct} 题`);
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

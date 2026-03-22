@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>单张塔罗牌 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        .tarot-card-inner {
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .flipped .tarot-card-inner {
+            transform: rotateY(180deg);
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🃏 秘境 <span class="gradient-text">单张塔罗</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">闭眼默念你的问题。让这一张牌为你揭示宇宙的絮语。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white flex flex-col items-center animate-item shadow-2xl" style="animation-delay: 0.2s">
+            
+            <div class="w-full max-w-md mb-12 text-center">
+                <button onclick="draw()" id="drawBtn" class="w-full py-5 bg-indigo-500 hover:bg-indigo-600 text-white font-black rounded-2xl shadow-xl shadow-indigo-100 transition-all active:scale-95 text-xl mb-6">
+                    🔮 诚心抽取此牌
+                </button>
+            </div>
+
+            <div id="cardCtn" class="hidden perspective-1000 w-full max-w-sm">
+                <div id="cardInner" class="tarot-card-inner relative w-full aspect-[2/3.5] bg-gradient-to-br from-indigo-50 to-pink-50 rounded-[3rem] border-2 border-indigo-100 shadow-2xl flex flex-col items-center justify-center p-8 text-center overflow-hidden group">
+                    <div class="absolute -top-10 -right-10 text-[10rem] text-indigo-100/30 rotate-12 transition-transform group-hover:rotate-0">✨</div>
+                    
+                    <span class="px-4 py-1 bg-white/80 rounded-full text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-8 border border-indigo-50 shadow-sm" id="posLabel">正位</span>
+                    
+                    <div class="text-8xl mb-6 drop-shadow-xl animate-bounce" id="emoji">🌞</div>
+                    <h2 class="text-3xl font-black text-gray-800 mb-4" id="name">太阳</h2>
+                    
+                    <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/80 shadow-inner">
+                        <p class="text-indigo-600 font-black text-xs uppercase tracking-widest mb-2">Meaning / 启示</p>
+                        <p class="text-gray-500 text-sm leading-relaxed font-medium" id="meaning">
+                            成功、快乐、活力、积极。你正处于光明的循环中，一切都在向好发展。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>塔罗牌不是预言，而是一面镜子。它反映的是你潜意识中被忽略的直觉。当你抽到一张牌时，那个瞬间你想到的第一个画面，往往就是你内心最真实的答案。纯娱乐，请放松心态哦。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const cards=[
+            {emoji:'🧙',name:'魔术师',up:'技能、创造力、意志力、新开始',down:'操纵、欺骗、能力未发挥'},
+            {emoji:'🌕',name:'女教皇',up:'直觉、神圣、潜意识、平衡',down:'隐瞒、肤浅、被动'},
+            {emoji:'👩‍🦰',name:'皇后',up:'包容、丰收、感性、女性力量',down:'依赖、挥霍、停滞'},
+            {emoji:'👑',name:'皇帝',up:'权威、结构、领导力、秩序',down:'控制欲、专制、缺乏纪律'},
+            {emoji:'⛪',name:'教皇',up:'传统、体制、信仰、精神指引',down:'叛逆、死板、流言蜚语'},
+            {emoji:'❤️',name:'恋人',up:'爱情、和谐、关系的选择、对等',down:'不和谐、价值冲突、冷战'},
+            {emoji:'⚔️',name:'战车',up:'意志、控制、胜利、决断',down:'失控、侵略、自卑'},
+            {emoji:'⚖️',name:'正义',up:'公平、真相、因果、责任',down:'不公正、偏见、逃避真相'},
+            {emoji:'🕯️',name:'隐士',up:'省思、孤独、指引、内在智慧',down:'孤僻、偏执、幼稚'},
+            {emoji:'🎡',name:'命运之轮',up:'转机、必然、机遇、新循环',down:'阻碍、抗拒改变、厄运'},
+            {emoji:'💪',name:'力量',up:'勇气、柔性控制、耐心、坚定',down:'软弱、自我怀疑、放弃'},
+            {emoji:'🎭',name:'吊人',up:'牺牲、奉献、新视角、等待',down:'徒劳、消极、拖延'},
+            {emoji:'💀',name:'死神',up:'结束、再生、过渡、彻底改变',down:'停滞、恐惧改变、忧郁'},
+            {emoji:'🍷',name:'节制',up:'平衡、克制、融合、沟通',down:'失衡、冲突、极端的'},
+            {emoji:'👹',name:'恶魔',up:'束缚、欲望、物质、沉溺',down:'觉醒、解脱、自我探索'},
+            {emoji:'🗼',name:'塔',up:'突变、觉醒、从旧中解放',down:'固执、害怕改变、崩溃'},
+            {emoji:'⭐',name:'星星',up:'希望、信念、宁静、疗愈',down:'失望、迷茫、缺乏灵感'},
+            {emoji:'🌙',name:'月亮',up:'不安、直觉、潜意识、幻像',down:'焦虑、揭穿谎言、困惑'},
+            {emoji:'🌞',name:'太阳',up:'快乐、成功、生命力、真相',down:'延迟、信心不足、阴霾'},
+            {emoji:'🎺',name:'审判',up:'觉醒、转机、救赎、新开始',down:'迟疑、自责、无视警告'},
+            {emoji:'🌐',name:'世界',up:'圆满、成就、旅行、完成',down:'半途而废、欠缺收尾'},
+            {emoji:'🤡',name:'愚者',up:'纯粹、冒险、不羁、无限可能',down:'鲁莽、不计后果、迷失'}
+        ];
+
+        function draw(){
+            const btn = document.getElementById('drawBtn');
+            btn.disabled = true;
+            btn.innerText = "正在感应星象...";
+            
+            const cardCtn = document.getElementById('cardCtn');
+            const cardInner = document.getElementById('cardInner');
+            cardCtn.classList.add('hidden');
+            
+            setTimeout(() => {
+                const c = cards[Math.floor(Math.random()*cards.length)];
+                const isUp = Math.random() > 0.35;
+                
+                document.getElementById('emoji').textContent = c.emoji;
+                document.getElementById('name').textContent = c.name + (isUp ? ' (正位)' : ' (逆位)');
+                document.getElementById('posLabel').textContent = isUp ? '正位' : '逆位';
+                document.getElementById('meaning').textContent = isUp ? c.up : c.down;
+                
+                if(!isUp) {
+                    document.getElementById('emoji').classList.add('rotate-180');
+                } else {
+                    document.getElementById('emoji').classList.remove('rotate-180');
+                }
+                
+                cardCtn.classList.remove('hidden');
+                cardInner.classList.add('animate-item');
+                
+                btn.disabled = false;
+                btn.innerText = "🔮 再抽一签";
+                Utils.toast('启示已降临 ✨', 'success');
+            }, 800);
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy  -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

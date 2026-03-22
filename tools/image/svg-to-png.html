@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SVG 转 PNG - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7] min-h-screen font-['Outfit']">
+    <!-- 导航栏 -->
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-pink-100 px-4 md:px-6 py-3">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2 md:gap-3 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-8 h-8 md:w-10 md:h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-xl md:text-2xl shadow-lg shadow-pink-200">Q</div>
+                <span class="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-rose-400">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="px-4 py-2 rounded-full bg-pink-50 text-pink-500 hover:bg-pink-100 transition-all text-sm font-semibold">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12 animate-fade-in">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-[#4a4a4a] mb-4">SVG 转 PNG</h1>
+            <p class="text-gray-500">将代码变为像素，赋予矢量图形更广阔的应用可能 🖼️</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-8 mb-12 bg-white/70 backdrop-blur-sm border border-white/50 shadow-xl shadow-pink-100/50 rounded-[2rem]">
+            <div id="upload-area" class="w-full h-80 border-4 border-dashed border-pink-100 rounded-[2rem] flex flex-col items-center justify-center group hover:border-pink-300 transition-all cursor-pointer bg-pink-50/30 text-center">
+                <input type="file" id="fileInput" accept=".svg" class="hidden">
+                <div class="w-20 h-20 bg-white rounded-3xl shadow-sm flex items-center justify-center text-4xl mb-4 group-hover:scale-110 transition-transform duration-500">🖼️</div>
+                <p class="text-pink-400 font-bold text-lg px-4">拖入或读取 SVG 文件</p>
+                <p class="text-pink-300 text-sm mt-2">支持标准格式的 .svg 文件</p>
+            </div>
+
+            <div id="preview-area" class="hidden animate-fade-in w-full text-center">
+                <div class="bg-white rounded-[2rem] p-8 mb-8 border border-pink-50 shadow-inner flex items-center justify-center">
+                    <img id="svgPreview" class="max-w-full max-h-[400px]">
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-4 justify-center">
+                    <button id="downloadBtn" class="cute-button px-10 py-4 bg-gradient-to-r from-pink-400 to-rose-400 text-white rounded-2xl font-bold shadow-lg shadow-pink-200 hover:scale-105 transition-all text-lg flex items-center justify-center gap-2">
+                        <span>🚀</span> 转换为 PNG 并下载
+                    </button>
+                    <button id="resetBtn" class="px-10 py-4 bg-white text-gray-400 rounded-2xl font-bold border-2 border-gray-100 hover:bg-gray-50 transition-all">更换文件</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 说明区 -->
+        <div class="grid md:grid-cols-2 gap-8 mb-12 animate-fade-in">
+            <section class="space-y-6">
+                <h2 class="text-2xl font-bold text-[#4a4a4a] flex items-center gap-3">
+                    <span class="w-10 h-10 bg-white rounded-2xl flex items-center justify-center shadow-sm">🎯</span>
+                    专属指南及提示
+                </h2>
+                <div class="bg-white/60 backdrop-blur-sm rounded-[2rem] p-8 border border-white shadow-xl shadow-pink-100/20">
+                    <p class="text-[#6b7280] text-sm leading-relaxed mb-4">PNG 转换会保留 SVG 的内置透明度。如果 SVG 中包含非法的外链资源（如跨域图片），转换可能会受到浏览器安全限制。</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- 加载遮罩 -->
+    <div id="loader-overlay" class="fixed inset-0 bg-pink-50/80 backdrop-blur-sm z-[100] flex items-center justify-center hidden">
+        <div class="cute-loader-candy"></div>
+    </div>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('upload-area');
+        const previewArea = document.getElementById('preview-area');
+        const svgPreview = document.getElementById('svgPreview');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const loader = document.getElementById('loader-overlay');
+
+        const showLoader = () => loader.classList.remove('hidden');
+        const hideLoader = () => loader.classList.add('hidden');
+
+        uploadArea.onclick = () => fileInput.click();
+
+        fileInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) handleFile(file);
+        };
+
+        async function handleFile(file) {
+            showLoader();
+            try {
+                const text = await file.text();
+                const blob = new Blob([text], { type: 'image/svg+xml' });
+                const url = URL.createObjectURL(blob);
+                svgPreview.src = url;
+                svgPreview.onload = () => {
+                    uploadArea.classList.add('hidden');
+                    previewArea.classList.remove('hidden');
+                    hideLoader();
+                };
+            } catch (err) {
+                Utils.toast('解析失败', 'error');
+                hideLoader();
+            }
+        }
+
+        downloadBtn.onclick = () => {
+            const img = svgPreview;
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // 使用 naturalWidth/Height 或者 img 的显示尺寸
+            canvas.width = img.naturalWidth || 800; 
+            canvas.height = img.naturalHeight || 800;
+
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            
+            const pngData = canvas.toDataURL('image/png');
+            Utils.downloadFile(pngData, `converted_${Date.now()}.png`, 'image/png');
+            Utils.toast('保存成功', 'success');
+        };
+
+        resetBtn.onclick = () => {
+            fileInput.value = '';
+            uploadArea.classList.remove('hidden');
+            previewArea.classList.add('hidden');
+        };
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

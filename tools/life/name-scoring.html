@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>姓名打分 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50"><div class="container mx-auto flex justify-between items-center"><div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'"><div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div><span class="text-2xl font-bold gradient-text">小Q工具箱</span></div><a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a></div></nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">✨ 姓名趣味打分</h1>
+            <p class="text-gray-500">纯属娱乐！根据姓名的字符特征给出一个趣味评分</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="max-w-md mx-auto mb-6">
+                <label class="block text-xs font-bold text-gray-400 uppercase mb-2">输入姓名</label>
+                <input type="text" id="name" placeholder="请输入中文姓名" class="w-full p-4 bg-gray-50 rounded-xl border border-pink-100 outline-none text-center text-xl">
+            </div>
+            <button onclick="score()" class="w-full max-w-md mx-auto block py-4 bg-gradient-to-r from-pink-500 to-purple-500 text-white font-bold rounded-xl text-lg">🎯 开始打分</button>
+            <div id="result" class="hidden mt-8 text-center">
+                <div class="bg-gradient-to-br from-yellow-100 to-pink-100 rounded-3xl p-8">
+                    <p class="text-lg text-gray-500 mb-2" id="rName"></p>
+                    <p class="text-7xl font-black text-pink-500 my-3" id="rScore"></p>
+                    <p class="text-gray-400 text-sm mb-4">/ 100 分</p>
+                    <div class="w-full bg-gray-200 rounded-full h-4 mb-4"><div id="bar" class="bg-gradient-to-r from-pink-400 to-purple-400 h-4 rounded-full transition-all"></div></div>
+                    <p class="text-gray-600" id="rComment"></p>
+                </div>
+                <div class="grid grid-cols-3 gap-3 mt-4">
+                    <div class="bg-pink-50 rounded-xl p-4"><p class="text-xs text-gray-400">音韵</p><p class="text-xl font-bold text-pink-500" id="rSound">0</p></div>
+                    <div class="bg-purple-50 rounded-xl p-4"><p class="text-xs text-gray-400">书写</p><p class="text-xl font-bold text-purple-500" id="rWrite">0</p></div>
+                    <div class="bg-blue-50 rounded-xl p-4"><p class="text-xs text-gray-400">寓意</p><p class="text-xl font-bold text-blue-500" id="rMeaning">0</p></div>
+                </div>
+            </div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center"><span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">!</span>使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>输入中文姓名。</li><li>查看音韵、书写、寓意三维评分。</li><li>纯属娱乐，不要当真！</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">评分有科学依据吗？</div><div class="text-gray-500 text-sm">没有，纯属基于字符编码的趣味算法，仅供娱乐。每个名字都很好！</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        // 基于字符编码的趣味哈希算法，与真实姓名学无关
+        function hashName(name) {
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) {
+                const ch = name.charCodeAt(i);
+                hash = ((hash << 5) - hash) + ch;
+                hash = hash & hash;
+            }
+            return Math.abs(hash);
+        }
+
+        function score() {
+            const name = document.getElementById('name').value.trim();
+            if (!name) { alert('请输入姓名'); return; }
+
+            const h = hashName(name);
+            // 各维度分数 60-100
+            const sound = 60 + (h % 41);
+            const write = 60 + ((h >> 3) % 41);
+            const meaning = 60 + ((h >> 6) % 41);
+            const total = Math.round((sound + write + meaning) / 3);
+
+            const comments = [
+                [95, '🌟 绝佳好名！自带光环，前途无量！'],
+                [90, '✨ 非常出色！名如其人，令人印象深刻。'],
+                [85, '💫 相当不错！音韵优美，寓意美好。'],
+                [80, '👍 好名字！简洁大方，朗朗上口。'],
+                [70, '😊 不错的名字，平实中透着美好。'],
+                [0, '🌈 每个名字都承载着父母的爱与期望，都是最好的！'],
+            ];
+            let comment = comments[comments.length-1][1];
+            for (const c of comments) {
+                if (total >= c[0]) { comment = c[1]; break; }
+            }
+
+            document.getElementById('rName').textContent = `「${name}」的评分`;
+            document.getElementById('rScore').textContent = total;
+            document.getElementById('bar').style.width = total + '%';
+            document.getElementById('rComment').textContent = comment;
+            document.getElementById('rSound').textContent = sound;
+            document.getElementById('rWrite').textContent = write;
+            document.getElementById('rMeaning').textContent = meaning;
+            document.getElementById('result').classList.remove('hidden');
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

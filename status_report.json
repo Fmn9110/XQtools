@@ -1,0 +1,3007 @@
+{
+  "implemented": [
+    {
+      "id": 1,
+      "cat": "image",
+      "slug": "grid-cut-9",
+      "name": "九宫格切图"
+    },
+    {
+      "id": 2,
+      "cat": "image",
+      "slug": "grid-cut-4",
+      "name": "四宫格切图"
+    },
+    {
+      "id": 3,
+      "cat": "image",
+      "slug": "grid-cut-16",
+      "name": "十六宫格切图"
+    },
+    {
+      "id": 4,
+      "cat": "image",
+      "slug": "image-compress",
+      "name": "图片压缩"
+    },
+    {
+      "id": 5,
+      "cat": "image",
+      "slug": "image-crop",
+      "name": "图片裁剪"
+    },
+    {
+      "id": 6,
+      "cat": "image",
+      "slug": "image-rotate",
+      "name": "图片旋转"
+    },
+    {
+      "id": 7,
+      "cat": "image",
+      "slug": "image-flip",
+      "name": "图片翻转"
+    },
+    {
+      "id": 8,
+      "cat": "image",
+      "slug": "image-resize",
+      "name": "图片尺寸修改"
+    },
+    {
+      "id": 9,
+      "cat": "image",
+      "slug": "png-to-jpg",
+      "name": "PNG转JPG"
+    },
+    {
+      "id": 10,
+      "cat": "image",
+      "slug": "jpg-to-png",
+      "name": "JPG转PNG"
+    },
+    {
+      "id": 11,
+      "cat": "image",
+      "slug": "jpg-to-webp",
+      "name": "JPG转WebP"
+    },
+    {
+      "id": 12,
+      "cat": "image",
+      "slug": "webp-to-jpg",
+      "name": "WebP转JPG"
+    },
+    {
+      "id": 13,
+      "cat": "image",
+      "slug": "image-join",
+      "name": "图片拼接"
+    },
+    {
+      "id": 14,
+      "cat": "image",
+      "slug": "long-image-join",
+      "name": "图片长图拼接"
+    },
+    {
+      "id": 15,
+      "cat": "image",
+      "slug": "image-watermark",
+      "name": "图片加水印"
+    },
+    {
+      "id": 16,
+      "cat": "image",
+      "slug": "image-clean",
+      "name": "图片去水印"
+    },
+    {
+      "id": 17,
+      "cat": "image",
+      "slug": "image-blur",
+      "name": "图片模糊"
+    },
+    {
+      "id": 18,
+      "cat": "image",
+      "slug": "image-sharpen",
+      "name": "图片锐化"
+    },
+    {
+      "id": 19,
+      "cat": "image",
+      "slug": "image-grayscale",
+      "name": "图片灰度"
+    },
+    {
+      "id": 20,
+      "cat": "image",
+      "slug": "image-filter",
+      "name": "图片滤镜"
+    },
+    {
+      "id": 21,
+      "cat": "image",
+      "slug": "image-brightness",
+      "name": "图片亮度调整"
+    },
+    {
+      "id": 22,
+      "cat": "image",
+      "slug": "image-contrast",
+      "name": "图片对比度调整"
+    },
+    {
+      "id": 23,
+      "cat": "image",
+      "slug": "image-pixelate",
+      "name": "图片像素化"
+    },
+    {
+      "id": 24,
+      "cat": "image",
+      "slug": "image-mosaic",
+      "name": "图片马赛克"
+    },
+    {
+      "id": 26,
+      "cat": "image",
+      "slug": "avatar-gen",
+      "name": "头像生成"
+    },
+    {
+      "id": 27,
+      "cat": "image",
+      "slug": "id-photo-resize",
+      "name": "证件照尺寸生成"
+    },
+    {
+      "id": 28,
+      "cat": "image",
+      "slug": "id-photo-bg",
+      "name": "证件照背景替换"
+    },
+    {
+      "id": 29,
+      "cat": "image",
+      "slug": "meme-make",
+      "name": "表情包制作"
+    },
+    {
+      "id": 30,
+      "cat": "image",
+      "slug": "gif-make",
+      "name": "GIF制作"
+    },
+    {
+      "id": 32,
+      "cat": "image",
+      "slug": "gif-compress",
+      "name": "GIF压缩"
+    },
+    {
+      "id": 33,
+      "cat": "image",
+      "slug": "gif-to-mp4",
+      "name": "GIF转MP4(Canvas模拟帧序列)"
+    },
+    {
+      "id": 34,
+      "cat": "image",
+      "slug": "image-to-pdf",
+      "name": "图片转PDF"
+    },
+    {
+      "id": 35,
+      "cat": "image",
+      "slug": "pdf-to-image",
+      "name": "PDF转图片(前端解析)"
+    },
+    {
+      "id": 36,
+      "cat": "image",
+      "slug": "color-extract",
+      "name": "图片颜色提取"
+    },
+    {
+      "id": 37,
+      "cat": "image",
+      "slug": "palette-gen",
+      "name": "调色板生成"
+    },
+    {
+      "id": 38,
+      "cat": "image",
+      "slug": "image-border",
+      "name": "图片边框"
+    },
+    {
+      "id": 39,
+      "cat": "image",
+      "slug": "image-puzzle",
+      "name": "图片拼图"
+    },
+    {
+      "id": 40,
+      "cat": "image",
+      "slug": "format-check",
+      "name": "图片格式检测"
+    },
+    {
+      "id": 41,
+      "cat": "image",
+      "slug": "ico-gen",
+      "name": "ICO图标生成"
+    },
+    {
+      "id": 42,
+      "cat": "image",
+      "slug": "favicon-gen",
+      "name": "favicon生成"
+    },
+    {
+      "id": 43,
+      "cat": "image",
+      "slug": "qr-gen",
+      "name": "二维码生成"
+    },
+    {
+      "id": 44,
+      "cat": "image",
+      "slug": "qr-scan",
+      "name": "二维码识别"
+    },
+    {
+      "id": 45,
+      "cat": "image",
+      "slug": "wifi-qr",
+      "name": "WIFI二维码生成"
+    },
+    {
+      "id": 46,
+      "cat": "image",
+      "slug": "text-qr",
+      "name": "文本二维码生成"
+    },
+    {
+      "id": 47,
+      "cat": "image",
+      "slug": "tel-qr",
+      "name": "电话二维码生成"
+    },
+    {
+      "id": 48,
+      "cat": "image",
+      "slug": "mail-qr",
+      "name": "邮件二维码生成"
+    },
+    {
+      "id": 49,
+      "cat": "image",
+      "slug": "vcard-qr",
+      "name": "名片二维码生成"
+    },
+    {
+      "id": 51,
+      "cat": "image",
+      "slug": "exif-strip",
+      "name": "图片EXIF删除"
+    },
+    {
+      "id": 52,
+      "cat": "image",
+      "slug": "id-meta-view",
+      "name": "图片元数据查看"
+    },
+    {
+      "id": 53,
+      "cat": "image",
+      "slug": "batch-rename",
+      "name": "图片批量重命名(前端Blob导出)"
+    },
+    {
+      "id": 54,
+      "cat": "image",
+      "slug": "ratio-crop",
+      "name": "图片比例裁剪"
+    },
+    {
+      "id": 55,
+      "cat": "image",
+      "slug": "transparent-bg",
+      "name": "图片透明背景"
+    },
+    {
+      "id": 56,
+      "cat": "image",
+      "slug": "image-tint",
+      "name": "图片调色"
+    },
+    {
+      "id": 57,
+      "cat": "image",
+      "slug": "style-transfer",
+      "name": "图片风格转换"
+    },
+    {
+      "id": 58,
+      "cat": "image",
+      "slug": "pixel-art",
+      "name": "图片像素艺术"
+    },
+    {
+      "id": 59,
+      "cat": "image",
+      "slug": "add-text",
+      "name": "图片文字添加"
+    },
+    {
+      "id": 60,
+      "cat": "image",
+      "slug": "poster-gen",
+      "name": "海报生成器"
+    },
+    {
+      "id": 61,
+      "cat": "image",
+      "slug": "svg-to-png",
+      "name": "SVG转PNG"
+    },
+    {
+      "id": 62,
+      "cat": "image",
+      "slug": "png-to-svg",
+      "name": "PNG转SVG(路径提取模拟)"
+    },
+    {
+      "id": 63,
+      "cat": "image",
+      "slug": "add-shadow",
+      "name": "图片阴影添加"
+    },
+    {
+      "id": 64,
+      "cat": "image",
+      "slug": "reflection-gen",
+      "name": "图片倒影生成"
+    },
+    {
+      "id": 65,
+      "cat": "image",
+      "slug": "polaroid-frame",
+      "name": "拍立得相框生成"
+    },
+    {
+      "id": 66,
+      "cat": "image",
+      "slug": "rounded-corners",
+      "name": "图片圆角处理"
+    },
+    {
+      "id": 67,
+      "cat": "image",
+      "slug": "old-photo-fix",
+      "name": "老照片修复(滤镜模拟)"
+    },
+    {
+      "id": 68,
+      "cat": "image",
+      "slug": "sketch-filter",
+      "name": "图片素描化"
+    },
+    {
+      "id": 69,
+      "cat": "image",
+      "slug": "oil-paint",
+      "name": "图片油画化"
+    },
+    {
+      "id": 70,
+      "cat": "image",
+      "slug": "emboss-filter",
+      "name": "图片浮雕化"
+    },
+    {
+      "id": 71,
+      "cat": "image",
+      "slug": "negative-filter",
+      "name": "图片底片效果"
+    },
+    {
+      "id": 72,
+      "cat": "image",
+      "slug": "color-wheel",
+      "name": "色轮生成器"
+    },
+    {
+      "id": 73,
+      "cat": "image",
+      "slug": "gradient-gen",
+      "name": "渐变色生成器"
+    },
+    {
+      "id": 74,
+      "cat": "image",
+      "slug": "screen-test-img",
+      "name": "屏幕分辨率测试图生成"
+    },
+    {
+      "id": 75,
+      "cat": "image",
+      "slug": "placeholder-gen",
+      "name": "占位图生成"
+    },
+    {
+      "id": 85,
+      "cat": "image",
+      "slug": "id-bg-change",
+      "name": "证件照换底色(基础版)"
+    },
+    {
+      "id": 86,
+      "cat": "pdf",
+      "slug": "pdf-merge",
+      "name": "PDF合并"
+    },
+    {
+      "id": 87,
+      "cat": "pdf",
+      "slug": "pdf-split",
+      "name": "PDF拆分"
+    },
+    {
+      "id": 88,
+      "cat": "pdf",
+      "slug": "pdf-compress",
+      "name": "PDF压缩"
+    },
+    {
+      "id": 89,
+      "cat": "pdf",
+      "slug": "pdf-rotate",
+      "name": "PDF旋转"
+    },
+    {
+      "id": 90,
+      "cat": "pdf",
+      "slug": "pdf-delete-page",
+      "name": "PDF页面删除"
+    },
+    {
+      "id": 91,
+      "cat": "pdf",
+      "slug": "pdf-extract-page",
+      "name": "PDF页面提取"
+    },
+    {
+      "id": 92,
+      "cat": "pdf",
+      "slug": "pdf-watermark",
+      "name": "PDF加水印"
+    },
+    {
+      "id": 93,
+      "cat": "pdf",
+      "slug": "pdf-page-number",
+      "name": "PDF加页码"
+    },
+    {
+      "id": 94,
+      "cat": "pdf",
+      "slug": "pdf-to-jpg",
+      "name": "PDF转JPG"
+    },
+    {
+      "id": 95,
+      "cat": "pdf",
+      "slug": "jpg-to-pdf",
+      "name": "JPG转PDF"
+    },
+    {
+      "id": 96,
+      "cat": "pdf",
+      "slug": "png-to-pdf",
+      "name": "PNG转PDF"
+    },
+    {
+      "id": 97,
+      "cat": "pdf",
+      "slug": "pdf-to-text",
+      "name": "PDF转文本"
+    },
+    {
+      "id": 98,
+      "cat": "pdf",
+      "slug": "pdf-to-word",
+      "name": "PDF转Word(基础文本提取)"
+    },
+    {
+      "id": 99,
+      "cat": "pdf",
+      "slug": "word-to-pdf",
+      "name": "Word转PDF(纯文本渲染)"
+    },
+    {
+      "id": 100,
+      "cat": "pdf",
+      "slug": "pdf-sign",
+      "name": "PDF签名"
+    },
+    {
+      "id": 101,
+      "cat": "pdf",
+      "slug": "pdf-fill-form",
+      "name": "PDF填表"
+    },
+    {
+      "id": 102,
+      "cat": "pdf",
+      "slug": "pdf-encrypt",
+      "name": "PDF加密"
+    },
+    {
+      "id": 103,
+      "cat": "pdf",
+      "slug": "pdf-decrypt",
+      "name": "PDF解密"
+    },
+    {
+      "id": 104,
+      "cat": "pdf",
+      "slug": "pdf-reorder",
+      "name": "PDF页面排序"
+    },
+    {
+      "id": 105,
+      "cat": "pdf",
+      "slug": "pdf-resize",
+      "name": "PDF尺寸修改"
+    },
+    {
+      "id": 106,
+      "cat": "pdf",
+      "slug": "pdf-margin",
+      "name": "PDF页边距调整"
+    },
+    {
+      "id": 107,
+      "cat": "pdf",
+      "slug": "pdf-crop",
+      "name": "PDF裁剪"
+    },
+    {
+      "id": 108,
+      "cat": "pdf",
+      "slug": "pdf-highlight",
+      "name": "PDF高亮"
+    },
+    {
+      "id": 109,
+      "cat": "pdf",
+      "slug": "pdf-comment",
+      "name": "PDF注释"
+    },
+    {
+      "id": 110,
+      "cat": "pdf",
+      "slug": "pdf-compare",
+      "name": "PDF比较(文本比对)"
+    },
+    {
+      "id": 112,
+      "cat": "pdf",
+      "slug": "pdf-bookmark-gen",
+      "name": "PDF书签生成"
+    },
+    {
+      "id": 113,
+      "cat": "pdf",
+      "slug": "pdf-bookmark-edit",
+      "name": "PDF书签编辑"
+    },
+    {
+      "id": 114,
+      "cat": "pdf",
+      "slug": "pdf-scale",
+      "name": "PDF页面缩放"
+    },
+    {
+      "id": 115,
+      "cat": "pdf",
+      "slug": "pdf-export-img",
+      "name": "PDF导出图片"
+    },
+    {
+      "id": 116,
+      "cat": "pdf",
+      "slug": "pdf-to-svg",
+      "name": "PDF导出SVG"
+    },
+    {
+      "id": 117,
+      "cat": "pdf",
+      "slug": "pdf-to-html",
+      "name": "PDF导出HTML"
+    },
+    {
+      "id": 118,
+      "cat": "pdf",
+      "slug": "pdf-merge-img",
+      "name": "PDF合并图片"
+    },
+    {
+      "id": 119,
+      "cat": "pdf",
+      "slug": "pdf-batch",
+      "name": "PDF批量转换(前端排队处理)"
+    },
+    {
+      "id": 120,
+      "cat": "pdf",
+      "slug": "pdf-ocr",
+      "name": "PDF OCR识别(前端Tesseract.js)"
+    },
+    {
+      "id": 122,
+      "cat": "pdf",
+      "slug": "pdf-table-extract",
+      "name": "PDF表格解析提取"
+    },
+    {
+      "id": 123,
+      "cat": "pdf",
+      "slug": "pdf-stats",
+      "name": "PDF文档信息统计"
+    },
+    {
+      "id": 125,
+      "cat": "pdf",
+      "slug": "pdf-text-replace",
+      "name": "PDF文本替换(基础版)"
+    },
+    {
+      "id": 128,
+      "cat": "pdf",
+      "slug": "pdf-mirror",
+      "name": "PDF页面镜像反转"
+    },
+    {
+      "id": 129,
+      "cat": "pdf",
+      "slug": "pdf-flip-v",
+      "name": "PDF页面上下翻转"
+    },
+    {
+      "id": 131,
+      "cat": "pdf",
+      "slug": "pdf-title-edit",
+      "name": "PDF标题编辑"
+    },
+    {
+      "id": 132,
+      "cat": "pdf",
+      "slug": "pdf-author-edit",
+      "name": "PDF作者编辑"
+    },
+    {
+      "id": 138,
+      "cat": "pdf",
+      "slug": "pdf-to-epub",
+      "name": "PDF转EPUB(文本流重排)"
+    },
+    {
+      "id": 144,
+      "cat": "pdf",
+      "slug": "pdf-grayscale",
+      "name": "PDF黑白/灰度转换"
+    },
+    {
+      "id": 145,
+      "cat": "pdf",
+      "slug": "pdf-bg-remove",
+      "name": "PDF去白边背景"
+    },
+    {
+      "id": 153,
+      "cat": "pdf",
+      "slug": "pdf-to-pdfa",
+      "name": "PDF PDF/A版本转换模拟"
+    },
+    {
+      "id": 171,
+      "cat": "text",
+      "slug": "word-count",
+      "name": "字数统计"
+    },
+    {
+      "id": 172,
+      "cat": "text",
+      "slug": "char-count",
+      "name": "字符统计"
+    },
+    {
+      "id": 173,
+      "cat": "text",
+      "slug": "english-word-count",
+      "name": "单词统计"
+    },
+    {
+      "id": 174,
+      "cat": "text",
+      "slug": "remove-empty-lines",
+      "name": "去除空行"
+    },
+    {
+      "id": 175,
+      "cat": "text",
+      "slug": "remove-duplicate",
+      "name": "去除重复行"
+    },
+    {
+      "id": 176,
+      "cat": "text",
+      "slug": "multi-sort",
+      "name": "文本多列排序"
+    },
+    {
+      "id": 177,
+      "cat": "text",
+      "slug": "text-reverse",
+      "name": "文本反转"
+    },
+    {
+      "id": 178,
+      "cat": "text",
+      "slug": "case-convert",
+      "name": "文本大小写转换"
+    },
+    {
+      "id": 179,
+      "cat": "text",
+      "slug": "md-to-html",
+      "name": "Markdown转HTML"
+    },
+    {
+      "id": 180,
+      "cat": "text",
+      "slug": "html-to-md",
+      "name": "HTML转Markdown"
+    },
+    {
+      "id": 181,
+      "cat": "text",
+      "slug": "json-format",
+      "name": "JSON格式化"
+    },
+    {
+      "id": 182,
+      "cat": "text",
+      "slug": "json-minify",
+      "name": "JSON压缩"
+    },
+    {
+      "id": 183,
+      "cat": "text",
+      "slug": "sql-beautify",
+      "name": "SQL格式化"
+    },
+    {
+      "id": 184,
+      "cat": "text",
+      "slug": "base64-encode",
+      "name": "Base64编码"
+    },
+    {
+      "id": 185,
+      "cat": "text",
+      "slug": "base64-decode",
+      "name": "Base64解码"
+    },
+    {
+      "id": 186,
+      "cat": "text",
+      "slug": "url-encode",
+      "name": "URL编码"
+    },
+    {
+      "id": 187,
+      "cat": "text",
+      "slug": "url-decode",
+      "name": "URL解码"
+    },
+    {
+      "id": 188,
+      "cat": "text",
+      "slug": "unicode-encode",
+      "name": "Unicode编码"
+    },
+    {
+      "id": 189,
+      "cat": "text",
+      "slug": "unicode-decode",
+      "name": "Unicode解码"
+    },
+    {
+      "id": 190,
+      "cat": "text",
+      "slug": "text-diff",
+      "name": "文本差异对比(Diff)"
+    },
+    {
+      "id": 191,
+      "cat": "text",
+      "slug": "dirty-word-check",
+      "name": "敏感词本地检测"
+    },
+    {
+      "id": 192,
+      "cat": "text",
+      "slug": "keyword-stats",
+      "name": "关键词密度提取"
+    },
+    {
+      "id": 193,
+      "cat": "text",
+      "slug": "word-seg",
+      "name": "文本分词(基础正则)"
+    },
+    {
+      "id": 194,
+      "cat": "text",
+      "slug": "text-summary",
+      "name": "文本摘要(词频提取)"
+    },
+    {
+      "id": 195,
+      "cat": "text",
+      "slug": "read-time",
+      "name": "文本阅读时间计算"
+    },
+    {
+      "id": 196,
+      "cat": "text",
+      "slug": "pass-gen",
+      "name": "强随机密码生成"
+    },
+    {
+      "id": 197,
+      "cat": "text",
+      "slug": "uuid-gen",
+      "name": "随机UUID/GUID生成"
+    },
+    {
+      "id": 198,
+      "cat": "text",
+      "slug": "regex-replace",
+      "name": "文本正则替换"
+    },
+    {
+      "id": 199,
+      "cat": "text",
+      "slug": "multi-replace",
+      "name": "文本多条件批量替换"
+    },
+    {
+      "id": 200,
+      "cat": "text",
+      "slug": "no-punctuation",
+      "name": "文本去标点符号"
+    },
+    {
+      "id": 201,
+      "cat": "text",
+      "slug": "aes-encrypt",
+      "name": "文本加密(AES等前端实现)"
+    },
+    {
+      "id": 202,
+      "cat": "text",
+      "slug": "aes-decrypt",
+      "name": "文本解密"
+    },
+    {
+      "id": 203,
+      "cat": "text",
+      "slug": "ascii-font",
+      "name": "ASCII艺术字生成"
+    },
+    {
+      "id": 204,
+      "cat": "text",
+      "slug": "stylized-eng",
+      "name": "特殊字体/花体英文字生成"
+    },
+    {
+      "id": 205,
+      "cat": "text",
+      "slug": "emoji-mix",
+      "name": "Emoji表情组合生成"
+    },
+    {
+      "id": 206,
+      "cat": "text",
+      "slug": "text-to-img",
+      "name": "长文本转图片"
+    },
+    {
+      "id": 207,
+      "cat": "text",
+      "slug": "text-to-qr",
+      "name": "文本转二维码"
+    },
+    {
+      "id": 208,
+      "cat": "text",
+      "slug": "to-pinyin",
+      "name": "文本转拼音带声调"
+    },
+    {
+      "id": 209,
+      "cat": "text",
+      "slug": "first-letter",
+      "name": "拼音首字母提取"
+    },
+    {
+      "id": 210,
+      "cat": "text",
+      "slug": "to-cht",
+      "name": "简体转繁体"
+    },
+    {
+      "id": 211,
+      "cat": "text",
+      "slug": "to-chs",
+      "name": "繁体转简体"
+    },
+    {
+      "id": 212,
+      "cat": "text",
+      "slug": "line-num",
+      "name": "文本行编号自动添加"
+    },
+    {
+      "id": 213,
+      "cat": "text",
+      "slug": "strip-html",
+      "name": "文本去HTML标签"
+    },
+    {
+      "id": 214,
+      "cat": "text",
+      "slug": "url-extract",
+      "name": "文本URL批量提取"
+    },
+    {
+      "id": 215,
+      "cat": "text",
+      "slug": "email-extract",
+      "name": "文本邮箱地址提取"
+    },
+    {
+      "id": 216,
+      "cat": "text",
+      "slug": "phone-extract",
+      "name": "文本手机号提取"
+    },
+    {
+      "id": 217,
+      "cat": "text",
+      "slug": "ip-extract",
+      "name": "文本IP地址提取"
+    },
+    {
+      "id": 218,
+      "cat": "text",
+      "slug": "kw-report",
+      "name": "文本关键词统计报表"
+    },
+    {
+      "id": 219,
+      "cat": "text",
+      "slug": "random-line",
+      "name": "文本随机抽取行"
+    },
+    {
+      "id": 220,
+      "cat": "text",
+      "slug": "text-split",
+      "name": "长文本批量分割(按大小/行数)"
+    },
+    {
+      "id": 221,
+      "cat": "text",
+      "slug": "html-entity-enc",
+      "name": "HTML实体编码"
+    },
+    {
+      "id": 222,
+      "cat": "text",
+      "slug": "html-entity-dec",
+      "name": "HTML实体解码"
+    },
+    {
+      "id": 223,
+      "cat": "text",
+      "slug": "url-to-json",
+      "name": "URL参数解析转JSON"
+    },
+    {
+      "id": 224,
+      "cat": "text",
+      "slug": "jwt-decode",
+      "name": "JWT Token解码查看"
+    },
+    {
+      "id": 225,
+      "cat": "text",
+      "slug": "md5-hash",
+      "name": "MD5哈希计算"
+    },
+    {
+      "id": 226,
+      "cat": "text",
+      "slug": "sha256-hash",
+      "name": "SHA1/SHA256计算"
+    },
+    {
+      "id": 227,
+      "cat": "text",
+      "slug": "csv-json-conv",
+      "name": "CSV与JSON互转"
+    },
+    {
+      "id": 228,
+      "cat": "text",
+      "slug": "xml-json-conv",
+      "name": "XML与JSON互转"
+    },
+    {
+      "id": 229,
+      "cat": "text",
+      "slug": "yaml-json-conv",
+      "name": "YAML与JSON互转"
+    },
+    {
+      "id": 230,
+      "cat": "text",
+      "slug": "morse-conv",
+      "name": "摩斯密码转换"
+    },
+    {
+      "id": 231,
+      "cat": "text",
+      "slug": "braille-conv",
+      "name": "盲文点字转换"
+    },
+    {
+      "id": 232,
+      "cat": "text",
+      "slug": "capitalize",
+      "name": "文本首字母大写"
+    },
+    {
+      "id": 233,
+      "cat": "text",
+      "slug": "naming-conv",
+      "name": "驼峰/下划线/帕斯卡命名互转"
+    },
+    {
+      "id": 234,
+      "cat": "text",
+      "slug": "id-card-check",
+      "name": "身份证号格式校验"
+    },
+    {
+      "id": 235,
+      "cat": "text",
+      "slug": "bank-check",
+      "name": "银行卡号Luhn算法校验"
+    },
+    {
+      "id": 236,
+      "cat": "text",
+      "slug": "mac-format",
+      "name": "MAC地址格式化清洗"
+    },
+    {
+      "id": 237,
+      "cat": "text",
+      "slug": "ip-format",
+      "name": "IPv4/IPv6格式校验互转"
+    },
+    {
+      "id": 238,
+      "cat": "text",
+      "slug": "color-code-conv",
+      "name": "颜色代码互转(HEX/RGB/HSL)"
+    },
+    {
+      "id": 240,
+      "cat": "text",
+      "slug": "css-beautify",
+      "name": "CSS代码压缩/格式化"
+    },
+    {
+      "id": 241,
+      "cat": "text",
+      "slug": "js-beautify",
+      "name": "JS代码压缩/格式化"
+    },
+    {
+      "id": 242,
+      "cat": "text",
+      "slug": "html-beautify",
+      "name": "HTML代码压缩/格式化"
+    },
+    {
+      "id": 243,
+      "cat": "text",
+      "slug": "regex-test",
+      "name": "正则表达式在线测试"
+    },
+    {
+      "id": 244,
+      "cat": "text",
+      "slug": "cron-gen",
+      "name": "Cron定时表达式生成"
+    },
+    {
+      "id": 245,
+      "cat": "text",
+      "slug": "ua-parse",
+      "name": "User-Agent解析器"
+    },
+    {
+      "id": 246,
+      "cat": "text",
+      "slug": "http-code",
+      "name": "HTTP状态码查询手册"
+    },
+    {
+      "id": 247,
+      "cat": "text",
+      "slug": "keycode-view",
+      "name": "ASCII码/Keycode键盘码查询"
+    },
+    {
+      "id": 248,
+      "cat": "text",
+      "slug": "base-conv",
+      "name": "进制转换器(二/八/十/十六进制)"
+    },
+    {
+      "id": 249,
+      "cat": "text",
+      "slug": "subnet-mask",
+      "name": "子网掩码/CIDR计算器"
+    },
+    {
+      "id": 250,
+      "cat": "text",
+      "slug": "port-list",
+      "name": "常用端口号查询速查表"
+    },
+    {
+      "id": 251,
+      "cat": "text",
+      "slug": "code-shorter",
+      "name": "代码高亮截图生成(仿Carbon)"
+    },
+    {
+      "id": 252,
+      "cat": "text",
+      "slug": "shadow-maker",
+      "name": "Box-Shadow阴影生成器"
+    },
+    {
+      "id": 253,
+      "cat": "text",
+      "slug": "grad-css-gen",
+      "name": "CSS渐变背景生成器"
+    },
+    {
+      "id": 254,
+      "cat": "text",
+      "slug": "cubic-bezier",
+      "name": "贝塞尔曲线(Cubic-Bezier)生成"
+    },
+    {
+      "id": 255,
+      "cat": "text",
+      "slug": "checksum-calc",
+      "name": "BVS/CVS校验和计算"
+    },
+    {
+      "id": 256,
+      "cat": "study",
+      "slug": "pomodoro-tool",
+      "name": "番茄工作法时钟"
+    },
+    {
+      "id": 257,
+      "cat": "study",
+      "slug": "count-up",
+      "name": "学习正向计时器"
+    },
+    {
+      "id": 258,
+      "cat": "study",
+      "slug": "gpa-calc",
+      "name": "GPA综合计算器"
+    },
+    {
+      "id": 259,
+      "cat": "study",
+      "slug": "weighted-score",
+      "name": "加权成绩计算器"
+    },
+    {
+      "id": 260,
+      "cat": "study",
+      "slug": "plan-gen",
+      "name": "学习计划自动生成表"
+    },
+    {
+      "id": 261,
+      "cat": "study",
+      "slug": "ddl-timer",
+      "name": "作业/DDL倒计时"
+    },
+    {
+      "id": 262,
+      "cat": "study",
+      "slug": "exam-track",
+      "name": "考试倒计时追踪"
+    },
+    {
+      "id": 263,
+      "cat": "study",
+      "slug": "schedule-grid",
+      "name": "课程表拖拽生成"
+    },
+    {
+      "id": 264,
+      "cat": "study",
+      "slug": "todo-list",
+      "name": "学习任务清单(Todo)"
+    },
+    {
+      "id": 265,
+      "cat": "study",
+      "slug": "study-heat",
+      "name": "学习时间统计热力图"
+    },
+    {
+      "id": 266,
+      "cat": "study",
+      "slug": "flash-cards",
+      "name": "单词记忆闪卡工具"
+    },
+    {
+      "id": 267,
+      "cat": "study",
+      "slug": "ebbinghaus-plan",
+      "name": "艾宾浩斯遗忘曲线排期器"
+    },
+    {
+      "id": 268,
+      "cat": "study",
+      "slug": "error-notes",
+      "name": "错题本分类整理工具"
+    },
+    {
+      "id": 269,
+      "cat": "study",
+      "slug": "cornel-template",
+      "name": "康奈尔笔记生成模板"
+    },
+    {
+      "id": 270,
+      "cat": "study",
+      "slug": "mind-map",
+      "name": "纯前端思维导图"
+    },
+    {
+      "id": 271,
+      "cat": "study",
+      "slug": "thesis-outline",
+      "name": "论文树状提纲生成"
+    },
+    {
+      "id": 272,
+      "cat": "study",
+      "slug": "title-ideas",
+      "name": "论文题目灵感随机组合"
+    },
+    {
+      "id": 273,
+      "cat": "study",
+      "slug": "cite-gen",
+      "name": "参考文献格式自动生成(APA/MLA)"
+    },
+    {
+      "id": 274,
+      "cat": "study",
+      "slug": "cite-conv",
+      "name": "引用格式交叉转换"
+    },
+    {
+      "id": 275,
+      "cat": "study",
+      "slug": "latex-gen",
+      "name": "LaTeX常用公式生成器"
+    },
+    {
+      "id": 276,
+      "cat": "study",
+      "slug": "algebra-solver",
+      "name": "基础代数公式计算器"
+    },
+    {
+      "id": 277,
+      "cat": "study",
+      "slug": "science-calc",
+      "name": "高级科学计算器"
+    },
+    {
+      "id": 278,
+      "cat": "study",
+      "slug": "physics-unit",
+      "name": "物理/化学单位换算器"
+    },
+    {
+      "id": 279,
+      "cat": "study",
+      "slug": "data-unit",
+      "name": "数据存储单位换算"
+    },
+    {
+      "id": 280,
+      "cat": "study",
+      "slug": "matrix-calc",
+      "name": "矩阵加减乘法计算"
+    },
+    {
+      "id": 281,
+      "cat": "study",
+      "slug": "prob-calc",
+      "name": "基础概率/排列组合计算"
+    },
+    {
+      "id": 282,
+      "cat": "study",
+      "slug": "test-gen",
+      "name": "随机试题卷面生成"
+    },
+    {
+      "id": 283,
+      "cat": "study",
+      "slug": "mock-exam",
+      "name": "倒计时模拟考试环境"
+    },
+    {
+      "id": 284,
+      "cat": "study",
+      "slug": "smart-goal",
+      "name": "SMART学习目标规划器"
+    },
+    {
+      "id": 285,
+      "cat": "study",
+      "slug": "habbit-track",
+      "name": "21天学习习惯打卡表"
+    },
+    {
+      "id": 286,
+      "cat": "study",
+      "slug": "reading-speed",
+      "name": "万字阅读时间精确计算"
+    },
+    {
+      "id": 287,
+      "cat": "study",
+      "slug": "mem-card-game",
+      "name": "交互式知识点记忆卡片"
+    },
+    {
+      "id": 288,
+      "cat": "study",
+      "slug": "review-map",
+      "name": "考前复习计划生成器"
+    },
+    {
+      "id": 289,
+      "cat": "study",
+      "slug": "data-pivot",
+      "name": "数据透视表生成"
+    },
+    {
+      "id": 290,
+      "cat": "study",
+      "slug": "line-chart",
+      "name": "基础折线图生成(Chart.js)"
+    },
+    {
+      "id": 291,
+      "cat": "study",
+      "slug": "bar-chart",
+      "name": "基础柱状图生成"
+    },
+    {
+      "id": 292,
+      "cat": "study",
+      "slug": "pie-chart",
+      "name": "数据饼状图生成"
+    },
+    {
+      "id": 293,
+      "cat": "study",
+      "slug": "md-table-ui",
+      "name": "Markdown表格可视化编辑器"
+    },
+    {
+      "id": 294,
+      "cat": "study",
+      "slug": "study-kanban",
+      "name": "每日作业计划看板"
+    },
+    {
+      "id": 295,
+      "cat": "study",
+      "slug": "random-name-pick",
+      "name": "课堂随机点名工具"
+    },
+    {
+      "id": 296,
+      "cat": "study",
+      "slug": "team-splitter",
+      "name": "课堂小组随机分配器"
+    },
+    {
+      "id": 297,
+      "cat": "study",
+      "slug": "fair-draw",
+      "name": "课堂公平抽签工具"
+    },
+    {
+      "id": 298,
+      "cat": "study",
+      "slug": "submit-check",
+      "name": "论文/作业提交前检查清单"
+    },
+    {
+      "id": 299,
+      "cat": "study",
+      "slug": "reflect-log",
+      "name": "学习反思日志生成器"
+    },
+    {
+      "id": 300,
+      "cat": "study",
+      "slug": "fill-blank-gen",
+      "name": "填空题知识测试生成"
+    },
+    {
+      "id": 329,
+      "cat": "study",
+      "slug": "reaction-test",
+      "name": "反应速度(毫秒)测试仪"
+    },
+    {
+      "id": 341,
+      "cat": "life",
+      "slug": "bmi-calc",
+      "name": "BMI体脂指数计算器"
+    },
+    {
+      "id": 408,
+      "cat": "life",
+      "slug": "first-aid-guide",
+      "name": "基础急救常识操作图册"
+    },
+    {
+      "id": 421,
+      "cat": "fun",
+      "slug": "lucky-wheel",
+      "name": "幸运转盘抽奖"
+    },
+    {
+      "id": 422,
+      "cat": "fun",
+      "slug": "random-draw",
+      "name": "抓阄/随机抽人"
+    },
+    {
+      "id": 423,
+      "cat": "fun",
+      "slug": "random-num-range",
+      "name": "区间随机数字生成"
+    },
+    {
+      "id": 424,
+      "cat": "fun",
+      "slug": "name-gen",
+      "name": "随机人名生成(中/英文)"
+    },
+    {
+      "id": 425,
+      "cat": "fun",
+      "slug": "nickname-gen",
+      "name": "随机网络昵称生成"
+    },
+    {
+      "id": 426,
+      "cat": "fun",
+      "slug": "abstract-avatar",
+      "name": "随机几何体头像生成"
+    },
+    {
+      "id": 427,
+      "cat": "fun",
+      "slug": "random-wallpaper",
+      "name": "随机渐变壁纸生成"
+    },
+    {
+      "id": 428,
+      "cat": "fun",
+      "slug": "movie-pick",
+      "name": "随机周末电影类型推荐"
+    },
+    {
+      "id": 429,
+      "cat": "fun",
+      "slug": "music-pick",
+      "name": "随机音乐风格推荐"
+    },
+    {
+      "id": 430,
+      "cat": "fun",
+      "slug": "book-pick",
+      "name": "随机名著书籍推荐"
+    },
+    {
+      "id": 431,
+      "cat": "fun",
+      "slug": "coin-flip",
+      "name": "随机抛硬币模拟"
+    },
+    {
+      "id": 432,
+      "cat": "fun",
+      "slug": "dice-simulator",
+      "name": "随机丢骰子(1-6颗)模拟"
+    },
+    {
+      "id": 433,
+      "cat": "fun",
+      "slug": "random-joke",
+      "name": "随机冷笑话生成"
+    },
+    {
+      "id": 434,
+      "cat": "fun",
+      "slug": "philosophy-q",
+      "name": "随机哲学问题思考"
+    },
+    {
+      "id": 435,
+      "cat": "fun",
+      "slug": "daily-horoscope",
+      "name": "每日伪运势/黄历生成"
+    },
+    {
+      "id": 436,
+      "cat": "fun",
+      "slug": "lucky-color",
+      "name": "今日幸运色与幸运数字"
+    },
+    {
+      "id": 437,
+      "cat": "fun",
+      "slug": "card-shuffle",
+      "name": "扑克牌随机洗牌抽取"
+    },
+    {
+      "id": 438,
+      "cat": "fun",
+      "slug": "mbti-model",
+      "name": "极简MBTI性格测试模型"
+    },
+    {
+      "id": 439,
+      "cat": "fun",
+      "slug": "psy-test-gen",
+      "name": "趣味心理测试生成"
+    },
+    {
+      "id": 440,
+      "cat": "fun",
+      "slug": "name-compatibility",
+      "name": "爱情契合度名字计算(趣味)"
+    },
+    {
+      "id": 441,
+      "cat": "fun",
+      "slug": "truth-or-dare",
+      "name": "聚会真心话大冒险题库"
+    },
+    {
+      "id": 467,
+      "cat": "fun",
+      "slug": "tongue-twister",
+      "name": "绕口令等级挑战器"
+    }
+  ],
+  "placeholder": [
+    {
+      "id": 25,
+      "cat": "image",
+      "slug": "avatar-round",
+      "name": "头像圆形裁剪"
+    },
+    {
+      "id": 31,
+      "cat": "image",
+      "slug": "gif-split",
+      "name": "GIF分解"
+    },
+    {
+      "id": 50,
+      "cat": "image",
+      "slug": "exif-view",
+      "name": "图片EXIF查看"
+    },
+    {
+      "id": 76,
+      "cat": "image",
+      "slug": "logo-gen",
+      "name": "网站Logo生成器"
+    },
+    {
+      "id": 77,
+      "cat": "image",
+      "slug": "banner-gen",
+      "name": "横幅(Banner)生成器"
+    },
+    {
+      "id": 78,
+      "cat": "image",
+      "slug": "video-thumb",
+      "name": "视频缩略图生成适配"
+    },
+    {
+      "id": 79,
+      "cat": "image",
+      "slug": "social-cover",
+      "name": "社交媒体封面适配生成"
+    },
+    {
+      "id": 80,
+      "cat": "image",
+      "slug": "main-color",
+      "name": "图片主色调提取"
+    },
+    {
+      "id": 81,
+      "cat": "image",
+      "slug": "rgb-histogram",
+      "name": "图片RGB直方图生成"
+    },
+    {
+      "id": 82,
+      "cat": "image",
+      "slug": "web-long-pic",
+      "name": "网页长截图拼接"
+    },
+    {
+      "id": 83,
+      "cat": "image",
+      "slug": "upscale-canvas",
+      "name": "图片无损放大(Canvas插值)"
+    },
+    {
+      "id": 84,
+      "cat": "image",
+      "slug": "solid-wallpaper",
+      "name": "纯色壁纸生成器"
+    },
+    {
+      "id": 111,
+      "cat": "pdf",
+      "slug": "pdf-search",
+      "name": "PDF关键词搜索"
+    },
+    {
+      "id": 121,
+      "cat": "pdf",
+      "slug": "pdf-text-extract",
+      "name": "PDF纯文本提取"
+    },
+    {
+      "id": 124,
+      "cat": "pdf",
+      "slug": "pdf-reader",
+      "name": "纯前端PDF阅读器"
+    },
+    {
+      "id": 126,
+      "cat": "pdf",
+      "slug": "pdf-comment-clear",
+      "name": "PDF批注删除"
+    },
+    {
+      "id": 127,
+      "cat": "pdf",
+      "slug": "pdf-highlight-clear",
+      "name": "PDF文本高亮清除"
+    },
+    {
+      "id": 130,
+      "cat": "pdf",
+      "slug": "pdf-meta-edit",
+      "name": "PDF元数据编辑"
+    },
+    {
+      "id": 133,
+      "cat": "pdf",
+      "slug": "pdf-keywords-edit",
+      "name": "PDF关键词编辑"
+    },
+    {
+      "id": 134,
+      "cat": "pdf",
+      "slug": "pdf-defect-check",
+      "name": "PDF损坏文件检测"
+    },
+    {
+      "id": 135,
+      "cat": "pdf",
+      "slug": "pdf-security-check",
+      "name": "PDF安全权限检测"
+    },
+    {
+      "id": 136,
+      "cat": "pdf",
+      "slug": "pdf-outline-extract",
+      "name": "PDF目录树提取"
+    },
+    {
+      "id": 137,
+      "cat": "pdf",
+      "slug": "pdf-form-extract",
+      "name": "PDF表单数据提取"
+    },
+    {
+      "id": 139,
+      "cat": "pdf",
+      "slug": "epub-to-pdf",
+      "name": "EPUB转PDF"
+    },
+    {
+      "id": 140,
+      "cat": "pdf",
+      "slug": "pdf-to-mobi",
+      "name": "PDF转MOBI(基础流排版)"
+    },
+    {
+      "id": 141,
+      "cat": "pdf",
+      "slug": "mobi-to-pdf",
+      "name": "MOBI转PDF"
+    },
+    {
+      "id": 142,
+      "cat": "pdf",
+      "slug": "pdf-to-csv",
+      "name": "PDF转CSV"
+    },
+    {
+      "id": 143,
+      "cat": "pdf",
+      "slug": "json-to-pdf",
+      "name": "JSON转PDF报告"
+    },
+    {
+      "id": 146,
+      "cat": "pdf",
+      "slug": "pdf-center",
+      "name": "PDF页面内容居中对齐"
+    },
+    {
+      "id": 147,
+      "cat": "pdf",
+      "slug": "pdf-duplex",
+      "name": "PDF双面打印排版(添加空白页)"
+    },
+    {
+      "id": 148,
+      "cat": "pdf",
+      "slug": "pdf-booklet",
+      "name": "PDF小册子排版生成"
+    },
+    {
+      "id": 149,
+      "cat": "pdf",
+      "slug": "pdf-barcode",
+      "name": "PDF条形码插入"
+    },
+    {
+      "id": 150,
+      "cat": "pdf",
+      "slug": "pdf-qrcode",
+      "name": "PDF二维码插入"
+    },
+    {
+      "id": 151,
+      "cat": "pdf",
+      "slug": "pdf-seal",
+      "name": "PDF公章/印章添加"
+    },
+    {
+      "id": 152,
+      "cat": "pdf",
+      "slug": "pdf-sign-extract",
+      "name": "PDF手写签名抠图提取"
+    },
+    {
+      "id": 154,
+      "cat": "pdf",
+      "slug": "pdf-structure",
+      "name": "PDF内部结构查看(解析器)"
+    },
+    {
+      "id": 155,
+      "cat": "pdf",
+      "slug": "pdf-font-extract",
+      "name": "PDF内嵌字体提取"
+    },
+    {
+      "id": 156,
+      "cat": "pdf",
+      "slug": "pdf-img-batch",
+      "name": "PDF内嵌图片批量提取"
+    },
+    {
+      "id": 157,
+      "cat": "pdf",
+      "slug": "pdf-url-extract",
+      "name": "PDF内链URL提取"
+    },
+    {
+      "id": 158,
+      "cat": "pdf",
+      "slug": "pdf-layer-remove",
+      "name": "PDF隐藏内容/图层删除"
+    },
+    {
+      "id": 159,
+      "cat": "pdf",
+      "slug": "pdf-outline-text",
+      "name": "PDF文本转曲/扁平化"
+    },
+    {
+      "id": 160,
+      "cat": "pdf",
+      "slug": "pdf-flatten",
+      "name": "PDF交互表单扁平化"
+    },
+    {
+      "id": 161,
+      "cat": "pdf",
+      "slug": "pdf-split-half",
+      "name": "PDF对开页中间拆分"
+    },
+    {
+      "id": 162,
+      "cat": "pdf",
+      "slug": "pdf-join-half",
+      "name": "PDF两页跨页合并"
+    },
+    {
+      "id": 163,
+      "cat": "pdf",
+      "slug": "pdf-invert-color",
+      "name": "PDF颜色反转(暗黑模式打印)"
+    },
+    {
+      "id": 164,
+      "cat": "pdf",
+      "slug": "pdf-grid-helper",
+      "name": "PDF页面添加网格线辅助"
+    },
+    {
+      "id": 165,
+      "cat": "pdf",
+      "slug": "pdf-confidential",
+      "name": "PDF添加草稿/机密水印"
+    },
+    {
+      "id": 166,
+      "cat": "pdf",
+      "slug": "pdf-readonly",
+      "name": "PDF只读模式转换"
+    },
+    {
+      "id": 167,
+      "cat": "pdf",
+      "slug": "pdf-draft-extract",
+      "name": "PDF草稿模式(极简文本)提取"
+    },
+    {
+      "id": 168,
+      "cat": "pdf",
+      "slug": "pdf-json-outline",
+      "name": "PDF大纲结构JSON提取"
+    },
+    {
+      "id": 169,
+      "cat": "pdf",
+      "slug": "md-to-pdf",
+      "name": "Markdown导出PDF"
+    },
+    {
+      "id": 170,
+      "cat": "pdf",
+      "slug": "html-to-pdf",
+      "name": "HTML长页转PDF切片"
+    },
+    {
+      "id": 239,
+      "cat": "text",
+      "slug": "tab-space-swap",
+      "name": "空格与制表符批量替换"
+    },
+    {
+      "id": 301,
+      "cat": "study",
+      "slug": "dictation-test",
+      "name": "英语单词拼写听写测试"
+    },
+    {
+      "id": 302,
+      "cat": "study",
+      "slug": "math-drill",
+      "name": "随机四则运算出题机"
+    },
+    {
+      "id": 303,
+      "cat": "study",
+      "slug": "rest-remind",
+      "name": "学习定时休息提醒"
+    },
+    {
+      "id": 304,
+      "cat": "study",
+      "slug": "local-wiki",
+      "name": "个人本地知识库索引卡"
+    },
+    {
+      "id": 305,
+      "cat": "study",
+      "slug": "stroke-anim",
+      "name": "汉字笔画顺序演示"
+    },
+    {
+      "id": 306,
+      "cat": "study",
+      "slug": "multi-table",
+      "name": "九九乘法表生成器"
+    },
+    {
+      "id": 307,
+      "cat": "study",
+      "slug": "history-timeline",
+      "name": "历史年代纪事时间轴生成"
+    },
+    {
+      "id": 308,
+      "cat": "study",
+      "slug": "elements-table",
+      "name": "元素周期表速查表"
+    },
+    {
+      "id": 309,
+      "cat": "study",
+      "slug": "phonetic-map",
+      "name": "音标对照与发音图解"
+    },
+    {
+      "id": 310,
+      "cat": "study",
+      "slug": "world-geo",
+      "name": "世界地理国家首都速查"
+    },
+    {
+      "id": 311,
+      "cat": "study",
+      "slug": "geo-distance",
+      "name": "经纬度距离计算器"
+    },
+    {
+      "id": 312,
+      "cat": "study",
+      "slug": "geometry-formula",
+      "name": "面积体积几何公式速查"
+    },
+    {
+      "id": 313,
+      "cat": "study",
+      "slug": "trigo-calc",
+      "name": "三角函数计算器"
+    },
+    {
+      "id": 314,
+      "cat": "study",
+      "slug": "lin-reg",
+      "name": "线性回归方程计算"
+    },
+    {
+      "id": 315,
+      "cat": "study",
+      "slug": "stat-std-dev",
+      "name": "标准差与方差计算器"
+    },
+    {
+      "id": 316,
+      "cat": "study",
+      "slug": "random-phrase",
+      "name": "随机组词造句机"
+    },
+    {
+      "id": 317,
+      "cat": "study",
+      "slug": "word-limit",
+      "name": "阅读理解字数统计限制"
+    },
+    {
+      "id": 318,
+      "cat": "study",
+      "slug": "poem-check",
+      "name": "古诗词平仄检测"
+    },
+    {
+      "id": 319,
+      "cat": "study",
+      "slug": "rare-char-pinyin",
+      "name": "文言文生僻字注音速查"
+    },
+    {
+      "id": 320,
+      "cat": "study",
+      "slug": "sudoku-solve",
+      "name": "数独生成与解答(基础版)"
+    },
+    {
+      "id": 321,
+      "cat": "study",
+      "slug": "mines-logic",
+      "name": "扫雷逻辑训练器"
+    },
+    {
+      "id": 322,
+      "cat": "study",
+      "slug": "card-match-mem",
+      "name": "记忆力翻牌训练"
+    },
+    {
+      "id": 323,
+      "cat": "study",
+      "slug": "mental-math",
+      "name": "速算能力训练器"
+    },
+    {
+      "id": 324,
+      "cat": "study",
+      "slug": "study-noise",
+      "name": "专注力舒缓白噪音播放(前端音频)"
+    },
+    {
+      "id": 325,
+      "cat": "study",
+      "slug": "morse-listen",
+      "name": "莫斯密码听力训练"
+    },
+    {
+      "id": 326,
+      "cat": "study",
+      "slug": "music-scale",
+      "name": "乐理基础音阶生成"
+    },
+    {
+      "id": 327,
+      "cat": "study",
+      "slug": "spell-typer",
+      "name": "键盘盲打拼写练习"
+    },
+    {
+      "id": 328,
+      "cat": "study",
+      "slug": "mouse-aim",
+      "name": "鼠标精准度打靶训练"
+    },
+    {
+      "id": 330,
+      "cat": "study",
+      "slug": "word-cloud",
+      "name": "每日词汇云图生成"
+    },
+    {
+      "id": 331,
+      "cat": "study",
+      "slug": "isbn-check",
+      "name": "图书ISBN校验码计算"
+    },
+    {
+      "id": 332,
+      "cat": "study",
+      "slug": "book-catalog",
+      "name": "图书分类号速查"
+    },
+    {
+      "id": 333,
+      "cat": "study",
+      "slug": "scholarship-calc",
+      "name": "奖学金评定得分换算"
+    },
+    {
+      "id": 334,
+      "cat": "study",
+      "slug": "book-quote-card",
+      "name": "读书笔记摘录卡片生成"
+    },
+    {
+      "id": 335,
+      "cat": "study",
+      "slug": "postgrad-focus",
+      "name": "考研倒计时专注屏"
+    },
+    {
+      "id": 336,
+      "cat": "study",
+      "slug": "toefl-ielts-conv",
+      "name": "雅思托福分数对照计算"
+    },
+    {
+      "id": 337,
+      "cat": "study",
+      "slug": "self-contract",
+      "name": "自律承诺书签名生成"
+    },
+    {
+      "id": 338,
+      "cat": "study",
+      "slug": "error-layout",
+      "name": "错题打印拼图排版"
+    },
+    {
+      "id": 339,
+      "cat": "study",
+      "slug": "reading-progress",
+      "name": "读书进度百分比跟踪器"
+    },
+    {
+      "id": 340,
+      "cat": "study",
+      "slug": "credit-summary",
+      "name": "学期末学分核对统筹"
+    },
+    {
+      "id": 342,
+      "cat": "life",
+      "slug": "age-calc",
+      "name": "精确年龄计算器(到天)"
+    },
+    {
+      "id": 343,
+      "cat": "life",
+      "slug": "birth-weekday",
+      "name": "生日星期几计算"
+    },
+    {
+      "id": 344,
+      "cat": "life",
+      "slug": "free-timer",
+      "name": "自由倒计时生成器"
+    },
+    {
+      "id": 345,
+      "cat": "life",
+      "slug": "anniversary-calc",
+      "name": "恋爱/结婚纪念日计算"
+    },
+    {
+      "id": 346,
+      "cat": "life",
+      "slug": "love-days",
+      "name": "恋爱天数正计时"
+    },
+    {
+      "id": 347,
+      "cat": "life",
+      "slug": "sleep-cycle",
+      "name": "睡眠周期黄金时间计算"
+    },
+    {
+      "id": 348,
+      "cat": "life",
+      "slug": "burn-calories",
+      "name": "食物卡路里消耗计算"
+    },
+    {
+      "id": 349,
+      "cat": "life",
+      "slug": "water-plan",
+      "name": "每日喝水时间表提醒"
+    },
+    {
+      "id": 350,
+      "cat": "life",
+      "slug": "gym-routine",
+      "name": "基础健身动作计划表"
+    },
+    {
+      "id": 351,
+      "cat": "life",
+      "slug": "travel-budget",
+      "name": "旅行行程预算分配"
+    },
+    {
+      "id": 352,
+      "cat": "life",
+      "slug": "save-money-52",
+      "name": "52周存钱计划生成"
+    },
+    {
+      "id": 353,
+      "cat": "life",
+      "slug": "compound-interest",
+      "name": "银行复利/利率计算"
+    },
+    {
+      "id": 354,
+      "cat": "life",
+      "slug": "mortgage-calc",
+      "name": "基础房贷/等额本息计算"
+    },
+    {
+      "id": 355,
+      "cat": "life",
+      "slug": "hourly-rate",
+      "name": "工资时薪折算"
+    },
+    {
+      "id": 356,
+      "cat": "life",
+      "slug": "tax-calc",
+      "name": "基础个税计算(模拟)"
+    },
+    {
+      "id": 357,
+      "cat": "life",
+      "slug": "insurance-ratio",
+      "name": "五险一金比例计算"
+    },
+    {
+      "id": 358,
+      "cat": "life",
+      "slug": "ledger-stats",
+      "name": "日常消费账本统计"
+    },
+    {
+      "id": 359,
+      "cat": "life",
+      "slug": "shopping-list",
+      "name": "购物待办清单(LocalStorage)"
+    },
+    {
+      "id": 360,
+      "cat": "life",
+      "slug": "habit-grid",
+      "name": "每日习惯打卡网格"
+    },
+    {
+      "id": 361,
+      "cat": "life",
+      "slug": "calendar-gen",
+      "name": "万年历/日历生成器"
+    },
+    {
+      "id": 362,
+      "cat": "life",
+      "slug": "experience-time",
+      "name": "个人经历时间轴生成"
+    },
+    {
+      "id": 363,
+      "cat": "life",
+      "slug": "food-wheel",
+      "name": "“今天吃什么”随机大转盘"
+    },
+    {
+      "id": 364,
+      "cat": "life",
+      "slug": "random-weekend",
+      "name": "随机周末去哪儿生成"
+    },
+    {
+      "id": 365,
+      "cat": "life",
+      "slug": "house-chore-splitter",
+      "name": "随机家务任务分配"
+    },
+    {
+      "id": 366,
+      "cat": "life",
+      "slug": "constellation-query",
+      "name": "12星座查询与分析"
+    },
+    {
+      "id": 367,
+      "cat": "life",
+      "slug": "chinese-zodiac",
+      "name": "12生肖年份查询"
+    },
+    {
+      "id": 368,
+      "cat": "life",
+      "slug": "mood-journal",
+      "name": "基础情绪日历记录(像素点)"
+    },
+    {
+      "id": 369,
+      "cat": "life",
+      "slug": "local-diary",
+      "name": "本地加密极简日记本"
+    },
+    {
+      "id": 370,
+      "cat": "life",
+      "slug": "pill-remind",
+      "name": "药丸服药时间记录"
+    },
+    {
+      "id": 371,
+      "cat": "life",
+      "slug": "price-sum",
+      "name": "超市购物清单价格求和"
+    },
+    {
+      "id": 372,
+      "cat": "life",
+      "slug": "wish-list",
+      "name": "新年愿望清单检查表"
+    },
+    {
+      "id": 373,
+      "cat": "life",
+      "slug": "heart-rate-log",
+      "name": "基础静息心率记录表"
+    },
+    {
+      "id": 374,
+      "cat": "life",
+      "slug": "steps-to-km",
+      "name": "每日步数距离换算"
+    },
+    {
+      "id": 375,
+      "cat": "life",
+      "slug": "cloth-size-conv",
+      "name": "常见衣服尺码中外换算"
+    },
+    {
+      "id": 376,
+      "cat": "life",
+      "slug": "shoe-size-conv",
+      "name": "常见鞋码中外换算"
+    },
+    {
+      "id": 377,
+      "cat": "life",
+      "slug": "ring-size",
+      "name": "戒指指围尺寸换算"
+    },
+    {
+      "id": 378,
+      "cat": "life",
+      "slug": "ppi-calc",
+      "name": "屏幕PPI/尺寸真实计算"
+    },
+    {
+      "id": 379,
+      "cat": "life",
+      "slug": "vision-conv",
+      "name": "视力表度数对照转换"
+    },
+    {
+      "id": 380,
+      "cat": "life",
+      "slug": "bp-eval",
+      "name": "基础血压健康等级评估"
+    },
+    {
+      "id": 381,
+      "cat": "life",
+      "slug": "period-track",
+      "name": "女性生理期/排卵期估算"
+    },
+    {
+      "id": 382,
+      "cat": "life",
+      "slug": "due-date-calc",
+      "name": "孕妇预产期计算器"
+    },
+    {
+      "id": 383,
+      "cat": "life",
+      "slug": "relative-name",
+      "name": "复杂亲戚称呼计算器(中国家庭)"
+    },
+    {
+      "id": 384,
+      "cat": "life",
+      "slug": "retire-timer",
+      "name": "法定退休年龄倒计时"
+    },
+    {
+      "id": 385,
+      "cat": "life",
+      "slug": "fuel-consumption",
+      "name": "汽车油耗(百公里)计算"
+    },
+    {
+      "id": 386,
+      "cat": "life",
+      "slug": "taxi-cost",
+      "name": "打车费用里程预估模型"
+    },
+    {
+      "id": 387,
+      "cat": "life",
+      "slug": "vol-weight",
+      "name": "快递抛重/体积重计算"
+    },
+    {
+      "id": 388,
+      "cat": "life",
+      "slug": "room-area-conv",
+      "name": "房屋装修面积测量换算"
+    },
+    {
+      "id": 389,
+      "cat": "life",
+      "slug": "paint-calc",
+      "name": "墙纸/油漆用量估算"
+    },
+    {
+      "id": 390,
+      "cat": "life",
+      "slug": "tile-calc",
+      "name": "地板/瓷砖用量估算"
+    },
+    {
+      "id": 391,
+      "cat": "life",
+      "slug": "ac-power-match",
+      "name": "房间面积与空调匹数匹配"
+    },
+    {
+      "id": 392,
+      "cat": "life",
+      "slug": "tv-dist",
+      "name": "电视屏幕最佳观看距离计算"
+    },
+    {
+      "id": 393,
+      "cat": "life",
+      "slug": "fridge-vol",
+      "name": "冰箱容量选择计算"
+    },
+    {
+      "id": 394,
+      "cat": "life",
+      "slug": "gi-value",
+      "name": "常见食物GI(升糖)值查询"
+    },
+    {
+      "id": 395,
+      "cat": "life",
+      "slug": "trash-sort",
+      "name": "城市垃圾分类速查"
+    },
+    {
+      "id": 396,
+      "cat": "life",
+      "slug": "solar-terms",
+      "name": "中国传统二十四节气查询"
+    },
+    {
+      "id": 397,
+      "cat": "life",
+      "slug": "today-history",
+      "name": "历史上的今天(本地数据库)"
+    },
+    {
+      "id": 398,
+      "cat": "life",
+      "slug": "world-clock",
+      "name": "全球主要城市时区转换"
+    },
+    {
+      "id": 399,
+      "cat": "life",
+      "slug": "sunrise-sunset",
+      "name": "预估日出日落时间(经纬度)"
+    },
+    {
+      "id": 400,
+      "cat": "life",
+      "slug": "lunar-conv",
+      "name": "农历阳历互转计算"
+    },
+    {
+      "id": 401,
+      "cat": "life",
+      "slug": "intimacy-test",
+      "name": "亲密度评分测试"
+    },
+    {
+      "id": 402,
+      "cat": "life",
+      "slug": "pet-age-conv",
+      "name": "宠物猫狗年龄人类换算"
+    },
+    {
+      "id": 403,
+      "cat": "life",
+      "slug": "license-plate",
+      "name": "车牌号归属地速查字典"
+    },
+    {
+      "id": 404,
+      "cat": "life",
+      "slug": "gold-weight",
+      "name": "黄金单位(克/盎司)换算"
+    },
+    {
+      "id": 405,
+      "cat": "life",
+      "slug": "diamond-check",
+      "name": "钻石4C标准计算对照"
+    },
+    {
+      "id": 406,
+      "cat": "life",
+      "slug": "hcho-eval",
+      "name": "房间甲醛挥发安全估算"
+    },
+    {
+      "id": 407,
+      "cat": "life",
+      "slug": "alcohol-met",
+      "name": "饮酒酒精代谢时间估算"
+    },
+    {
+      "id": 409,
+      "cat": "life",
+      "slug": "wash-symbol",
+      "name": "衣服洗水标符号速查表"
+    },
+    {
+      "id": 410,
+      "cat": "life",
+      "slug": "jewelry-clean",
+      "name": "首饰清洗配方速查"
+    },
+    {
+      "id": 411,
+      "cat": "life",
+      "slug": "plant-water",
+      "name": "室内植物浇水周期表"
+    },
+    {
+      "id": 412,
+      "cat": "life",
+      "slug": "cooking-unit",
+      "name": "烹饪调料克数/勺数换算"
+    },
+    {
+      "id": 413,
+      "cat": "life",
+      "slug": "fridge-life",
+      "name": "常见食材冰箱保鲜期查询"
+    },
+    {
+      "id": 414,
+      "cat": "life",
+      "slug": "declutter-list",
+      "name": "家居物品断舍离清单"
+    },
+    {
+      "id": 415,
+      "cat": "life",
+      "slug": "lost-contact",
+      "name": "证件挂失电话黄页速查"
+    },
+    {
+      "id": 416,
+      "cat": "life",
+      "slug": "moving-list",
+      "name": "搬家打包物品清单生成"
+    },
+    {
+      "id": 417,
+      "cat": "life",
+      "slug": "emergency-bag",
+      "name": "防灾应急包物资清单"
+    },
+    {
+      "id": 418,
+      "cat": "life",
+      "slug": "temp-conv",
+      "name": "厨房烤箱温度换算(摄氏/华氏)"
+    },
+    {
+      "id": 419,
+      "cat": "life",
+      "slug": "baby-feed",
+      "name": "婴儿奶粉喂养量估算"
+    },
+    {
+      "id": 420,
+      "cat": "life",
+      "slug": "medicine-chest",
+      "name": "家庭常备药箱有效期管理"
+    },
+    {
+      "id": 442,
+      "cat": "fun",
+      "slug": "blind-box-num",
+      "name": "幸运数字盲盒抽取"
+    },
+    {
+      "id": 443,
+      "cat": "fun",
+      "slug": "love-words",
+      "name": "土味情话表白生成器"
+    },
+    {
+      "id": 444,
+      "cat": "fun",
+      "slug": "meme-text",
+      "name": "社交平台表情包文字生成"
+    },
+    {
+      "id": 445,
+      "cat": "fun",
+      "slug": "caption-meme",
+      "name": "暴走漫画梗图配文"
+    },
+    {
+      "id": 446,
+      "cat": "fun",
+      "slug": "meme-editor",
+      "name": "Meme梗图生成器"
+    },
+    {
+      "id": 447,
+      "cat": "fun",
+      "slug": "ascii-anim",
+      "name": "ASCII动态字符画生成"
+    },
+    {
+      "id": 448,
+      "cat": "fun",
+      "slug": "couple-name",
+      "name": "游戏情侣昵称配对生成"
+    },
+    {
+      "id": 449,
+      "cat": "fun",
+      "slug": "bad-ass-name",
+      "name": "霸气网名生成器"
+    },
+    {
+      "id": 450,
+      "cat": "fun",
+      "slug": "signature-text",
+      "name": "社交主页个性签名生成"
+    },
+    {
+      "id": 451,
+      "cat": "fun",
+      "slug": "pixel-avatar-diy",
+      "name": "像素风头像DIY生成"
+    },
+    {
+      "id": 452,
+      "cat": "fun",
+      "slug": "lit-text-gen",
+      "name": "文艺情书段落随机生成"
+    },
+    {
+      "id": 453,
+      "cat": "fun",
+      "slug": "blessing-gen",
+      "name": "节日通用祝福语生成"
+    },
+    {
+      "id": 454,
+      "cat": "fun",
+      "slug": "social-text",
+      "name": "朋友圈文案随机生成"
+    },
+    {
+      "id": 455,
+      "cat": "fun",
+      "slug": "poison-soup",
+      "name": "名人名言/毒鸡汤生成"
+    },
+    {
+      "id": 456,
+      "cat": "fun",
+      "slug": "bedtime-story",
+      "name": "睡前小故事段落生成"
+    },
+    {
+      "id": 457,
+      "cat": "fun",
+      "slug": "classic-poem",
+      "name": "随机唐诗宋词抽取"
+    },
+    {
+      "id": 458,
+      "cat": "fun",
+      "slug": "lyric-test",
+      "name": "流行歌词接龙测试"
+    },
+    {
+      "id": 459,
+      "cat": "fun",
+      "slug": "trivia-facts",
+      "name": "无用但有趣的冷知识库"
+    },
+    {
+      "id": 460,
+      "cat": "fun",
+      "slug": "riddles-bin",
+      "name": "脑筋急转弯问答机"
+    },
+    {
+      "id": 461,
+      "cat": "fun",
+      "slug": "logic-quiz",
+      "name": "逻辑智力题闯关"
+    },
+    {
+      "id": 462,
+      "cat": "fun",
+      "slug": "weird-task",
+      "name": "每日奇葩任务挑战"
+    },
+    {
+      "id": 463,
+      "cat": "fun",
+      "slug": "lottery-scroll",
+      "name": "年会幸运抽奖滚动器"
+    },
+    {
+      "id": 464,
+      "cat": "fun",
+      "slug": "team-group",
+      "name": "团建游戏分组器"
+    },
+    {
+      "id": 465,
+      "cat": "fun",
+      "slug": "tarot-single",
+      "name": "塔罗牌单张占卜模拟"
+    },
+    {
+      "id": 466,
+      "cat": "fun",
+      "slug": "hitokoto-plus",
+      "name": "每日一言(Hitokoto前端版)"
+    },
+    {
+      "id": 468,
+      "cat": "fun",
+      "slug": "allusion-riddles",
+      "name": "歇后语猜谜游戏"
+    },
+    {
+      "id": 469,
+      "cat": "fun",
+      "slug": "idiom-search",
+      "name": "成语接龙查询字典"
+    },
+    {
+      "id": 470,
+      "cat": "fun",
+      "slug": "acrostic-poem",
+      "name": "藏头诗智能生成器(前端词库)"
+    },
+    {
+      "id": 471,
+      "cat": "fun",
+      "slug": "kaomoji-lib",
+      "name": "颜文字(Kaomoji)大全与组合"
+    },
+    {
+      "id": 472,
+      "cat": "fun",
+      "slug": "mars-text",
+      "name": "抽象话/火星文翻译器"
+    },
+    {
+      "id": 473,
+      "cat": "fun",
+      "slug": "morse-code-audio",
+      "name": "摩斯密码发报机发声模拟"
+    },
+    {
+      "id": 474,
+      "cat": "fun",
+      "slug": "web-piano",
+      "name": "基础乐器音效模拟(Web Audio)"
+    },
+    {
+      "id": 475,
+      "cat": "fun",
+      "slug": "metronome-web",
+      "name": "电子节拍器(Metronome)"
+    },
+    {
+      "id": 476,
+      "cat": "fun",
+      "slug": "chord-gen",
+      "name": "随机吉他和弦走向生成"
+    },
+    {
+      "id": 477,
+      "cat": "fun",
+      "slug": "guitar-tuner",
+      "name": "吉他/尤克里里纯音调音模拟"
+    },
+    {
+      "id": 478,
+      "cat": "fun",
+      "slug": "cps-test",
+      "name": "鼠标点击连发手速测试(CPS)"
+    },
+    {
+      "id": 479,
+      "cat": "fun",
+      "slug": "dead-pixel-check",
+      "name": "屏幕坏点颜色切换检测"
+    },
+    {
+      "id": 480,
+      "cat": "fun",
+      "slug": "color-diff-test",
+      "name": "色弱色彩敏感度找不同"
+    },
+    {
+      "id": 481,
+      "cat": "fun",
+      "slug": "audio-freq-test",
+      "name": "听力音频频率范围测试"
+    },
+    {
+      "id": 482,
+      "cat": "fun",
+      "slug": "brain-tend",
+      "name": "趣味左右脑倾向测试"
+    },
+    {
+      "id": 483,
+      "cat": "fun",
+      "slug": "lie-detector",
+      "name": "娱乐测谎仪(随机概率模拟)"
+    },
+    {
+      "id": 484,
+      "cat": "fun",
+      "slug": "muyu-sim",
+      "name": "电子木鱼模拟器(功德+1)"
+    },
+    {
+      "id": 485,
+      "cat": "fun",
+      "slug": "beads-sim",
+      "name": "电子盘串/念珠模拟器"
+    },
+    {
+      "id": 486,
+      "cat": "fun",
+      "slug": "poet-divin",
+      "name": "掷筊(求神问卜)模拟器"
+    },
+    {
+      "id": 487,
+      "cat": "fun",
+      "slug": "temple-pick",
+      "name": "观音灵签求签模拟"
+    },
+    {
+      "id": 488,
+      "cat": "fun",
+      "slug": "pet-translator",
+      "name": "喵星人/汪星人语言翻译(娱乐)"
+    },
+    {
+      "id": 489,
+      "cat": "fun",
+      "slug": "alias-gen",
+      "name": "赛博朋克风花名生成器"
+    },
+    {
+      "id": 490,
+      "cat": "fun",
+      "slug": "sect-name",
+      "name": "武侠江湖门派称号生成"
+    },
+    {
+      "id": 491,
+      "cat": "fun",
+      "slug": "race-name",
+      "name": "魔幻世界种族名字生成"
+    },
+    {
+      "id": 492,
+      "cat": "fun",
+      "slug": "role-assign",
+      "name": "剧本杀角色随机分配器"
+    },
+    {
+      "id": 493,
+      "cat": "fun",
+      "slug": "spy-words",
+      "name": "谁是卧底词库提供机"
+    },
+    {
+      "id": 494,
+      "cat": "fun",
+      "slug": "draw-word",
+      "name": "你画我猜题目生成器"
+    },
+    {
+      "id": 495,
+      "cat": "fun",
+      "slug": "werewolf-card",
+      "name": "狼人杀身份发牌器"
+    },
+    {
+      "id": 496,
+      "cat": "fun",
+      "slug": "roulette-fun",
+      "name": "俄罗斯轮盘模拟器(安全版)"
+    },
+    {
+      "id": 497,
+      "cat": "fun",
+      "slug": "face-gen-val",
+      "name": "虚拟捏脸数值随机生成"
+    },
+    {
+      "id": 498,
+      "cat": "fun",
+      "slug": "movie-dialog",
+      "name": "电影台词拼图生成"
+    },
+    {
+      "id": 499,
+      "cat": "fun",
+      "slug": "led-display",
+      "name": "偶像打call滚动弹幕生成"
+    },
+    {
+      "id": 500,
+      "cat": "fun",
+      "slug": "holiday-countdown",
+      "name": "节日放假摸鱼倒计时"
+    }
+  ],
+  "missing": []
+}

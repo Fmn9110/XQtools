@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>批量条件替换 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen pb-20 md:pb-0">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4">批量条件替换</h1>
+            <p class="text-gray-500 italic">同时设置多个查找与替换规则，一次性处理全篇文本。🎭</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-8 bg-white shadow-xl mb-12">
+            <div class="mb-6">
+                <label class="block text-sm font-bold text-pink-300 uppercase tracking-widest mb-3 ml-2">原始长文本</label>
+                <textarea id="textInput" class="w-full h-48 p-6 bg-pink-50/20 border-2 border-pink-50 rounded-3xl text-sm outline-none mb-4 resize-none focus:border-pink-100 transition-colors" placeholder="在此输入需要处理的长文本..."></textarea>
+            </div>
+            
+            <div class="mb-8">
+                <label class="block text-sm font-bold text-pink-300 uppercase tracking-widest mb-4 ml-2">替换规则</label>
+                <div id="rulesContainer" class="space-y-3">
+                     <div class="flex flex-wrap md:flex-nowrap gap-3 items-center rule-row p-4 bg-pink-50/10 rounded-2xl border border-pink-50/50">
+                          <input type="text" class="find-field p-3 bg-white border border-pink-100 rounded-xl text-xs flex-1 outline-none focus:border-pink-300" placeholder="查找内容">
+                          <span class="text-pink-200 hidden md:inline">➡️</span>
+                          <input type="text" class="replace-field p-3 bg-white border border-pink-100 rounded-xl text-xs flex-1 outline-none focus:border-pink-300" placeholder="替换为">
+                          <button class="remove-btn text-red-300 hover:text-red-500 p-2 transition-colors">
+                              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                          </button>
+                     </div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-4 items-center justify-between mb-10">
+                 <button id="addRule" class="text-xs md:text-sm text-pink-400 font-bold hover:text-pink-600 transition-colors flex items-center gap-2">
+                     <span class="w-6 h-6 rounded-full bg-pink-100 flex items-center justify-center text-lg">+</span> 添加规则
+                 </button>
+                 <button id="execBtn" class="theme-download-btn px-10 py-3 text-sm md:text-base">立即执行全部规则</button>
+            </div>
+
+            <div class="relative group">
+                <label class="block text-sm font-bold text-pink-300 uppercase tracking-widest mb-3 ml-2">处理结果</label>
+                <textarea id="textOutput" readonly class="w-full h-48 p-6 bg-pink-50/10 border-2 border-pink-50 rounded-3xl text-sm outline-none resize-none" placeholder="替换后的结果将显示在这里..."></textarea>
+                <button onclick="copyOutput()" class="absolute right-4 bottom-4 bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-pink-100 text-pink-400 hover:text-pink-600 shadow-sm transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                </button>
+            </div>
+        </section>
+    </main>
+
+
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const container = document.getElementById('rulesContainer');
+        const addBtn = document.getElementById('addRule');
+
+        function createRuleRow() {
+            const div = document.createElement('div');
+            div.className = "flex flex-wrap md:flex-nowrap gap-3 items-center rule-row p-4 bg-pink-50/10 rounded-2xl border border-pink-50/50 transition-all hover:bg-pink-50/20 shadow-sm";
+            div.innerHTML = `
+                <input type="text" class="find-field p-3 bg-white border border-pink-100 rounded-xl text-xs flex-1 outline-none focus:border-pink-300" placeholder="查找内容">
+                <span class="text-pink-200 hidden md:inline">➡️</span>
+                <input type="text" class="replace-field p-3 bg-white border border-pink-100 rounded-xl text-xs flex-1 outline-none focus:border-pink-300" placeholder="替换为">
+                <button class="remove-btn text-red-300 hover:text-red-500 p-2 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+            `;
+            div.querySelector('.remove-btn').onclick = () => {
+                if (container.children.length > 1) {
+                    div.remove();
+                } else {
+                    Utils.toast('至少保留一条规则', 'warning');
+                }
+            };
+            return div;
+        }
+
+        addBtn.onclick = () => {
+            container.appendChild(createRuleRow());
+            Utils.toast('已添加新规则', 'info');
+        };
+        
+        // Setup initial remove button
+        document.querySelector('.remove-btn').onclick = (e) => {
+             const row = e.target.closest('.rule-row');
+             if (container.children.length > 1) {
+                 row.remove();
+             } else {
+                 Utils.toast('至少保留一条规则', 'warning');
+             }
+        };
+
+        document.getElementById('execBtn').onclick = () => {
+             let text = document.getElementById('textInput').value;
+             if (!text) {
+                 Utils.toast('请输入原始内容', 'warning');
+                 return;
+             }
+             const rows = container.querySelectorAll('.rule-row');
+             
+             let rulesApplied = 0;
+             rows.forEach(row => {
+                 const find = row.querySelector('.find-field').value;
+                 const replace = row.querySelector('.replace-field').value;
+                 if(find) {
+                     const escapedFind = find.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                     text = text.replace(new RegExp(escapedFind, 'g'), replace);
+                     rulesApplied++;
+                 }
+             });
+             
+             document.getElementById('textOutput').value = text;
+             if (rulesApplied > 0) {
+                 Utils.toast('批量替换完成', 'success');
+             } else {
+                 Utils.toast('未设置有效的替换规则', 'warning');
+             }
+        };
+
+        function copyOutput() {
+            const output = document.getElementById('textOutput');
+            if (!output.value) return;
+            navigator.clipboard.writeText(output.value).then(() => {
+                Utils.toast('结果已复制到剪贴板', 'success');
+            });
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

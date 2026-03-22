@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>退休倒计时 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50"><div class="container mx-auto flex justify-between items-center"><div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'"><div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div><span class="text-2xl font-bold gradient-text">小Q工具箱</span></div><a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a></div></nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">🧓 退休倒计时</h1>
+            <p class="text-gray-500">看看你还需要工作多少天才能退休</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div><label class="block text-xs font-bold text-gray-400 uppercase mb-2">出生日期</label><input type="date" id="birth" class="w-full p-4 bg-gray-50 rounded-xl border border-pink-100 outline-none"></div>
+                <div><label class="block text-xs font-bold text-gray-400 uppercase mb-2">性别</label>
+                    <select id="gender" class="w-full p-4 bg-gray-50 rounded-xl border border-pink-100 outline-none">
+                        <option value="male">男性 (60岁退休)</option>
+                        <option value="female">女性-职工 (55岁退休)</option>
+                        <option value="female2">女性-工人 (50岁退休)</option>
+                    </select>
+                </div>
+            </div>
+            <button onclick="calc()" class="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl text-lg">⏰ 开始倒数</button>
+            <div id="result" class="hidden mt-8 text-center">
+                <div class="bg-gradient-to-r from-blue-100 to-purple-100 rounded-3xl p-8 mb-4">
+                    <p class="text-gray-500 text-sm">距离退休还有</p>
+                    <p class="text-7xl font-black text-blue-500 my-2" id="rDays">0</p>
+                    <p class="text-gray-400">天</p>
+                    <p class="text-sm text-gray-500 mt-2" id="rDate"></p>
+                </div>
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="bg-blue-50 rounded-xl p-4"><p class="text-2xl font-bold text-blue-500" id="rYears">0</p><p class="text-xs text-gray-400">年</p></div>
+                    <div class="bg-purple-50 rounded-xl p-4"><p class="text-2xl font-bold text-purple-500" id="rMonths">0</p><p class="text-xs text-gray-400">月</p></div>
+                    <div class="bg-green-50 rounded-xl p-4"><p class="text-2xl font-bold text-green-500" id="rWorkDays">0</p><p class="text-xs text-gray-400">工作日</p></div>
+                </div>
+                <div class="mt-4 bg-gray-50 rounded-xl p-3">
+                    <div class="w-full bg-gray-200 rounded-full h-3"><div id="bar" class="bg-blue-500 h-3 rounded-full"></div></div>
+                    <p class="text-xs text-gray-400 mt-1">职业生涯进度 <span id="progress">0%</span></p>
+                </div>
+            </div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center"><span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">!</span>使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>选择出生日期和性别。</li><li>根据现行法定退休年龄计算。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">退休年龄准确吗？</div><div class="text-gray-500 text-sm">按现行法定退休年龄计算（男60/女职工55/女工人50），延迟退休政策实施后可能有变。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        function calc() {
+            const birthStr = document.getElementById('birth').value;
+            if (!birthStr) { alert('请选择出生日期'); return; }
+            const gender = document.getElementById('gender').value;
+            const retireAge = gender === 'male' ? 60 : gender === 'female' ? 55 : 50;
+
+            const birth = new Date(birthStr);
+            const retireDate = new Date(birth);
+            retireDate.setFullYear(retireDate.getFullYear() + retireAge);
+
+            const now = new Date();
+            const diff = retireDate - now;
+
+            if (diff <= 0) {
+                document.getElementById('rDays').textContent = '🎉';
+                document.getElementById('rDate').textContent = '恭喜！你已经到达退休年龄了！';
+                document.getElementById('rYears').textContent = '0';
+                document.getElementById('rMonths').textContent = '0';
+                document.getElementById('rWorkDays').textContent = '0';
+                document.getElementById('bar').style.width = '100%';
+                document.getElementById('progress').textContent = '100%';
+            } else {
+                const days = Math.floor(diff / (1000*60*60*24));
+                const years = Math.floor(days / 365.25);
+                const months = Math.floor((days % 365.25) / 30.44);
+                const workDays = Math.floor(days * 5 / 7);
+
+                document.getElementById('rDays').textContent = days.toLocaleString();
+                document.getElementById('rDate').textContent = `预计退休日：${retireDate.getFullYear()}年${retireDate.getMonth()+1}月${retireDate.getDate()}日`;
+                document.getElementById('rYears').textContent = years;
+                document.getElementById('rMonths').textContent = months;
+                document.getElementById('rWorkDays').textContent = workDays.toLocaleString();
+
+                // 假设22岁开始工作
+                const careerStart = new Date(birth);
+                careerStart.setFullYear(careerStart.getFullYear() + 22);
+                const totalCareer = retireDate - careerStart;
+                const elapsed = now - careerStart;
+                const pct = Math.max(0, Math.min(100, (elapsed / totalCareer) * 100));
+                document.getElementById('bar').style.width = pct + '%';
+                document.getElementById('progress').textContent = pct.toFixed(1) + '%';
+            }
+            document.getElementById('result').classList.remove('hidden');
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

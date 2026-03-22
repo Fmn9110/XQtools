@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>听写测试 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">英语单词拼写听写测试</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">使用语音合成朗读单词，练习你的听力与拼写。</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            <div id="setupArea">
+                <textarea id="wordList" rows="5" placeholder="输入单词列表，一行一个，如：&#10;apple&#10;banana&#10;watermelon" class="w-full p-4 md:p-6 bg-gray-50 rounded-2xl md:rounded-3xl border border-pink-50 outline-none focus:border-pink-200 transition-all text-sm mb-4 resize-none"></textarea>
+                <button onclick="startTest()" class="cute-button w-full py-4 bg-pink-400 text-white font-bold rounded-2xl shadow-lg">▶️ 开始听写模式</button>
+            </div>
+
+            <div id="testArea" class="hidden space-y-6">
+                <div class="flex justify-between items-center mb-4">
+                    <p class="text-xs font-bold text-pink-300 uppercase tracking-widest">PROGRESS: <span id="currentIdx">1</span> / <span id="totalWords">0</span></p>
+                    <button onclick="speakCurrent()" id="replayBtn" class="px-4 py-2 bg-pink-50 text-pink-500 font-bold rounded-xl text-xs border border-pink-100">🔁 重听单词</button>
+                </div>
+                <input type="text" id="answer" placeholder="输入你听到的单词..." class="w-full p-6 bg-gray-50 rounded-3xl border border-pink-50 outline-none focus:border-pink-300 text-center text-xl md:text-2xl font-bold shadow-inner" onkeydown="if(event.key==='Enter')nextWord()">
+                <button onclick="nextWord()" class="cute-button w-full py-4 bg-pink-400 text-white font-bold rounded-2xl shadow-lg">提交并下一个</button>
+            </div>
+
+            <div id="results" class="hidden mt-8 space-y-3 animate-fade-in"></div>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let words = [], current = 0, answers = [];
+        
+        function speak(text) {
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'en-US';
+            u.rate = 0.7; // 稍慢一点更清晰
+            u.pitch = 1.1;
+            window.speechSynthesis.speak(u);
+        }
+
+        function speakCurrent() {
+            if (words[current]) speak(words[current]);
+        }
+
+        function startTest() {
+            words = document.getElementById('wordList').value.trim().split('\n').map(s => s.trim()).filter(Boolean);
+            if (!words.length) {
+                Utils.toast('请先输入单词', 'warning');
+                return;
+            }
+            current = 0;
+            answers = [];
+            document.getElementById('setupArea').classList.add('hidden');
+            document.getElementById('testArea').classList.remove('hidden');
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('totalWords').textContent = words.length;
+            document.getElementById('currentIdx').textContent = 1;
+            document.getElementById('answer').value = '';
+            document.getElementById('answer').focus();
+            setTimeout(() => speakCurrent(), 500);
+            Utils.toast('测试开始', 'success');
+        }
+
+        function nextWord() {
+            const ans = document.getElementById('answer').value.trim();
+            if(!ans) {
+                Utils.toast('写点什么吧', 'warning');
+                return;
+            }
+            answers.push(ans.toLowerCase());
+            current++;
+            if (current >= words.length) {
+                showResults();
+                return;
+            }
+            document.getElementById('currentIdx').textContent = current + 1;
+            document.getElementById('answer').value = '';
+            document.getElementById('answer').focus();
+            speakCurrent();
+        }
+
+        function showResults() {
+            document.getElementById('testArea').classList.add('hidden');
+            let correct = 0;
+            let html = '<div class="pt-6 border-t border-pink-50"><p class="font-bold text-gray-800 mb-4 px-2">📝 详细报告</p><div class="space-y-3">';
+            
+            words.forEach((w, i) => {
+                const ans = answers[i] || '';
+                const ok = ans === w.toLowerCase();
+                if (ok) correct++;
+                html += `
+                    <div class="p-4 ${ok ? 'bg-pink-50/30' : 'bg-gray-50'} rounded-2xl flex flex-col md:flex-row justify-between gap-2 border border-pink-50/50">
+                        <div class="flex items-center gap-2">
+                            <span class="${ok ? 'text-pink-500' : 'text-gray-400'} font-black">${ok ? '💖' : '❌'}</span>
+                            <span class="font-bold text-slate-700">${w}</span>
+                        </div>
+                        <span class="text-xs md:text-sm ${ok ? 'text-pink-300' : 'text-pink-400'}">你的拼写: ${ans || '(未填写)'}</span>
+                    </div>
+                `;
+            });
+            
+            html += '</div></div>';
+            
+            const summaryHtml = `
+                <div class="text-center mb-8">
+                    <p class="text-[10px] font-black text-pink-300 uppercase tracking-[0.2em] mb-2">SCORE REPORT</p>
+                    <div class="inline-block relative">
+                         <p class="text-7xl font-black text-pink-500 tabular-nums">${correct}/${words.length}</p>
+                         <p class="text-xs font-bold text-pink-200 mt-2">${correct === words.length ? 'PERFECT! 👑' : 'KEEP GOING! 💪'}</p>
+                    </div>
+                </div>
+            `;
+            
+            const restartBtn = `<button onclick="location.reload()" class="w-full mt-6 py-4 bg-gray-50 text-gray-400 font-bold rounded-2xl hover:bg-gray-100 transition-all">重新开始</button>`;
+            
+            document.getElementById('results').innerHTML = summaryHtml + html + restartBtn;
+            document.getElementById('results').classList.remove('hidden');
+            Utils.toast('已完成测试');
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

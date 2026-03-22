@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>人名生成 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700;900&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .name-display {
+            font-family: 'Noto Serif SC', serif;
+            font-size: clamp(2.5rem, 12vw, 4.5rem);
+            font-weight: 900;
+            color: #1f2937;
+            text-align: center;
+            letter-spacing: 0.1em;
+            text-shadow: 2px 2px 0 #fecdd3, 4px 4px 0px rgba(0,0,0,0.02);
+            line-height: 1.2;
+            word-break: break-all;
+            padding: 1rem;
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">📖 随机 <span class="gradient-text">人名灵感</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">为你的故事画上点睛之笔。海量词库，一键赐名。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            
+            <div class="bg-gray-50/50 rounded-[4rem] p-8 md:p-16 mb-12 border-2 border-transparent shadow-inner relative flex flex-col items-center group overflow-hidden">
+                <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#fb7185 1px, transparent 1px); background-size: 30px 30px;"></div>
+                
+                <div class="absolute top-4 right-4 z-20">
+                    <button onclick="copyName()" class="w-12 h-12 bg-white/80 backdrop-blur-md rounded-2xl flex items-center justify-center text-pink-400 shadow-sm hover:text-pink-600 hover:scale-110 active:scale-95 transition-all">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    </button>
+                </div>
+                
+                <p class="text-5xl mb-6 float-animation">✒️</p>
+                <div class="name-display" id="resultName">...</div>
+            </div>
+
+            <div class="flex justify-center mb-12">
+                <div class="bg-gray-100 rounded-[2rem] p-2 flex gap-2 w-full max-w-sm">
+                    <button onclick="setMode('zh', this)" class="zh-btn flex-1 py-3 px-4 rounded-2xl font-black text-xs uppercase tracking-widest bg-white text-pink-500 shadow-sm transition-all">ZH / 华人姓名</button>
+                    <button onclick="setMode('en', this)" class="en-btn flex-1 py-3 px-4 rounded-2xl font-black text-xs uppercase tracking-widest text-gray-400 hover:text-pink-400 transition-all">EN / English</button>
+                </div>
+            </div>
+            
+            <div class="flex justify-center mb-12">
+                <button onclick="generateName()" class="w-full max-w-sm py-5 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-[2rem] shadow-xl shadow-pink-100 transition-all active:scale-95 text-xl">
+                    🎲 随机生成姓名
+                </button>
+            </div>
+
+            <div class="relative">
+                <div class="absolute -top-3 left-6 px-4 bg-white text-[10px] font-black text-pink-300 uppercase tracking-widest z-10">Inspiration Trace / 灵感足迹</div>
+                <div class="bg-gray-50/50 rounded-3xl p-6 min-h-[80px] flex flex-wrap gap-2 justify-center border-2 border-pink-50/50" id="historyBox">
+                    <span class="text-gray-300 font-bold italic">生成的历史记录将出现在这里...</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>姓名是父母给孩子的第一份礼物，也是文学创作中角色的灵魂标签。每一个名字背后，都蕴含着对某种特质的期待或对某种意境的向往。希望这些随机碰撞出的名字，能为你带来意想不到的创作灵感。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const db = {
+            zh_last: "赵钱孙李周吴郑王冯陈褚卫蒋沈韩杨朱秦尤许何吕施张孔曹严华金魏陶姜戚谢邹喻柏水窦章云苏潘葛奚范彭郎鲁韦昌马苗凤花方俞任袁柳酆鲍史唐费廉岑薛雷贺倪湯滕殷罗毕郝邬安常乐于时傅皮卞齐康伍余元卜顾孟平黄和穆萧尹姚邵湛汪祁毛禹狄米贝明臧计伏成戴谈宋茅庞熊纪舒屈项祝董梁杜阮蓝闵席季麻强贾路娄危江童颜郭梅盛林刁钟徐邱骆高夏蔡田樊胡凌霍虞万支柯昝管卢莫经房裘缪干解应宗丁宣贲邓郁单杭洪包诸左石崔吉钮龚程嵇邢滑裴陆荣翁荀羊於惠甄曲家封芮羿储靳汲邴糜松井段富巫乌焦巴弓牧隗山谷车侯宓蓬全郗班仰秋仲伊宫宁仇栾暴甘钭厉戎祖武符刘景詹束龙叶幸司韶郜黎蓟薄印宿白怀蒲邰从鄂索咸籍赖卓蔺屠蒙池乔阴鬱胥能苍双闻莘党翟谭贡劳逄姬申扶堵冉宰郦雍卻璩桑桂濮牛寿通边扈燕冀郏浦尚农温别庄晏柴瞿阎充慕连茹习宦艾鱼容向古易慎戈廖庾终暨居衡步都耿满弘匡国文寇广禄阙东欧殳沃利蔚越夔隆师巩厍聂晁勾敖融冷訾辛阚那简饶空曾毋沙乜养鞠须丰巢关蒯相查后荆红游竺权逯盖益桓公晋楚闫法汝鄢涂钦归海帅缑亢况后有琴梁丘左丘东门西门商牟佘佴伯赏南宫墨哈谯笪年爱阳佟言福".split(''),
+            zh_first_char: "伟刚勇毅俊峰强军平保东文辉力明永健世广志义兴良海山仁波宁贵福生龙元全国胜学祥才发武新利清飞彬顺信子杰涛昌成康星光天达安岩中茂进林有坚和彪博诚先敬震振壮会思群豪心邦承乐绍功松善厚庆磊民友裕河哲江超浩亮政谦亨奇固轮翰朗伯宏言若鸣朋斌梁栋维启克伦翔旭鹏泽晨辰士以建家致树炎德行时泰盛雄琛钧冠策腾楠榕风航弘秀娟英华慧巧美娜静淑惠珠翠雅芝玉萍红娥玲芬芳燕彩春菊兰凤洁梅琳素云莲真环雪荣爱妹霞香月莺媛艳瑞凡佳嘉琼勤珍贞莉桂娣叶璧璐娅琦晶妍茜秋珊莎锦黛青倩婷姣婉娴瑾颖露瑶怡婵雁蓓纨仪荷丹蓉眉君琴蕊薇菁梦岚苑婕馨瑗琰韵融园艺咏卿聪澜纯毓悦昭冰爽琬茗羽希宁欣飘育滢馥筠柔竹霭凝晓欢霄枫芸菲寒伊亚宜可姬舒影荔枝思丽".split(''),
+            en_first: ['James', 'Mary', 'John', 'Patricia', 'Robert', 'Jennifer', 'Michael', 'Linda', 'William', 'Elizabeth', 'David', 'Barbara', 'Richard', 'Susan', 'Joseph', 'Jessica', 'Thomas', 'Sarah', 'Charles', 'Karen', 'Christopher', 'Nancy', 'Daniel', 'Lisa', 'Matthew', 'Anthony', 'Margaret', 'Mark', 'Sandra', 'Donald', 'Ashley', 'Steven', 'Kimberly', 'Paul', 'Emily', 'Andrew', 'Donna', 'Joshua', 'Michelle', 'Kenneth', 'Dorothy', 'Kevin', 'Carol', 'Brian', 'Amanda', 'George', 'Melissa', 'Edward', 'Deborah', 'Ronald', 'Stephanie', 'Timothy', 'Rebecca', 'Jason', 'Sharon', 'Jeffrey', 'Laura', 'Ryan', 'Cynthia', 'Jacob', 'Kathleen', 'Gary', 'Amy', 'Nicholas', 'Shirley', 'Eric', 'Angela', 'Jonathan', 'Helen', 'Stephen', 'Anna', 'Larry', 'Brenda', 'Justin', 'Pamela', 'Scott', 'Nicole', 'Brandon', 'Emma', 'Benjamin', 'Samantha', 'Samuel', 'Katherine', 'Gregory', 'Christine', 'Frank', 'Debra', 'Alexander', 'Rachel', 'Raymond', 'Catherine', 'Patrick', 'Carolyn', 'Jack', 'Janet', 'Dennis', 'Ruth', 'Jerry', 'Maria', 'Tyler', 'Heather', 'Aaron', 'Diane', 'Jose', 'Virginia', 'Adam', 'Julie', 'Henry', 'Joyce', 'Nathan', 'Victoria', 'Douglas', 'Olivia', 'Zachary', 'Kelly', 'Peter', 'Christina', 'Kyle', 'Lauren', 'Walter', 'Joan', 'Ethan', 'Evelyn', 'Jeremy', 'Judith', 'Christian', 'Megan', 'Keith', 'Cheryl', 'Roger', 'Andrea', 'Terry', 'Hannah', 'Gerald', 'Martha', 'Sean', 'Jacqueline', 'Arthur', 'Frances', 'Dylan', 'Gloria', 'Carl', 'Ann', 'Albert', 'Teresa', 'Noah', 'Kathryn', 'Lawrence', 'Sara', 'Jesse', 'Janice'],
+            en_last: ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson', 'Walker', 'Young', 'Allen', 'King', 'Wright', 'Scott', 'Torres', 'Nguyen', 'Hill', 'Flores', 'Green', 'Adams', 'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell', 'Mitchell', 'Carter', 'Roberts', 'Gomez', 'Phillips', 'Evans', 'Turner', 'Diaz', 'Parker', 'Cruz', 'Edwards', 'Collins', 'Reyes', 'Stewart', 'Morris', 'Morales', 'Murphy', 'Cook', 'Rogers', 'Gutierrez', 'Ortiz', 'Morgan', 'Cooper', 'Peterson', 'Bailey', 'Reed', 'Kelly', 'Howard', 'Ramos', 'Kim', 'Cox', 'Ward', 'Richardson', 'Watson', 'Brooks', 'Chavez', 'Wood', 'James', 'Bennett', 'Gray', 'Mendoza', 'Ruiz', 'Hughes', 'Price', 'Alvarez', 'Castillo', 'Sanders', 'Patel', 'Myers', 'Long', 'Ross', 'Foster', 'Jimenez', 'Powell']
+        };
+
+        let currentMode = 'zh';
+
+        function setMode(mode, btn) {
+            currentMode = mode;
+            const zhBtn = document.querySelector('.zh-btn');
+            const enBtn = document.querySelector('.en-btn');
+            
+            [zhBtn, enBtn].forEach(b => {
+                b.classList.remove('bg-white', 'text-pink-500', 'shadow-sm');
+                b.classList.add('text-gray-400', 'hover:text-pink-400');
+            });
+            
+            btn.classList.remove('text-gray-400', 'hover:text-pink-400');
+            btn.classList.add('bg-white', 'text-pink-500', 'shadow-sm');
+            
+            Utils.toast(`切换到：${mode === 'zh' ? '华人姓名' : '英文名'}`, 'info');
+            generateName();
+        }
+
+        function generateName() {
+            const out = document.getElementById('resultName');
+            out.style.opacity = '0.3';
+            out.style.transform = 'scale(0.95)';
+            
+            setTimeout(() => {
+                let name = '';
+                if (currentMode === 'zh') {
+                    const l = db.zh_last[Math.floor(Math.random() * db.zh_last.length)];
+                    const flen = Math.random() > 0.4 ? 2 : 1;
+                    let f = '';
+                    for(let i=0; i<flen; i++) {
+                        f += db.zh_first_char[Math.floor(Math.random() * db.zh_first_char.length)];
+                    }
+                    name = l + f;
+                } else {
+                    const f = db.en_first[Math.floor(Math.random() * db.en_first.length)];
+                    const l = db.en_last[Math.floor(Math.random() * db.en_last.length)];
+                    name = `${f} ${l}`;
+                }
+                
+                out.innerText = name;
+                out.style.opacity = '1';
+                out.style.transform = 'scale(1)';
+                addToHistory(name);
+            }, 100);
+        }
+
+        function addToHistory(name) {
+            const box = document.getElementById('historyBox');
+            if(box.querySelector('span.italic')) box.innerHTML = '';
+            
+            const pill = document.createElement('div');
+            pill.className = "px-4 py-2 bg-pink-50 text-pink-400 rounded-xl text-sm font-black shadow-sm cursor-pointer hover:bg-pink-100 transition-all animate-item";
+            pill.innerText = name;
+            pill.onclick = () => { 
+                document.getElementById('resultName').innerText = name; 
+                Utils.toast('已选定历史灵感 ✨', 'info');
+            };
+            
+            box.prepend(pill);
+            if(box.children.length > 20) box.removeChild(box.lastChild);
+        }
+
+        async function copyName() {
+            const text = document.getElementById('resultName').innerText;
+            if (text === '...') return;
+            try {
+                await navigator.clipboard.writeText(text);
+                Utils.toast('灵感已复制到剪贴板 📋', 'success');
+            } catch (err) {
+                Utils.toast('复制失败', 'error');
+            }
+        }
+
+        // Initialize
+        setTimeout(generateName, 200);
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

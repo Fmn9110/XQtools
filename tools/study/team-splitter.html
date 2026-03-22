@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>小组分配 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .portal-glow { animation: portal-glow 4s infinite alternate; }
+        @keyframes portal-glow { 0% { filter: drop-shadow(0 0 10px rgba(244, 114, 182, 0.2)); } 100% { filter: drop-shadow(0 0 30px rgba(244, 114, 182, 0.5)); } }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6 shadow-sm no-print">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-12 px-4 max-w-4xl text-center min-h-[80vh] flex flex-col items-center justify-center">
+        <div class="cute-card p-10 md:p-20 bg-white shadow-2xl animate-item max-w-2xl mx-auto flex flex-col items-center relative overflow-hidden">
+            <!-- Decorative Circles -->
+            <div class="absolute -top-20 -left-20 w-64 h-64 bg-pink-50 rounded-full blur-3xl opacity-40"></div>
+            <div class="absolute -bottom-20 -right-20 w-64 h-64 bg-indigo-50 rounded-full blur-3xl opacity-40"></div>
+
+            <div class="w-24 h-24 bg-indigo-50 rounded-[2.5rem] flex items-center justify-center text-5xl mb-10 portal-glow relative z-10">🤝</div>
+            
+            <h1 class="text-4xl md:text-5xl font-black text-gray-800 mb-6 tracking-tight relative z-10">灵动分组控制台</h1>
+            <p class="text-slate-400 text-[10px] font-black uppercase tracking-[0.5em] mb-12 relative z-10">Strategic Team Allocation Infrastructure</p>
+            
+            <div class="p-10 bg-slate-50/80 rounded-[3rem] border border-slate-100 mb-12 text-left relative z-10">
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <p class="text-[10px] font-black text-emerald-500 uppercase tracking-widest leading-none">Module Integration Update</p>
+                </div>
+                <p class="text-sm text-slate-500 leading-relaxed font-bold">
+                    为了提供更加丝滑的成员名单管理与交互式分组演练，系统已将“小组分配”引擎深度整合至<br>
+                    <span class="inline-block mt-3 px-4 py-2 bg-indigo-100 text-indigo-500 rounded-full font-black shadow-sm ring-4 ring-white">“全能随机点名” 交互中心</span>
+                </p>
+            </div>
+
+            <button onclick="location.href='./random-name-pick.html'" class="w-full py-6 bg-pink-400 text-white font-black rounded-[2rem] shadow-2xl shadow-pink-100 hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-xl flex items-center justify-center gap-4 relative z-10 group">
+                立即前往 (ACCESS NOW) 🚀
+                <span class="group-hover:translate-x-1 transition-transform">→</span>
+            </button>
+        </div>
+        
+        <p class="mt-16 text-[10px] text-gray-300 font-bold uppercase tracking-[0.4em] pb-12 animate-item" style="animation-delay: 0.2s">
+            Cloud-Driven Roster Orchestration & Grouping Protocol v2.0
+        </p>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        // Loading Sequence
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        // Interactive Interaction Layer
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

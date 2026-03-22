@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>标准差计算 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .stat-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .stat-card:hover { transform: translateY(-4px); border-color: #ffb7c5; box-shadow: 0 10px 30px -10px rgba(244, 114, 182, 0.15); }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-14">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-800 mb-4 animate-item">统计波动深度分析仪</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">洞察数据背后的离散程度，用精准统计定义规律。📊</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-14 mb-12 bg-white shadow-2xl animate-item flex flex-col items-center" style="animation-delay: 0.2s">
+            <div class="w-full mb-10 text-left">
+                <label class="block text-[10px] font-black text-pink-300 mb-3 uppercase tracking-[0.2em] pl-4">Input Data Stream (Separated by comma/space)</label>
+                <textarea id="data" rows="5" placeholder="例如: 85, 90, 78, 92, 88 100" class="w-full p-8 bg-slate-50 border-2 border-slate-50 rounded-[2.5rem] outline-none focus:bg-white focus:border-pink-100 focus:shadow-xl transition-all text-sm font-bold shadow-inner font-mono text-slate-700 resize-none leading-relaxed"></textarea>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-4 w-full mb-12">
+                 <button onclick="calc()" class="flex-[3] py-6 bg-pink-400 text-white font-black rounded-3xl shadow-xl hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-xl flex items-center justify-center gap-3">
+                    📊 开启深度统计 (ANALYZE)
+                 </button>
+                 <button onclick="document.getElementById('data').value=''" class="flex-1 py-6 bg-slate-50 text-slate-400 font-bold rounded-3xl hover:bg-slate-100 transition-all text-sm uppercase tracking-widest">
+                    Clear 🧹
+                 </button>
+            </div>
+
+            <!-- Enhanced Result Section -->
+            <div id="result" class="hidden w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in text-left">
+                <!-- Result cards injected here -->
+            </div>
+
+            <!-- Distribution Preview (Mock/SVG) -->
+            <div id="distPreview" class="hidden w-full mt-12 p-8 bg-slate-50/50 rounded-[3rem] border border-slate-100 animate-fade-in">
+                 <div class="flex justify-between items-end h-24 gap-1 px-4" id="barContainer">
+                      <!-- Visual bars -->
+                 </div>
+                 <p class="text-[9px] text-slate-300 font-black uppercase tracking-widest mt-6 text-center">Data Distribution Preview</p>
+            </div>
+        </section>
+        
+        <footer class="text-gray-300 text-[10px] uppercase font-black tracking-[0.5em] pb-12 animate-item" style="animation-delay: 0.3s">
+            Advanced Variance & Standard Deviation Engine
+        </footer>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        function calc(){
+            const val = document.getElementById('data').value.trim();
+            if(!val) {
+                Utils.toast('请输入数据流哦 📊', 'warning');
+                return;
+            }
+            const nums = val.match(/-?\d+\.?\d*/g)?.map(Number);
+            if(!nums || nums.length < 2) {
+                Utils.toast('请输入至少 2 个数据进行有效统计分析 ⚠️', 'warning');
+                return;
+            }
+
+            const n = nums.length;
+            const mean = nums.reduce((s,v) => s + v, 0) / n;
+            const variance = nums.reduce((s,v) => s + (v - mean)**2, 0) / n;
+            const stdDev = Math.sqrt(variance);
+            const sampleVar = nums.reduce((s,v) => s + (v - mean)**2, 0) / (n - 1);
+            const sampleStd = Math.sqrt(sampleVar);
+            const max = Math.max(...nums);
+            const min = Math.min(...nums);
+            const range = max - min;
+
+            const resBox = document.getElementById('result');
+            resBox.innerHTML = `
+                ${createCard('Population Std (σ)', stdDev.toFixed(4), '👑', 'bg-pink-50 text-pink-400')}
+                ${createCard('Sample Std (s)', sampleStd.toFixed(4), '🎗️', 'bg-slate-50')}
+                ${createCard('Arithmetic Mean (μ)', mean.toFixed(4), '📏', 'bg-slate-50')}
+                ${createCard('Sample Variance (s²)', sampleVar.toFixed(4), '🔬', 'bg-slate-50')}
+                ${createCard('Pop. Variance (σ²)', variance.toFixed(4), '🧪', 'bg-slate-50')}
+                ${createCard('Max / Min Range', `${max} / ${min}`, '⚖️', 'bg-slate-50')}
+            `;
+            
+            updateBars(nums, min, max);
+            
+            resBox.classList.remove('hidden');
+            document.getElementById('distPreview').classList.remove('hidden');
+            Utils.toast('深度分析完成 ✨', 'success');
+        }
+
+        function createCard(lbl, val, icon, cls) {
+            return `
+                <div class="stat-card p-6 ${cls} rounded-[2.5rem] border-2 border-transparent flex flex-col items-center justify-center text-center shadow-sm">
+                    <span class="text-2xl mb-2 opacity-60">${icon}</span>
+                    <span class="text-[9px] font-black uppercase tracking-[0.2em] mb-1 opacity-40">${lbl}</span>
+                    <span class="text-2xl font-black text-slate-800 tracking-tighter font-mono">${val}</span>
+                </div>
+            `;
+        }
+
+        function updateBars(nums, min, max) {
+            const container = document.getElementById('barContainer');
+            container.innerHTML = '';
+            const range = max - min || 1;
+            const sorted = [...nums].sort((a,b) => a-b);
+            
+            // Limit to 20 bars for desktop, 10 for mobile
+            const count = window.innerWidth > 768 ? 20 : 10;
+            const sliceSize = Math.max(1, Math.floor(sorted.length / count));
+            
+            for(let i=0; i<count && i*sliceSize < sorted.length; i++) {
+                const val = sorted[i*sliceSize];
+                const height = ((val - min) / range * 80) + 20;
+                const bar = document.createElement('div');
+                bar.className = "flex-1 bg-pink-100 rounded-t-full transition-all duration-700";
+                bar.style.height = '0%';
+                container.appendChild(bar);
+                setTimeout(() => bar.style.height = height + '%', 50 * i);
+            }
+        }
+
+        // 加载与点击特效
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button') || e.target.closest('textarea')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

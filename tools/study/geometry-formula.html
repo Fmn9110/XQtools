@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>几何公式 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">面积体积几何公式演算</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">选择图形并输入参数，快速获取面积、周长或体积。</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 mb-12 bg-white shadow-2xl animate-item" style="animation-delay: 0.2s">
+            <div class="mb-8">
+                <p class="text-[10px] font-black text-pink-400 uppercase tracking-widest mb-3">Select Shape 选择图形</p>
+                <div class="relative">
+                    <select id="shape" onchange="showFields()" class="w-full p-4 bg-gray-50 rounded-2xl border border-pink-50 outline-none focus:border-pink-200 transition-all font-bold text-slate-700 shadow-inner appearance-none cursor-pointer">
+                        <option value="circle">⭕ 圆形 (Circle)</option>
+                        <option value="rect">📏 矩形 (Rectangle)</option>
+                        <option value="triangle">📐 三角形 (Triangle)</option>
+                        <option value="sphere">🔮 球体 (Sphere)</option>
+                        <option value="cylinder">🪣 圆柱体 (Cylinder)</option>
+                        <option value="cone">🔺 圆锥 (Cone)</option>
+                    </select>
+                    <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-pink-300">▼</div>
+                </div>
+            </div>
+
+            <div id="fields" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                <!-- Inputs generated here -->
+            </div>
+
+            <button onclick="calc()" class="w-full py-4 bg-pink-400 text-white font-black rounded-2xl shadow-lg hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95">
+                🪄 执行几何演算
+            </button>
+
+            <div id="result" class="hidden mt-8 space-y-3 animate-fade-in">
+                <!-- Results generated here -->
+            </div>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const shapes = {
+            circle: { fields: [{ id: 'r', label: '半径 (Radius)' }], calc: v => [{ name: '面积 (Area)', val: (Math.PI * v.r ** 2).toFixed(4), unit: '²' }, { name: '周长 (Perimeter)', val: (2 * Math.PI * v.r).toFixed(4), unit: '' }] },
+            rect: { fields: [{ id: 'w', label: '宽度 (Width)' }, { id: 'h', label: '高度 (Height)' }], calc: v => [{ name: '面积 (Area)', val: (v.w * v.h).toFixed(4), unit: '²' }, { name: '周长 (Perimeter)', val: (2 * (v.w + v.h)).toFixed(4), unit: '' }] },
+            triangle: { fields: [{ id: 'a', label: '底边 (Base)' }, { id: 'h', label: '高度 (Height)' }, { id: 's1', label: '边长 1 (Side1)' }, { id: 's2', label: '边长 2 (Side2)' }], calc: v => { const r = [{ name: '面积 (Area)', val: (0.5 * v.a * v.h).toFixed(4), unit: '²' }]; if (v.s1 && v.s2) r.push({ name: '周长 (Perimeter)', val: (v.a + v.s1 + v.s2).toFixed(4), unit: '' }); return r; } },
+            sphere: { fields: [{ id: 'r', label: '半径 (Radius)' }], calc: v => [{ name: '体积 (Volume)', val: (4 / 3 * Math.PI * v.r ** 3).toFixed(4), unit: '³' }, { name: '表面积 (S.Area)', val: (4 * Math.PI * v.r ** 2).toFixed(4), unit: '²' }] },
+            cylinder: { fields: [{ id: 'r', label: '底面半径 (r)' }, { id: 'h', label: '高度 (h)' }], calc: v => [{ name: '体积 (Volume)', val: (Math.PI * v.r ** 2 * v.h).toFixed(4), unit: '³' }, { name: '侧面积 (Lateral)', val: (2 * Math.PI * v.r * v.h).toFixed(4), unit: '²' }, { name: '表面积 (S.Area)', val: (2 * Math.PI * v.r * (v.r + v.h)).toFixed(4), unit: '²' }] },
+            cone: { fields: [{ id: 'r', label: '底面半径 (r)' }, { id: 'h', label: '高度 (h)' }], calc: v => { const l = Math.sqrt(v.r ** 2 + v.h ** 2); return [{ name: '体积 (Volume)', val: (Math.PI * v.r ** 2 * v.h / 3).toFixed(4), unit: '³' }, { name: '侧面积 (Lateral)', val: (Math.PI * v.r * l).toFixed(4), unit: '²' }, { name: '母线长 (L)', val: l.toFixed(4), unit: '' }]; } },
+        };
+
+        function showFields() {
+            const s = shapes[document.getElementById('shape').value];
+            document.getElementById('fields').innerHTML = s.fields.map(f => `
+                <div class="relative animate-fade-in">
+                    <input type="number" id="${f.id}" placeholder="${f.label}" step="0.01" class="w-full p-4 pl-10 bg-gray-50 rounded-2xl border border-pink-50 outline-none focus:border-pink-200 transition-all text-sm shadow-inner font-bold text-slate-600">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-pink-300 text-xs font-bold">#</span>
+                </div>
+            `).join('');
+            document.getElementById('result').classList.add('hidden');
+        }
+
+        function calc() {
+            const s = shapes[document.getElementById('shape').value];
+            const vals = {};
+            let hasEmpty = false;
+            s.fields.forEach(f => {
+                const val = parseFloat(document.getElementById(f.id).value);
+                if (isNaN(val) && !f.label.includes('Side')) hasEmpty = true;
+                vals[f.id] = val || 0;
+            });
+
+            if (hasEmpty) {
+                Utils.toast('请填写必要的数值哦', 'warning');
+                return;
+            }
+
+            const results = s.calc(vals);
+            document.getElementById('result').innerHTML = results.map(r => `
+                <div class="p-6 bg-pink-50/20 rounded-3xl border border-pink-50 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-sm animate-fade-in">
+                    <span class="text-[10px] font-black text-pink-400 uppercase tracking-widest">${r.name}</span>
+                    <span class="font-black text-slate-700 text-xl">${r.val}<sub class="text-pink-300 ml-1 font-bold">${r.unit}</sub></span>
+                </div>
+            `).join('');
+            document.getElementById('result').classList.remove('hidden');
+            Utils.toast('演算完成', 'success');
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    showFields();
+                }, 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

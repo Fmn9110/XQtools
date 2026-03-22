@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MBTI速测 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🧩 MBTI <span class="gradient-text">速测挑战</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">8道题更深入地探索各个性格维度。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            <div id="quiz" class="grid grid-cols-1 gap-6">
+                <!-- Questions dynamic -->
+            </div>
+
+            <div class="mt-12 flex justify-center pb-10 border-b border-pink-50">
+                <button onclick="calcMBTI()" class="w-full max-w-md py-5 bg-gradient-to-r from-indigo-400 to-purple-500 hover:from-indigo-500 hover:to-purple-600 text-white font-black rounded-3xl shadow-xl shadow-indigo-100 transition-all active:scale-95 text-xl flex items-center justify-center gap-2">
+                    🧩 生成完整个性剖析
+                </button>
+            </div>
+
+            <div id="mbtiResult" class="hidden mt-12 animate-item">
+                <div class="bg-gradient-to-br from-indigo-50/50 to-purple-50/50 rounded-[3rem] p-10 md:p-16 border-2 border-indigo-100 shadow-inner group relative overflow-hidden text-center">
+                    <div class="absolute -top-10 -right-10 text-9xl text-indigo-500/10 opacity-30 group-hover:rotate-12 transition-transform">🧪</div>
+                    
+                    <p class="text-[10px] font-black text-indigo-300 uppercase tracking-[0.4em] mb-4">Final Verdict / 最终判定</p>
+                    <p class="text-6xl md:text-7xl font-black text-indigo-500 mb-6 drop-shadow-sm" style="font-family: 'Outfit', sans-serif;" id="mbtiType"></p>
+                    
+                    <div class="bg-white/60 backdrop-blur-md rounded-3xl p-8 border border-white shadow-sm text-left max-w-md mx-auto relative group">
+                        <div class="absolute -top-2 -left-2 w-8 h-8 bg-indigo-400 text-white rounded-full flex items-center justify-center text-xs shadow-md">✨</div>
+                        <h3 class="font-black text-gray-800 text-2xl mb-2" id="mbtiTitle"></h3>
+                        <p class="text-gray-500 font-bold leading-relaxed text-sm md:text-base" id="mbtiDesc"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🧿</span>
+                <p>MBTI速测可以帮助你快速锁定可能的性格区间。每一个维度（EI/SN/TF/JP）都在描述你与世界互动的方式。了解这些偏好，能让你用更舒适的方式工作、生活与社交。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const questions = [
+            {q:'参加社交派对后，你通常的感觉是？',a:'感到精力充沛，甚至想找人继续聊聊',b:'感到精疲力竭，需要独自安静地休息',dim:'EI'},
+            {q:'在人群中，你更倾向于？',a:'主动发起话题和活动，带动气氛',b:'做一个倾听者，等待他人打破沉默',dim:'EI'},
+            {q:'你对信息的处理更倾向于？',a:'关注当下客观的事实、数据和细节',b:'关注隐藏的模式、未来的可能性和整体感',dim:'SN'},
+            {q:'学习一个新技能时，你喜欢？',a:'按照明确的说明和具体的步骤来动手',b:'先弄懂为什么要这么做，理解核心原理',dim:'SN'},
+            {q:'做重大决定时，你会优先考虑？',a:'逻辑分析，追求客观性和公平性',b:'人际影响，追求和谐以及内心的价值观',dim:'TF'},
+            {q:'朋友遇到挫折向你寻求支持时，你通常？',a:'直接帮他冷静分析问题，寻找解决建议',b:'优先安抚对方的情绪，给予情感上的陪伴',dim:'TF'},
+            {q:'你对时间的管理风格是？',a:'喜欢有条理的计划，倾向于尽早完成任务',b:'喜欢随性自由，更享受在压力下爆发灵感',dim:'JP'},
+            {q:'如果要去一个陌生的地方旅行，你会？',a:'查好攻略并预订好所有行程，按计划走',b:'只定好第一个落脚点，剩下的随遇而安',dim:'JP'},
+        ];
+
+        const types = {
+            'INTJ':{title:'建筑师',desc:'独立而有远见，善于制定长期计划和宏大蓝图。'},
+            'INTP':{title:'逻辑学家',desc:'好奇心强，热爱在思想领域分析和解决复杂问题。'},
+            'ENTJ':{title:'指挥官',desc:'天生的领导者，果断高效，擅长组织与实现目标。'},
+            'ENTP':{title:'辩论家',desc:'聪明灵活，热爱打破陈规并寻找智力上的挑战。'},
+            'INFJ':{title:'提倡者',desc:'理想主义者，拥有深刻的洞察力和坚定的内心信念。'},
+            'INFP':{title:'调停者',desc:'内心丰富，追求真正属于自己的、独一无2的价值。'},
+            'ENFJ':{title:'主人公',desc:'热情有感染力，是天生的社交高手和激励大师。'},
+            'ENFP':{title:'竞选者',desc:'热情洋溢，总能看到生活中每一个微小的可能性。'},
+            'ISTJ':{title:'物流师',desc:'可靠踏实，是规则、秩序和社会传统的坚定保护者。'},
+            'ISFJ':{title:'守卫者',desc:'温暖体贴，是那些默默付出、保护所爱之人的英雄。'},
+            'ESTJ':{title:'总经理',desc:'卓越的组织者，能够熟练地管理各种事物和团队。'},
+            'ESFJ':{title:'执政官',desc:'热心肠且善于交际，总能在群体中创造和谐的气氛。'},
+            'ISTP':{title:'鉴赏家',desc:'冷静务实，善于利用工具和实践经验来破解难题。'},
+            'ISFP':{title:'探险家',desc:'温和而灵活的艺术家，活在当下，享受感性的美。'},
+            'ESTP':{title:'企业家',desc:'精力充沛且善于把握现有的机会，享受快节奏生活。'},
+            'ESFP':{title:'表演者',desc:'热爱生活，是能够随时把派对气氛带到高点的灵魂人。'},
+        };
+
+        const answers = {};
+        
+        function renderQuiz() {
+            let html = '';
+            questions.forEach((q, i) => {
+                html += `<div class="bg-gray-50/50 rounded-3xl p-6 md:p-8 border-2 border-transparent hover:border-pink-50 transition-all">
+                    <p class="font-black text-gray-700 mb-6 text-lg md:text-xl flex items-start gap-3">
+                        <span class="text-pink-400/30 text-2xl font-black">${i+1}.</span>
+                        <span>${q.q}</span>
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button id="btn-${i}-a" onclick="pickM(${i},'a')" class="quiz-btn-${i} p-4 rounded-2xl bg-white border-2 border-pink-50 text-sm font-bold hover:border-pink-300 text-gray-600 text-left transition-all active:scale-[0.98]">A. ${q.a}</button>
+                        <button id="btn-${i}-b" onclick="pickM(${i},'b')" class="quiz-btn-${i} p-4 rounded-2xl bg-white border-2 border-pink-50 text-sm font-bold hover:border-pink-300 text-gray-600 text-left transition-all active:scale-[0.98]">B. ${q.b}</button>
+                    </div>
+                </div>`;
+            });
+            document.getElementById('quiz').innerHTML = html;
+        }
+
+        function pickM(i, val) {
+            answers[i] = val;
+            document.querySelectorAll(`.quiz-btn-${i}`).forEach(b => {
+                b.classList.remove('border-pink-400', 'bg-pink-50', 'text-pink-600');
+            });
+            const selected = document.getElementById(`btn-${i}-${val}`);
+            selected.classList.add('border-pink-400', 'bg-pink-50', 'text-pink-600');
+            Utils.toast(`第 ${i+1} 题已勾选`, 'info');
+        }
+
+        function calcMBTI() {
+            if (Object.keys(answers).length < questions.length) {
+                Utils.toast('请先回答完所有问题哦', 'info');
+                return;
+            }
+            const dims = {E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0};
+            questions.forEach((q, i) => {
+                const d = q.dim;
+                if (answers[i]==='a') dims[d[0]]++;
+                else dims[d[1]]++;
+            });
+            const type = (dims.E>=dims.I?'E':'I') + (dims.S>=dims.N?'S':'N') + (dims.T>=dims.F?'T':'F') + (dims.J>=dims.P?'J':'P');
+            const info = types[type] || {title:'独特型',desc:'你是大自然给这个世界的独特惊喜。'};
+            
+            document.getElementById('mbtiType').textContent = type;
+            document.getElementById('mbtiTitle').textContent = info.title;
+            document.getElementById('mbtiDesc').textContent = info.desc;
+            
+            const resultBox = document.getElementById('mbtiResult');
+            resultBox.classList.remove('hidden');
+            Utils.toast('速测报告已生成 ✨', 'success');
+            
+            setTimeout(() => {
+                resultBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+            renderQuiz();
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>现代诗生成 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">✍️ 灵感 <span class="gradient-text">现代诗</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">输入一个词，为你编织一段跨越时空的诗意表达。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item text-center" style="animation-delay: 0.2s">
+            <div class="max-w-lg mx-auto mb-10">
+                <div class="relative group mb-8">
+                    <label class="block text-[10px] font-black text-gray-300 uppercase tracking-widest mb-2 pl-4 text-left">Theme Keyword / 主题词</label>
+                    <input type="text" id="keyword" placeholder="如：月亮、孤独、时光、你..." 
+                        class="w-full p-6 bg-pink-50/20 rounded-3xl border-2 border-transparent focus:border-pink-200 outline-none text-center text-xl font-bold text-gray-700 transition-all shadow-inner">
+                </div>
+
+                <button onclick="genPoem()" class="w-full py-5 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-2xl shadow-xl shadow-pink-100 transition-all active:scale-95 text-xl flex items-center justify-center gap-2">
+                    ✨ 赋予灵感生命
+                </button>
+            </div>
+
+            <div id="poemBox" class="hidden bg-gradient-to-br from-pink-50/50 to-white rounded-[3rem] p-10 md:p-16 border-2 border-pink-100 shadow-inner group relative overflow-hidden text-left">
+                <div class="absolute -top-6 -right-6 text-7xl text-pink-200 opacity-20 group-hover:rotate-12 transition-transform">🖋️</div>
+                <p class="text-[10px] font-black text-pink-300 uppercase tracking-[0.4em] mb-6 border-b border-pink-100 pb-2 inline-block">Modern Verse / 现代诗篇</p>
+                <div class="text-gray-700 text-lg md:text-xl leading-[2] font-medium" id="poemContent">
+                    <!-- Poem content dynamic -->
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>诗歌是语言的精华，是情感的避风港。虽然这里的生成基于固定的艺术框架，但希望它们能触动你心底某个未察觉的角落。无论现实多么坚硬，诗意总能为我们的生活留下一条柔软的缝隙。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        function pick(a){return a[Math.floor(Math.random()*a.length)];}
+        const templates = [
+            (k) => `${k}落在窗前\n像一封来自远方的信\n我没有拆开\n只是把它放在心里\n等风来的时候\n再一起飞走`,
+            (k) => `我在${k}的边缘行走\n左边是昨天\n右边是明天\n而我\n只是一个短暂的现在`,
+            (k) => `如果${k}是一种颜色\n它一定是透明的\n看不见\n却无处不在\n像空气 像思念 像你`,
+            (k) => `把${k}折成一只纸鹤\n放在最高的书架上\n等某个落雨的午后\n它会自己张开翅膀\n飞回你手心`,
+            (k) => `${k}是一杯温水\n不烫嘴\n却能暖到心底\n我慢慢喝\n慢慢回忆\n那些被遗忘的春天`,
+            (k) => `世界很大\n${k}很小\n但足够装下\n一整个夜晚的星辰\n和我所有的沉默`,
+        ];
+
+        function genPoem() {
+            const kw = document.getElementById('keyword').value.trim() || '时光';
+            const poem = pick(templates)(kw);
+            
+            const box = document.getElementById('poemBox');
+            const content = document.getElementById('poemContent');
+            
+            content.style.opacity = '0';
+            content.style.transform = 'translateY(10px)';
+            
+            setTimeout(() => {
+                content.innerHTML = poem.split('\n').map(l=>`<p class="mb-2">${l}</p>`).join('');
+                box.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    content.style.opacity = '1';
+                    content.style.transform = 'translateY(0)';
+                    content.style.transition = 'all 0.5s ease-out';
+                }, 50);
+                
+                Utils.toast('灵感捕获成功 ✨', 'success');
+            }, 300);
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

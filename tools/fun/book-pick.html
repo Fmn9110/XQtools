@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>今天读什么书 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">📚 今天读 <span class="gradient-text">什么书</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">在茫茫书海中，与你的下一位精神导师不期而遇。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            <div class="flex gap-2 mb-10 flex-wrap justify-center animate-item" style="animation-delay: 0.3s">
+                <button onclick="setCat('')" class="cat-btn px-6 py-2.5 rounded-full font-black text-xs uppercase tracking-widest bg-pink-500 text-white shadow-lg shadow-pink-200 transition-all" id="cat-all">ALL / 全部</button>
+                <button onclick="setCat('文学')" class="cat-btn px-6 py-2.5 rounded-full font-black text-xs uppercase tracking-widest bg-pink-50 text-pink-400 hover:bg-pink-100 transition-all">📖 文学</button>
+                <button onclick="setCat('哲学')" class="cat-btn px-6 py-2.5 rounded-full font-black text-xs uppercase tracking-widest bg-pink-50 text-pink-400 hover:bg-pink-100 transition-all">🧠 哲学</button>
+                <button onclick="setCat('科技')" class="cat-btn px-6 py-2.5 rounded-full font-black text-xs uppercase tracking-widest bg-pink-50 text-pink-400 hover:bg-pink-100 transition-all">💡 科技</button>
+                <button onclick="setCat('心理')" class="cat-btn px-6 py-2.5 rounded-full font-black text-xs uppercase tracking-widest bg-pink-50 text-pink-400 hover:bg-pink-100 transition-all">💭 心理</button>
+            </div>
+            
+            <button onclick="pickBook()" class="theme-download-btn w-full max-w-md mx-auto block py-5 text-xl mb-10">🎲 随机推荐一本</button>
+            
+            <div id="bookCard" class="hidden animate-item">
+                <div class="bg-gradient-to-br from-pink-50/70 to-orange-50/50 rounded-[2.5rem] p-8 md:p-12 border-2 border-pink-100/50 shadow-inner text-center relative overflow-hidden group">
+                    <div class="absolute top-4 left-6 text-7xl opacity-5 group-hover:scale-110 transition-transform select-none" id="bgEmoji">📗</div>
+                    <p class="text-5xl md:text-7xl mb-6 drop-shadow-sm" id="bEmoji">📗</p>
+                    <p class="text-2xl md:text-4xl font-black text-gray-800 mb-2 tracking-tight" id="bTitle"></p>
+                    <p class="text-xs font-black text-pink-300 uppercase tracking-[0.3em] mb-6" id="bAuthor"></p>
+                    <div class="max-w-xl mx-auto">
+                        <p class="text-gray-500 leading-relaxed text-sm md:text-base italic" id="bDesc"></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="welcomePlaceholder" class="text-center py-20 animate-item">
+                <p class="text-gray-300 text-sm font-black uppercase tracking-[0.5em]">Waiting for your choice...</p>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.4s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">📖</span>
+                    阅读之道
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50">
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        阅读不仅仅是获取信息，更是一场跨越时空的对话。通过点击分类，您可以缩小兴趣范围，让系统为您精准匹配那些触动灵魂的文字。
+                    </p>
+                </div>
+            </section>
+            <section class="animate-item" style="animation-delay: 0.5s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">💡</span>
+                    为何阅读？
+                </h2>
+                <div class="bg-white p-6 rounded-2xl border border-pink-50 shadow-sm leading-relaxed">
+                    <p class="text-gray-500 text-sm">“书籍是人类进步的阶梯。” 每天只需 15 分钟，坚持一年，您将发现一个完全不同的自己。</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const books = [
+            {cat:'文学',title:'百年孤独',author:'加西亚·马尔克斯',desc:'魔幻现实主义经典，讲述布恩迪亚家族七代人的传奇故事。',emoji:'📗'},
+            {cat:'文学',title:'活着',author:'余华',desc:'一个农民的一生，经历了中国近代最动荡的年代。震撼人心的生命力。',emoji:'📕'},
+            {cat:'文学',title:'小王子',author:'圣·埃克苏佩里',desc:'给大人看的童话，关于爱、友谊和生命中最重要的事。',emoji:'🌹'},
+            {cat:'文学',title:'挪威的森林',author:'村上春树',desc:'关于青春、爱情和迷茫的细腻日本小说。',emoji:'🌲'},
+            {cat:'文学',title:'三体',author:'刘慈欣',desc:'中国科幻文学巅峰之作，思考人类文明的未来命运。',emoji:'🌌'},
+            {cat:'哲学',title:'苏菲的世界',author:'乔斯坦·贾德',desc:'一部用故事讲哲学史的小说，适合哲学入门。',emoji:'🦉'},
+            {cat:'哲学',title:'人生的智慧',author:'叔本华',desc:'关于如何尽量幸福愉快地度过一生的实用指南。',emoji:'📜'},
+            {cat:'哲学',title:'存在与时间',author:'海德格尔',desc:'20世纪最重要的哲学著作之一，探讨存在的意义。',emoji:'⏳'},
+            {cat:'科技',title:'人类简史',author:'尤瓦尔·赫拉利',desc:'从石器时代到21世纪，重新审视人类历史的发展脉络。',emoji:'🧬'},
+            {cat:'科技',title:'失控',author:'凯文·凯利',desc:'关于机器、社会与经济的新生物学，预言了互联网的发展。',emoji:'🤖'},
+            {cat:'科技',title:'编码',author:'查尔斯·佩措尔德',desc:'从电报机到计算机，用通俗方式讲透计算机原理。',emoji:'💻'},
+            {cat:'心理',title:'思考快与慢',author:'丹尼尔·卡尼曼',desc:'诺奖得主揭示人类决策的两个系统，改变你看世界的方式。',emoji:'🧠'},
+            {cat:'心理',title:'被讨厌的勇气',author:'岸见一郎',desc:'用对话体讲解阿德勒心理学，教你获得自由与幸福。',emoji:'💪'},
+            {cat:'心理',title:'亲密关系',author:'罗兰·米勒',desc:'关于人际关系和亲密关系的经典教材，科学且实用。',emoji:'💕'},
+        ];
+        let currentCat = '';
+        
+        function setCat(cat) {
+            currentCat = cat;
+            document.querySelectorAll('.cat-btn').forEach(b => {
+                b.className = 'cat-btn px-6 py-2.5 rounded-full font-black text-xs uppercase tracking-widest bg-pink-50 text-pink-400 hover:bg-pink-100 transition-all';
+            });
+            const activeBtn = event.target.closest('.cat-btn') || document.getElementById('cat-all');
+            activeBtn.className = 'cat-btn px-6 py-2.5 rounded-full font-black text-xs uppercase tracking-widest bg-pink-500 text-white shadow-lg shadow-pink-200 transition-all';
+            Utils.toast('已切换至: ' + (cat || '全部'), 'info');
+        }
+
+        function pickBook() {
+            const pool = currentCat ? books.filter(b => b.cat === currentCat) : books;
+            const book = pool[Math.floor(Math.random() * pool.length)];
+            
+            document.getElementById('bEmoji').textContent = book.emoji;
+            document.getElementById('bgEmoji').textContent = book.emoji;
+            document.getElementById('bTitle').textContent = book.title;
+            document.getElementById('bAuthor').textContent = `${book.author} · ${book.cat}`;
+            document.getElementById('bDesc').textContent = book.desc;
+            
+            document.getElementById('bookCard').classList.remove('hidden');
+            document.getElementById('welcomePlaceholder').classList.add('hidden');
+            Utils.toast('为你挑选了《' + book.title + '》', 'success');
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

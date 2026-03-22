@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tab空格互转 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23FFB6C1'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.25rem;
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen pb-20 md:pb-0">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4">Tab 与空格互转</h1>
+            <p class="text-gray-500 italic">在 Tab 缩进和空格缩进之间互相转换。⇥</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 bg-white shadow-xl mb-12">
+            <div class="flex items-center space-x-4 mb-8">
+                <label class="text-[10px] font-bold text-pink-300 uppercase tracking-widest whitespace-nowrap">缩进空格数</label>
+                <select id="spaces" class="px-6 py-2 bg-pink-50/20 border-2 border-pink-50 rounded-xl text-pink-500 font-bold outline-none focus:border-pink-200 transition-all cursor-pointer pr-12">
+                    <option value="2">2</option>
+                    <option value="4" selected>4</option>
+                    <option value="8">8</option>
+                </select>
+            </div>
+
+            <div class="space-y-6">
+                <div class="relative group">
+                    <label class="block text-[10px] font-bold text-pink-300 uppercase tracking-widest mb-3 ml-2">待处理内容</label>
+                    <textarea id="input" rows="8" placeholder="粘贴包含 Tab 或空格缩进的代码..." class="w-full p-6 bg-pink-50/10 border-2 border-pink-50 rounded-3xl text-sm font-mono outline-none focus:border-pink-200 transition-all resize-none shadow-inner" spellcheck="false"></textarea>
+                    <button onclick="clearText('input')" class="absolute right-6 top-10 text-pink-200 hover:text-pink-400 p-2 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button onclick="toSpaces()" class="theme-download-btn py-4 text-base font-bold shadow-lg shadow-pink-100">Tab → 空格</button>
+                    <button onclick="toTabs()" class="theme-secondary-btn py-4 text-base font-bold border-2">空格 → Tab</button>
+                </div>
+
+                <div class="relative group">
+                    <label class="block text-[10px] font-bold text-pink-300 uppercase tracking-widest mb-3 ml-2">输出结果</label>
+                    <textarea id="output" rows="8" class="w-full p-6 bg-pink-50/10 border-2 border-pink-50 rounded-3xl text-sm font-mono outline-none focus:border-pink-200 transition-all resize-none shadow-inner" spellcheck="false" readonly placeholder="转换结果将在此显示..."></textarea>
+                    <button onclick="copyOutput()" class="mt-4 w-full theme-secondary-btn py-3 text-sm font-bold border-2">📋 复制转换结果</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            <section class="cute-card p-8 bg-white/50 border border-pink-50">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                    <span class="w-2 h-6 bg-pink-400 rounded-full mr-3"></span>
+                    使用说明
+                </h2>
+                <ul class="text-gray-600 text-sm space-y-3 list-none">
+                    <li class="flex items-start"><span class="text-pink-400 mr-2">Step 1.</span> 选择缩进空格数量</li>
+                    <li class="flex items-start"><span class="text-pink-400 mr-2">Step 2.</span> 粘贴代码到上方输入框</li>
+                    <li class="flex items-start"><span class="text-pink-400 mr-2">Step 3.</span> 点击对应转换按钮</li>
+                    <li class="flex items-start"><span class="text-pink-400 mr-2">Step 4.</span> 复制结果到你的编辑器</li>
+                </ul>
+            </section>
+
+            <section class="cute-card p-8 bg-white/50 border border-pink-50">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                    <span class="w-2 h-6 bg-pink-400 rounded-full mr-3"></span>
+                    常见问题
+                </h2>
+                <div class="space-y-4 text-sm text-gray-600">
+                    <div>
+                        <p class="font-bold text-gray-700 mb-1">转换会报错吗？</p>
+                        <p>工具仅处理空白字符，不修改任何逻辑代码，非常安全。</p>
+                    </div>
+                    <div>
+                        <p class="font-bold text-gray-700 mb-1">为什么需要转换？</p>
+                        <p>不同的编辑器和协作团队可能有不同的缩进规范。Python 推荐 4 空格，Vue 推荐 2 空格。</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        function toSpaces(){
+            const n = parseInt(document.getElementById('spaces').value);
+            const text = document.getElementById('input').value;
+            if(!text) { Utils.toast('请输入内容', 'warning'); return; }
+            document.getElementById('output').value = text.replace(/\t/g, ' '.repeat(n));
+            Utils.toast('已转换为半角空格', 'success');
+        }
+        function toTabs(){
+            const n = parseInt(document.getElementById('spaces').value);
+            const text = document.getElementById('input').value;
+            if(!text) { Utils.toast('请输入内容', 'warning'); return; }
+            const regex = new RegExp(' '.repeat(n), 'g');
+            document.getElementById('output').value = text.replace(regex, '\t');
+            Utils.toast('已转换为 Tab 缩进', 'success');
+        }
+        function copyOutput() {
+            const out = document.getElementById('output');
+            if(!out.value) { Utils.toast('没有可复制的内容', 'warning'); return; }
+            navigator.clipboard.writeText(out.value).then(() => {
+                Utils.toast('已复制到剪贴板', 'success');
+            });
+        }
+        function clearText(id) {
+            document.getElementById(id).value = '';
+            Utils.toast('已清空', 'info');
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

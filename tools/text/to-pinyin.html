@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>汉字转拼音 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/pinyin-pro"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen pb-20 md:pb-0">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4">汉字转拼音</h1>
+            <p class="text-gray-500 italic">为汉字标注拼音、声调，或者提取首字母。🈯</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 bg-white shadow-xl mb-12">
+            <div class="relative group mb-8">
+                <label class="block text-[10px] font-bold text-pink-300 uppercase tracking-widest mb-3 ml-2">汉字文本</label>
+                <textarea id="textInput" class="w-full h-48 p-8 bg-pink-50/10 border-2 border-pink-50 rounded-[2.5rem] text-sm outline-none focus:border-pink-200 transition-all resize-none shadow-inner" placeholder="在此粘贴汉字文本..."></textarea>
+                <button onclick="clearInput()" class="absolute right-6 top-12 text-pink-200 hover:text-pink-400 p-2 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+            </div>
+            
+            <div class="flex flex-wrap gap-4 justify-center mb-10">
+                 <button onclick="convert('pinyin')" class="theme-download-btn px-8 py-3 text-sm font-bold shadow-lg shadow-pink-100 flex-1 min-w-[120px]">带调全拼</button>
+                 <button onclick="convert('initial')" class="theme-secondary-btn border-2 px-8 py-3 text-sm font-bold flex-1 min-w-[120px]">提取首字母</button>
+                 <button onclick="convert('none')" class="theme-secondary-btn border-2 px-8 py-3 text-sm font-bold flex-1 min-w-[120px]">无调拼音</button>
+            </div>
+
+            <div class="relative">
+                <label class="block text-[10px] font-bold text-pink-300 uppercase tracking-widest mb-3 ml-2">拼音结果</label>
+                <div id="outputArea" class="w-full min-h-[140px] p-8 bg-pink-50/5 border-2 border-dashed border-pink-100 rounded-[2.5rem] text-lg text-gray-600 leading-relaxed text-left shadow-inner">
+                     拼音结果将在此显示...
+                </div>
+                <button id="copyBtn" class="mt-6 w-full text-xs text-pink-400 font-bold hover:text-pink-600 transition-colors uppercase tracking-widest text-center cursor-pointer">
+                    📋 点击并复制拼音结果
+                </button>
+            </div>
+        </section>
+    </main>
+
+
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const { pinyin } = pinyinPro;
+        const input = document.getElementById('textInput');
+        const output = document.getElementById('outputArea');
+
+        window.convert = (type) => {
+            const val = input.value.trim();
+            if(!val) { Utils.toast('请输入汉字', 'warning'); return; }
+            
+            let res = "";
+            switch(type) {
+                case 'pinyin': res = pinyin(val, { toneType: 'symbol' }); break;
+                case 'none': res = pinyin(val, { toneType: 'none' }); break;
+                case 'initial': res = pinyin(val, { pattern: 'initial', toneType: 'none' }); break;
+            }
+            output.innerText = res;
+            Utils.toast('已成功转换', 'success');
+        };
+
+        document.getElementById('copyBtn').onclick = () => {
+             if(output.innerText === '拼音结果将显示在这里...') { Utils.toast('没有可复制的内容', 'warning'); return; }
+             navigator.clipboard.writeText(output.innerText).then(() => {
+                 Utils.toast('内容已复制', 'success');
+             });
+        };
+
+        function clearInput() {
+            input.value = '';
+            output.innerText = '拼音结果将显示在这里...';
+            Utils.toast('已清空', 'info');
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

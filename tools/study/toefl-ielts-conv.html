@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>托福雅思分数转换 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .conv-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .conv-card:focus-within { transform: translateY(-5px); box-shadow: 0 20px 40px -10px rgba(244, 114, 182, 0.15); border-color: #fce7f3; }
+        .sync-icon { transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .sync-active .sync-icon { transform: rotate(180deg); }
+        tr:hover td { background: #fff5f7 !important; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6 shadow-sm no-print">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-14">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-800 mb-4 animate-item">全球视野：语言分数转换</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s italic italic">托福 & 雅思官方比对，CEFR 标准对齐。🌐</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-14 mb-12 bg-white shadow-2xl animate-item" style="animation-delay: 0.2s">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 relative" id="convApp">
+                <div class="conv-card p-10 bg-slate-50/50 rounded-[3rem] border border-slate-100 flex flex-col items-center">
+                    <span class="text-[10px] font-black text-pink-400 uppercase tracking-[0.3em] mb-4">TOEFL iBT (0-120)</span>
+                    <input type="number" id="toefl" placeholder="0" min="0" max="120" oninput="convert('toefl')" class="w-full bg-transparent border-none outline-none text-center font-black text-5xl text-slate-800 placeholder:text-slate-200 tabular-nums">
+                    <p class="mt-4 text-[10px] font-bold text-slate-300 uppercase italic">Intellectual Power Score</p>
+                </div>
+
+                <!-- Sync Indicator -->
+                <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 bg-white rounded-full shadow-lg border border-pink-50 flex items-center justify-center text-xl z-10 no-print">
+                    <span class="sync-icon">🔄</span>
+                </div>
+
+                <div class="conv-card p-10 bg-slate-50/50 rounded-[3rem] border border-slate-100 flex flex-col items-center">
+                    <span class="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] mb-4">IELTS (0-9.0)</span>
+                    <input type="number" id="ielts" placeholder="0.0" min="0" max="9" step="0.5" oninput="convert('ielts')" class="w-full bg-transparent border-none outline-none text-center font-black text-5xl text-slate-800 placeholder:text-slate-200 tabular-nums">
+                    <p class="mt-4 text-[10px] font-bold text-slate-300 uppercase italic">Linguistic Ability Grade</p>
+                </div>
+            </div>
+
+            <div id="resultInfo" class="hidden animate-fade-in p-8 bg-pink-50/50 rounded-[2.5rem] border border-pink-100 mb-12">
+                <p class="text-sm font-black text-pink-500 mb-1" id="levelName">--</p>
+                <p class="text-[10px] text-pink-300 uppercase tracking-widest font-black" id="cefrLevel">CEFR Alignment: --</p>
+            </div>
+
+            <div class="mt-14">
+                <h3 class="text-xs font-black text-slate-300 uppercase tracking-[0.4em] mb-8 text-left pl-4">Conversion Logic Matrix (ETS/British Council Standard)</h3>
+                <div class="overflow-x-auto rounded-[2rem] border border-slate-50 shadow-sm">
+                    <table class="w-full text-xs text-center">
+                        <thead class="bg-slate-50 text-slate-400 font-black uppercase tracking-widest">
+                            <tr>
+                                <th class="p-5 border-b border-slate-100">TOEFL iBT</th>
+                                <th class="p-5 border-b border-slate-100">IELTS</th>
+                                <th class="p-5 border-b border-slate-100">Professional Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-slate-500 font-bold">
+                            <tr><td class="p-4 border-b border-slate-50">118-120</td><td class="p-4 border-b border-slate-50">9.0</td><td class="p-4 border-b border-slate-50 text-pink-400">专家级 (Expert)</td></tr>
+                            <tr><td class="p-4 border-b border-slate-50">115-117</td><td class="p-4 border-b border-slate-50">8.5</td><td class="p-4 border-b border-slate-50">优秀+ (High Mastery)</td></tr>
+                            <tr><td class="p-4 border-b border-slate-50">110-114</td><td class="p-4 border-b border-slate-50">8.0</td><td class="p-4 border-b border-slate-50">优秀 (Mastery)</td></tr>
+                            <tr><td class="p-4 border-b border-slate-50">102-109</td><td class="p-4 border-b border-slate-50">7.5</td><td class="p-4 border-b border-slate-50">良好+ (Upper C1)</td></tr>
+                            <tr><td class="p-4 border-b border-slate-50">94-101</td><td class="p-4 border-b border-slate-50">7.0</td><td class="p-4 border-b border-slate-50">良好 (C1 Threshold)</td></tr>
+                            <tr><td class="p-4 border-b border-slate-50">79-93</td><td class="p-4 border-b border-slate-50">6.5</td><td class="p-4 border-b border-slate-50">中等+ (Upper B2)</td></tr>
+                            <tr><td class="p-4 border-b border-slate-50">60-78</td><td class="p-4 border-b border-slate-50">6.0</td><td class="p-4 border-b border-slate-50">中等 (B2 Threshold)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+        
+        <p class="text-[10px] text-gray-300 font-bold uppercase tracking-[0.5em] pb-12 animate-item">
+            Official Multi-Standard Language Proficiency Mapping Engine
+        </p>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const map = [
+            { t: 118, i: 9, label: '专家级', cefr: 'C2 Proficiency' },
+            { t: 115, i: 8.5, label: '优秀+', cefr: 'C2 Mastery' },
+            { t: 110, i: 8, label: '优秀', cefr: 'C1/C2 Transition' },
+            { t: 102, i: 7.5, label: '良好+', cefr: 'C1 Advanced' },
+            { t: 94, i: 7, label: '良好', cefr: 'C1 Threshold' },
+            { t: 79, i: 6.5, label: '中等+', cefr: 'B2+ High' },
+            { t: 60, i: 6, label: '中等', cefr: 'B2 Level' },
+            { t: 46, i: 5.5, label: '基础+', cefr: 'B1+' },
+            { t: 35, i: 5, label: '基础', cefr: 'B1 Level' }
+        ];
+
+        function convert(source) {
+            const tEl = document.getElementById('toefl');
+            const iEl = document.getElementById('ielts');
+            const app = document.getElementById('convApp');
+            const resBox = document.getElementById('resultInfo');
+            
+            app.classList.add('sync-active');
+            setTimeout(() => app.classList.remove('sync-active'), 600);
+
+            if (source === 'toefl') {
+                const val = parseInt(tEl.value);
+                if (isNaN(val)) { resBox.classList.add('hidden'); return; }
+                const match = map.find(m => val >= m.t) || { i: '< 4.5', label: '基础以下', cefr: 'Below B1' };
+                iEl.value = match.i;
+                showInfo(match);
+            } else {
+                const val = parseFloat(iEl.value);
+                if (isNaN(val)) { resBox.classList.add('hidden'); return; }
+                const match = map.find(m => val >= m.i) || { t: '< 32', label: '基础以下', cefr: 'Below B1' };
+                tEl.value = match.t;
+                showInfo(match);
+            }
+        }
+
+        function showInfo(m) {
+            const box = document.getElementById('resultInfo');
+            box.classList.remove('hidden');
+            document.getElementById('levelName').textContent = m.label;
+            document.getElementById('cefrLevel').textContent = 'CEFR Alignment: ' + m.cefr;
+        }
+
+        // Init
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button') || e.target.closest('input')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

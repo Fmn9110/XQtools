@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>命名风格转换 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen pb-20 md:pb-0">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4">命名风格转换</h1>
+            <p class="text-gray-500 italic">在驼峰、蛇形、帕斯卡、中划线等命名法之间自由切换，程序员开发利器。💻</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 bg-white shadow-xl mb-12">
+            <div class="mb-10">
+                <label class="block text-sm font-bold text-pink-300 uppercase tracking-widest mb-4 text-center">输入初始名称</label>
+                <input type="text" id="rawInput" class="w-full p-6 bg-pink-50/20 border-2 border-pink-50 rounded-[2rem] text-xl md:text-2xl font-black text-pink-600 outline-none focus:border-pink-200 mb-2 transition-all text-center shadow-inner" placeholder="myVariable / my_variable / MyVariable...">
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 text-left">
+                <div class="p-4 bg-pink-50/30 rounded-2xl border border-pink-50 hover:bg-pink-50/50 transition-all cursor-pointer group" onclick="copy('camel')">
+                    <p class="text-[10px] text-pink-300 font-bold uppercase mb-1 tracking-widest">CamelCase</p>
+                    <p id="camel" class="text-sm font-mono font-bold text-gray-700 truncate group-hover:text-pink-600 transition-colors">-</p>
+                </div>
+                <div class="p-4 bg-pink-50/30 rounded-2xl border border-pink-50 hover:bg-pink-50/50 transition-all cursor-pointer group" onclick="copy('snake')">
+                    <p class="text-[10px] text-pink-300 font-bold uppercase mb-1 tracking-widest">snake_case</p>
+                    <p id="snake" class="text-sm font-mono font-bold text-gray-700 truncate group-hover:text-pink-600 transition-colors">-</p>
+                </div>
+                <div class="p-4 bg-pink-50/30 rounded-2xl border border-pink-50 hover:bg-pink-50/50 transition-all cursor-pointer group" onclick="copy('pascal')">
+                    <p class="text-[10px] text-pink-300 font-bold uppercase mb-1 tracking-widest">PascalCase</p>
+                    <p id="pascal" class="text-sm font-mono font-bold text-gray-700 truncate group-hover:text-pink-600 transition-colors">-</p>
+                </div>
+                <div class="p-4 bg-pink-50/30 rounded-2xl border border-pink-50 hover:bg-pink-50/50 transition-all cursor-pointer group" onclick="copy('kebab')">
+                    <p class="text-[10px] text-pink-300 font-bold uppercase mb-1 tracking-widest">kebab-case</p>
+                    <p id="kebab" class="text-sm font-mono font-bold text-gray-700 truncate group-hover:text-pink-600 transition-colors">-</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 说明卡片 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div class="bg-white/60 backdrop-blur-sm p-6 rounded-3xl border border-pink-100">
+                <h3 class="font-bold text-gray-700 mb-2">🐫 Camel Case</h3>
+                <p class="text-xs text-gray-500 leading-relaxed">小驼峰，首字母小写，其余单词首字母大写。常见于 JS 变量与函数命名。</p>
+            </div>
+            <div class="bg-white/60 backdrop-blur-sm p-6 rounded-3xl border border-pink-100">
+                <h3 class="font-bold text-gray-700 mb-2">🐍 Snake Case</h3>
+                <p class="text-xs text-gray-500 leading-relaxed">下划线命名，单词间用下划线连接。常见于 Python、SQL 与 C 命名。</p>
+            </div>
+            <div class="bg-white/60 backdrop-blur-sm p-6 rounded-3xl border border-pink-100">
+                <h3 class="font-bold text-gray-700 mb-2">📐 Pascal Case</h3>
+                <p class="text-xs text-gray-500 leading-relaxed">大驼峰，所有单词首字母均为大写。常见于 Java、C# 的类名。</p>
+            </div>
+        </div>
+    </main>
+
+
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const input = document.getElementById('rawInput');
+        
+        input.oninput = () => {
+            const val = input.value.trim();
+            if(!val) {
+                document.getElementById('camel').innerText = '-';
+                document.getElementById('snake').innerText = '-';
+                document.getElementById('pascal').innerText = '-';
+                document.getElementById('kebab').innerText = '-';
+                return;
+            }
+            
+            // Normalize: split by _, -, or uppercase
+            const words = val.replace(/([A-Z])/g, ' $1').replace(/[_-]/g, ' ').toLowerCase().split(/\s+/).filter(x => x);
+            
+            if (words.length === 0) return;
+
+            document.getElementById('camel').innerText = words[0] + words.slice(1).map(w => w[0].toUpperCase() + w.slice(1)).join('');
+            document.getElementById('snake').innerText = words.join('_');
+            document.getElementById('pascal').innerText = words.map(w => w[0].toUpperCase() + w.slice(1)).join('');
+            document.getElementById('kebab').innerText = words.join('-');
+        };
+
+        window.copy = (id) => {
+            const text = document.getElementById(id).innerText;
+            if(text === '-') return;
+            navigator.clipboard.writeText(text).then(() => {
+                Utils.toast('已复制到剪贴板', 'success');
+            });
+        };
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

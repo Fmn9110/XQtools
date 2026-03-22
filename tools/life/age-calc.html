@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>精确年龄计算器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div>
+                <span class="text-2xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">🎂 精确年龄计算器</h1>
+            <p class="text-gray-500">精确到年、月、日、小时的年龄计算，还能查看你已经活过了多少天！</p>
+        </header>
+
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase mb-2">出生日期</label>
+                    <input type="date" id="birthDate" class="w-full p-4 bg-gray-50 rounded-xl border border-pink-100 focus:border-pink-400 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase mb-2">计算到日期（默认今天）</label>
+                    <input type="date" id="targetDate" class="w-full p-4 bg-gray-50 rounded-xl border border-pink-100 focus:border-pink-400 outline-none">
+                </div>
+            </div>
+            <button onclick="calcAge()" class="w-full py-4 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl transition-colors text-lg">🎉 计算年龄</button>
+
+            <div id="result" class="hidden mt-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-pink-50 rounded-2xl p-6 text-center">
+                        <p class="text-4xl font-black text-pink-500" id="rYears">0</p>
+                        <p class="text-gray-400 text-xs mt-1">年</p>
+                    </div>
+                    <div class="bg-purple-50 rounded-2xl p-6 text-center">
+                        <p class="text-4xl font-black text-purple-500" id="rMonths">0</p>
+                        <p class="text-gray-400 text-xs mt-1">月</p>
+                    </div>
+                    <div class="bg-blue-50 rounded-2xl p-6 text-center">
+                        <p class="text-4xl font-black text-blue-500" id="rDays">0</p>
+                        <p class="text-gray-400 text-xs mt-1">天</p>
+                    </div>
+                    <div class="bg-green-50 rounded-2xl p-6 text-center">
+                        <p class="text-4xl font-black text-green-500" id="rHours">0</p>
+                        <p class="text-gray-400 text-xs mt-1">小时</p>
+                    </div>
+                </div>
+                <div class="bg-gray-50 rounded-2xl p-6 space-y-2 text-sm text-gray-600">
+                    <p>📅 你已经活了 <strong id="totalDays" class="text-pink-500">0</strong> 天</p>
+                    <p>⏰ 共计约 <strong id="totalHours" class="text-purple-500">0</strong> 小时</p>
+                    <p>💓 心跳了大约 <strong id="totalHeartbeats" class="text-red-500">0</strong> 次（按75次/分钟估算）</p>
+                    <p>🌙 经历了大约 <strong id="totalSleeps" class="text-blue-500">0</strong> 次日出日落</p>
+                    <p>🎂 下一个生日还有 <strong id="nextBirthday" class="text-green-500">0</strong> 天</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">!</span>
+                    使用说明
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50">
+                    <ul class="space-y-4 text-gray-600 list-disc list-inside">
+                        <li>选择你的出生日期。</li>
+                        <li>可选修改"计算到日期"，默认为今天。</li>
+                        <li>点击"计算年龄"按钮查看详细结果。</li>
+                    </ul>
+                </div>
+            </section>
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2>
+                <div class="space-y-4">
+                    <div class="bg-white p-4 rounded-xl border border-pink-50">
+                        <div class="font-bold text-gray-700 mb-1">计算精确吗？</div>
+                        <div class="text-gray-500 text-sm">精确到天，考虑了闰年等因素。</div>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-pink-50">
+                        <div class="font-bold text-gray-700 mb-1">数据会上传吗？</div>
+                        <div class="text-gray-500 text-sm">不会，所有计算均在本地完成。</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        // 设置默认日期
+        document.getElementById('targetDate').valueAsDate = new Date();
+
+        function calcAge() {
+            const birthStr = document.getElementById('birthDate').value;
+            const targetStr = document.getElementById('targetDate').value;
+            if (!birthStr) { alert('请选择出生日期'); return; }
+
+            const birth = new Date(birthStr);
+            const target = targetStr ? new Date(targetStr) : new Date();
+
+            if (birth > target) { alert('出生日期不能晚于目标日期'); return; }
+
+            // 计算年月日差
+            let years = target.getFullYear() - birth.getFullYear();
+            let months = target.getMonth() - birth.getMonth();
+            let days = target.getDate() - birth.getDate();
+
+            if (days < 0) {
+                months--;
+                const prevMonth = new Date(target.getFullYear(), target.getMonth(), 0);
+                days += prevMonth.getDate();
+            }
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+
+            const totalMs = target - birth;
+            const totalDaysVal = Math.floor(totalMs / (1000 * 60 * 60 * 24));
+            const totalHoursVal = Math.floor(totalMs / (1000 * 60 * 60));
+
+            document.getElementById('rYears').textContent = years;
+            document.getElementById('rMonths').textContent = months;
+            document.getElementById('rDays').textContent = days;
+            document.getElementById('rHours').textContent = Math.floor((totalMs % (1000*60*60*24)) / (1000*60*60));
+            document.getElementById('totalDays').textContent = totalDaysVal.toLocaleString();
+            document.getElementById('totalHours').textContent = totalHoursVal.toLocaleString();
+            document.getElementById('totalHeartbeats').textContent = (totalDaysVal * 24 * 60 * 75).toLocaleString();
+            document.getElementById('totalSleeps').textContent = totalDaysVal.toLocaleString();
+
+            // 计算下一个生日
+            let nextBD = new Date(target.getFullYear(), birth.getMonth(), birth.getDate());
+            if (nextBD <= target) nextBD.setFullYear(nextBD.getFullYear() + 1);
+            const daysToNext = Math.ceil((nextBD - target) / (1000 * 60 * 60 * 24));
+            document.getElementById('nextBirthday').textContent = daysToNext;
+
+            document.getElementById('result').classList.remove('hidden');
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>常用端口字典 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen pb-20 md:pb-0">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4">常用服务端口字典</h1>
+            <p class="text-gray-500 italic">21(FTP), 80(HTTP), 3306(MySQL)... 维护者的口袋手册。📕</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 bg-white shadow-xl mb-12">
+            <div class="relative group mb-10">
+                <input type="text" id="searchInput" class="w-full p-6 bg-pink-50/20 border-2 border-pink-50 rounded-[2rem] text-xl md:text-2xl font-black text-center text-pink-600 outline-none focus:border-pink-200 transition-all shadow-inner" placeholder="搜索端口或服务 (如 80 或 FTP)">
+                <div class="absolute inset-y-0 left-8 flex items-center pointer-events-none text-pink-200 group-focus-within:text-pink-400 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+            </div>
+            
+            <div id="resList" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                 <!-- Generated List -->
+            </div>
+        </section>
+    </main>
+
+
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const ports = {
+            "21": "FTP - 文件传输协议",
+            "22": "SSH - 安全外壳协议",
+            "23": "Telnet - 远程登录",
+            "25": "SMTP - 邮件传输",
+            "53": "DNS - 域名解析",
+            "80": "HTTP - 网页访问",
+            "443": "HTTPS - 安全网页访问",
+            "3306": "MySQL - 数据库",
+            "6379": "Redis - 缓存服务",
+            "8080": "Http Proxy / Tomcat",
+            "1433": "SQL Server",
+            "5432": "PostgreSQL",
+            "27017": "MongoDB",
+            "9200": "Elasticsearch",
+            "1521": "Oracle DB"
+        };
+
+        const input = document.getElementById('searchInput');
+        const list = document.getElementById('resList');
+
+        function render(filter = "") {
+            const items = Object.entries(ports)
+                .filter(([k, v]) => k.includes(filter) || v.toLowerCase().includes(filter.toLowerCase()));
+            
+            if (items.length === 0) {
+                list.innerHTML = `<div class="col-span-full py-12 text-center text-pink-200 font-bold uppercase tracking-widest">没有找到结果</div>`;
+                return;
+            }
+
+            list.innerHTML = items.map(([k, v]) => `
+                    <div class="flex items-center gap-4 p-5 bg-pink-50/30 rounded-[1.5rem] border border-pink-50 hover:bg-gradient-to-r hover:from-pink-400 hover:to-pink-500 group transition-all duration-300 transform hover:-translate-y-1 cursor-default">
+                        <div class="w-16 flex flex-col">
+                            <span class="text-xs font-bold text-pink-300 group-hover:text-pink-100 uppercase tracking-tighter">Port</span>
+                            <span class="text-xl font-black text-pink-500 group-hover:text-white">${k}</span>
+                        </div>
+                        <div class="flex-1">
+                            <span class="text-sm font-bold text-gray-700 group-hover:text-white transition-colors">${v}</span>
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        input.oninput = (e) => render(e.target.value);
+        render();
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>九宫格切图 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Required Libraries -->
+    <script src="../../assets/lib/jszip.min.js"
+        onerror="this.onerror=null;this.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';"></script>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+
+<body class="bg-[#fffafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div
+                    class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 transition-transform hover:rotate-0">
+                    Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html"
+                class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-4 md:py-8 px-4 max-w-6xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold mb-4 animate-item gradient-text">九宫格视觉美学</h1>
+            <p class="text-gray-500 animate-item" style="animation-delay: 0.1s">将宏大叙事分解为 3x3 的灵感碎片，称霸朋友圈。📸</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-8 mb-12 animate-item" style="animation-delay: 0.2s">
+            <div id="upload-stage" class="text-center">
+                <div id="drop-zone"
+                    class="w-full border-4 border-dashed border-pink-100 rounded-3xl p-8 md:p-16 hover:border-pink-300 transition-all cursor-pointer bg-white group">
+                    <input type="file" id="fileInput" accept="image/*" class="hidden">
+                    <div class="text-7xl mb-6 group-hover:scale-110 transition-transform">📁</div>
+                    <p class="text-xl font-bold text-gray-700">点击或拖入您的作品</p>
+                    <p class="text-pink-400 mt-2 text-sm italic">自动居中并智能切分为九格</p>
+                </div>
+            </div>
+
+            <div id="result-stage" class="hidden animate-fade-in w-full space-y-8">
+                <div class="flex flex-col lg:flex-row gap-12 items-center lg:items-start">
+                    <!-- Preview -->
+                    <div class="flex-1 w-full max-w-[420px]">
+                        <div id="preview-grid"
+                            class="grid grid-cols-3 gap-3 p-5 bg-pink-50/30 rounded-[2.5rem] shadow-inner border border-pink-50">
+                            <!-- JS Inject 9 items -->
+                        </div>
+                        <p
+                            class="text-pink-400 text-[10px] mt-6 font-bold text-center italic uppercase leading-relaxed">
+                            长按上方想要的小图即可直接保存 📱</p>
+                    </div>
+
+                    <!-- Config -->
+                    <div class="w-full lg:w-80 space-y-6">
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-pink-50 space-y-4 text-center">
+                            <h3 class="font-black text-gray-800 italic uppercase">导出选项</h3>
+                            <button id="downloadAllBtn"
+                                class="w-full cute-button theme-download-btn py-4 rounded-full font-black text-sm">打包全套
+                                (ZIP)</button>
+                            <button id="downloadIndividualBtn"
+                                class="w-full theme-secondary-btn py-4 rounded-full text-xs font-bold text-pink-500">逐张自动下载</button>
+                            <div class="pt-4 border-t border-pink-50">
+                                <button onclick="location.reload()"
+                                    class="text-gray-400 hover:text-pink-500 text-xs font-bold transition-all">重新上传图片</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.3s">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <span
+                    class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">💡</span>
+                朋友圈发布小贴士
+            </h2>
+            <div class="bg-white rounded-3xl p-8 shadow-sm border border-pink-50 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-full blur-3xl -mr-10 -mt-10 opacity-50">
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 relative z-10 font-medium italic">
+                    <p class="text-xs text-gray-500 leading-relaxed">1. 在发布朋友圈时，请严格按照 1-9 的文件名顺序依次勾选图片。</p>
+                    <p class="text-xs text-gray-500 leading-relaxed">2. 如果原图色彩鲜艳，切分后的九宫格效果会更具视觉冲击力。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-10 text-center text-gray-400 text-xs border-t border-pink-50 mt-12 bg-white/50">
+        © 2026 小Q工具箱 · 纯前端离线实验室 💖
+    </footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadStage = document.getElementById('upload-stage');
+        const resultStage = document.getElementById('result-stage');
+        const previewGrid = document.getElementById('preview-grid');
+        const downloadAllBtn = document.getElementById('downloadAllBtn');
+        const downloadIndividualBtn = document.getElementById('downloadIndividualBtn');
+
+        let slicedImages = [];
+
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.getElementById('drop-zone').onclick = () => fileInput.click();
+        fileInput.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const img = new Image();
+            img.src = await Utils.readFileAsDataURL(file);
+            img.onload = () => {
+                processImage(img);
+                uploadStage.classList.add('hidden');
+                resultStage.classList.remove('hidden');
+                Utils.toast('九宫格已就绪！', 'success');
+            };
+        };
+
+        function processImage(img) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const size = Math.min(img.width, img.height);
+            const offsetX = (img.width - size) / 2;
+            const offsetY = (img.height - size) / 2;
+            const tileSize = size / 3;
+            slicedImages = [];
+            previewGrid.innerHTML = '';
+
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    canvas.width = tileSize; canvas.height = tileSize;
+                    ctx.drawImage(img, offsetX + j * tileSize, offsetY + i * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize);
+                    const url = canvas.toDataURL('image/jpeg', 0.9);
+                    slicedImages.push(url);
+
+                    const div = document.createElement('div');
+                    div.className = 'relative aspect-square bg-gray-50 rounded-2xl overflow-hidden group shadow-sm border border-white hover:z-10 hover:scale-105 transition-all duration-300';
+                    div.innerHTML = `
+                        <img src="${url}" class="w-full h-full object-cover">
+                        <div class="absolute bottom-1 right-1 px-1 bg-black/20 text-white text-[8px] rounded font-mono backdrop-blur-sm pointer-events-none">${i * 3 + j + 1}</div>
+                    `;
+                    previewGrid.appendChild(div);
+                }
+            }
+        }
+
+        downloadAllBtn.onclick = async () => {
+            if (window.innerWidth <= 768) {
+                Utils.toast('移动端建议长按保存，打包功能请在电脑端使用', 'info');
+                return;
+            }
+            const zip = new JSZip();
+            slicedImages.forEach((data, index) => zip.file(`q_slice_9_${index + 1}.jpg`, data.split(',')[1], { base64: true }));
+            const content = await zip.generateAsync({ type: "blob" });
+            Utils.downloadFile(content, `q_slices_9_${Date.now()}.zip`, "application/zip");
+            Utils.toast('资源包正在生成...', 'success');
+        };
+
+        downloadIndividualBtn.onclick = () => {
+            slicedImages.forEach((url, i) => {
+                setTimeout(() => Utils.downloadFile(url, `q_slice_9_${i + 1}.jpg`, "image/jpeg"), i * 400);
+            });
+            Utils.toast('下载队列已开启', 'success');
+        };
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+
+</html>

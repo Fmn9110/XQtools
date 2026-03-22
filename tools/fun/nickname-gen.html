@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>网名生成 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .nick-display {
+            font-family: 'ZCOOL KuaiLe', cursive;
+            font-size: clamp(2rem, 10vw, 3.5rem);
+            color: #ec4899;
+            text-align: center;
+            letter-spacing: 0.1em;
+            text-shadow: 2px 2px 0px #fce7f3;
+            line-height: 1.2;
+            word-break: break-all;
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🕶️ 潮流 <span class="gradient-text">个性昵称</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">拒绝重名。为你的社交帐号挑选一个独特的身份。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            
+            <div class="bg-pink-50/30 rounded-[3rem] p-10 md:p-20 mb-12 border-4 border-white shadow-xl relative flex flex-col items-center group overflow-hidden shadow-inner">
+                <div class="absolute top-4 right-4 z-20">
+                    <button onclick="copyCurrent()" class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-pink-400 shadow-sm hover:text-pink-600 hover:scale-110 active:scale-95 transition-all">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    </button>
+                </div>
+                
+                <p class="text-4xl mb-6 float-animation">✨</p>
+                <div class="nick-display" id="resultNick">...</div>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-4 mb-12 w-full max-w-lg mx-auto">
+                <select id="styleSelect" class="flex-1 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-pink-200 focus:bg-white outline-none text-gray-600 font-black py-4 px-6 text-sm md:text-base transition-all shadow-inner">
+                    <option value="cute">🌸 清新可爱风</option>
+                    <option value="cool">🧊 高冷霸总风</option>
+                    <option value="weird">🤡 沙雕搞怪风</option>
+                    <option value="poetry">🏮 诗意古风</option>
+                </select>
+                <button onclick="generateNick()" class="flex-1 py-4 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-2xl shadow-xl shadow-pink-100 transition-all active:scale-95 text-lg">
+                    🎨 换个新鲜感
+                </button>
+            </div>
+
+            <div class="relative">
+                <div class="absolute -top-3 left-6 px-4 bg-white text-[10px] font-black text-pink-300 uppercase tracking-widest z-10">Recent Batch / 最近心动</div>
+                <div id="historyBox" class="bg-gray-50/50 rounded-3xl p-6 min-h-[60px] flex flex-wrap gap-2 justify-center border-2 border-pink-50/50">
+                    <!-- History pills -->
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🧿</span>
+                <p>一个好的昵称就像一个人的电子名片。它不仅代表了你的个性，更代表了你那一刻的心情。无论你是想卖萌、耍酷还是纯粹想开个玩笑，希望这里能帮你找到那个“对味”的自己。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const vocab = {
+            cute: {
+                adj: ['快乐的', '贪吃的', '打瞌睡的', '迷路的', '软乎乎的', '甜甜的', '胖嘟嘟的', '会发光的', '冒泡的', '毛茸茸的', '神奇的', '呆萌的', '努力的'],
+                noun: ['小橘子', '草莓熊', '小饼干', '布丁', '云朵', '小星星', '冰淇淋', '奶茶', '小水母', '汽水', '小蘑菇', '饭团', '棉花糖', '小精灵']
+            },
+            cool: {
+                adj: ['冷酷的', '沉默的', '暗夜的', '孤独的', '无情的', '傲慢的', '致命的', '幻影', '破碎的', '堕落的', '极寒の'],
+                noun: ['刺客', '狼', '孤影', '深渊', '修罗', '冰刃', '死神', '判官', '黑客', '残月', '幽灵', '魔王']
+            },
+            weird: {
+                adj: ['脱发的', '捡破烂的', '疯狂的', '喝假酒的', '在逃的', '熬夜的', '发霉的', '野生', '无证的', '八百斤的', '刚学会上网的', '村头'],
+                noun: ['程序员', '奥特曼', '二哈', '精神小伙', '键盘侠', '复读机', '咸鱼', '老油条', '咕咕鸡', '马桶刷', '电线杆', '霸王龙']
+            },
+            poetry: {
+                adj: ['清风', '明月', '落花', '暮岚', '晨曦', '流萤', '孤鸿', '远岫', '烟岚', '飞花', '浮云', '踏雪', '寻梦'],
+                noun: ['客', '人', '辞', '赋', '歌', '梦', '影', '痕', '归人', '居士', '散人', '公子']
+            }
+        };
+
+        function generateNick() {
+            const style = document.getElementById('styleSelect').value;
+            const dict = vocab[style];
+            const a = dict.adj[Math.floor(Math.random() * dict.adj.length)];
+            const n = dict.noun[Math.floor(Math.random() * dict.noun.length)];
+            
+            let nick = (style === 'cute' || style === 'weird') && Math.random() > 0.6
+                        ? a + n + ['~', '！', 'ovo', 'QAQ', '鸭', '酱'][Math.floor(Math.random()*6)]
+                        : a + n;
+
+            const out = document.getElementById('resultNick');
+            out.style.opacity = '0';
+            out.style.transform = 'translateY(10px)';
+            
+            setTimeout(() => {
+                out.innerText = nick;
+                out.style.opacity = '1';
+                out.style.transform = 'translateY(0)';
+                out.style.transition = 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                addToHistory(nick);
+            }, 150);
+        }
+
+        function addToHistory(nick) {
+            const box = document.getElementById('historyBox');
+            const el = document.createElement('div');
+            el.className = 'px-4 py-2 bg-pink-50 text-pink-400 rounded-xl font-black shadow-sm cursor-pointer hover:bg-pink-100 transition-all text-sm animate-item';
+            el.innerText = nick;
+            el.onclick = () => {
+                document.getElementById('resultNick').innerText = nick;
+                Utils.toast('已选定历史灵感 ✨', 'info');
+            };
+            box.prepend(el);
+            if(box.children.length > 15) box.removeChild(box.lastChild);
+        }
+
+        function copyCurrent() {
+            const text = document.getElementById('resultNick').innerText;
+            if(text === '...') return;
+            navigator.clipboard.writeText(text).then(() => {
+                Utils.toast('已复制到剪贴板 📋', 'success');
+            });
+        }
+
+        // Initialize
+        setTimeout(generateNick, 200);
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

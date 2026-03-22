@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>心愿清单 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50"><div class="container mx-auto flex justify-between items-center"><div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'"><div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div><span class="text-2xl font-bold gradient-text">小Q工具箱</span></div><a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a></div></nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">⭐ 心愿清单</h1>
+            <p class="text-gray-500">写下你的愿望，一个个去实现</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="flex gap-2 mb-4">
+                <input type="text" id="wishInput" placeholder="写下你的心愿..." class="flex-1 p-4 bg-gray-50 rounded-xl border outline-none" onkeydown="if(event.key==='Enter')addWish()">
+                <select id="priority" class="p-4 bg-gray-50 rounded-xl border outline-none text-sm">
+                    <option value="⭐">⭐ 普通</option><option value="💖">💖 重要</option><option value="🔥">🔥 紧急</option>
+                </select>
+            </div>
+            <button onclick="addWish()" class="w-full py-3 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold rounded-xl text-lg">✨ 许下心愿</button>
+            <div class="mt-4 flex justify-between items-center">
+                <span class="text-sm text-gray-400">已实现 <strong id="done">0</strong>/<span id="total">0</span> 个心愿</span>
+                <div class="flex gap-2">
+                    <button onclick="setFilter('all')" class="filter-btn text-xs px-3 py-1 rounded-full bg-pink-500 text-white" id="f-all">全部</button>
+                    <button onclick="setFilter('pending')" class="filter-btn text-xs px-3 py-1 rounded-full bg-gray-100 text-gray-500" id="f-pending">待实现</button>
+                    <button onclick="setFilter('done')" class="filter-btn text-xs px-3 py-1 rounded-full bg-gray-100 text-gray-500" id="f-done">已实现</button>
+                </div>
+            </div>
+            <div class="mt-4 space-y-2" id="list"></div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>输入你的心愿并选择优先级。</li><li>实现后点击标记完成。</li><li>所有数据保存在本地浏览器。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">可以设置截止日期吗？</div><div class="text-gray-500 text-sm">目前是极简版本，专注于记录和跟踪心愿。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const KEY = 'xq_wish_list';
+        let currentFilter = 'all';
+        function getWishes() { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } }
+
+        function addWish() {
+            const text = document.getElementById('wishInput').value.trim();
+            if (!text) { alert('请输入你的心愿'); return; }
+            const priority = document.getElementById('priority').value;
+            const wishes = getWishes();
+            wishes.unshift({ text, priority, done: false, id: Date.now(), date: new Date().toISOString() });
+            localStorage.setItem(KEY, JSON.stringify(wishes));
+            document.getElementById('wishInput').value = '';
+            render();
+        }
+
+        function toggleWish(id) {
+            const wishes = getWishes();
+            const w = wishes.find(x => x.id === id);
+            if (w) w.done = !w.done;
+            localStorage.setItem(KEY, JSON.stringify(wishes));
+            render();
+        }
+
+        function delWish(id) {
+            if (!confirm('确定删除这个心愿？')) return;
+            localStorage.setItem(KEY, JSON.stringify(getWishes().filter(x => x.id !== id)));
+            render();
+        }
+
+        function setFilter(f) {
+            currentFilter = f;
+            document.querySelectorAll('.filter-btn').forEach(b => b.className = 'filter-btn text-xs px-3 py-1 rounded-full bg-gray-100 text-gray-500');
+            document.getElementById('f-'+f).className = 'filter-btn text-xs px-3 py-1 rounded-full bg-pink-500 text-white';
+            render();
+        }
+
+        function render() {
+            const wishes = getWishes();
+            const total = wishes.length;
+            const doneCount = wishes.filter(w => w.done).length;
+            document.getElementById('done').textContent = doneCount;
+            document.getElementById('total').textContent = total;
+
+            const filtered = wishes.filter(w => {
+                if (currentFilter === 'pending') return !w.done;
+                if (currentFilter === 'done') return w.done;
+                return true;
+            });
+
+            let html = '';
+            filtered.forEach(w => {
+                const d = new Date(w.date);
+                const dateStr = `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`;
+                html += `<div class="flex items-center gap-3 p-4 rounded-xl transition-colors ${w.done ? 'bg-green-50' : 'bg-pink-50/50'}">
+                    <button onclick="toggleWish(${w.id})" class="w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${w.done ? 'bg-green-500 border-green-500 text-white' : 'border-pink-300'}">
+                        <span class="text-xs">${w.done ? '✓' : ''}</span>
+                    </button>
+                    <span class="text-lg">${w.priority}</span>
+                    <div class="flex-1">
+                        <p class="${w.done ? 'line-through text-gray-400' : 'text-gray-700 font-bold'}">${w.text}</p>
+                        <p class="text-xs text-gray-300">${dateStr}</p>
+                    </div>
+                    <button onclick="delWish(${w.id})" class="text-gray-300 hover:text-red-400 text-sm">✕</button>
+                </div>`;
+            });
+            document.getElementById('list').innerHTML = html || '<div class="text-center py-8"><p class="text-4xl mb-2">✨</p><p class="text-gray-400">还没有心愿，写下第一个吧</p></div>';
+        }
+        render();
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

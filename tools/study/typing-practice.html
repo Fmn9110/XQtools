@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>打字练习 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@500;800&display=swap" rel="stylesheet">
+    <style>
+        .typing-box { font-family: 'JetBrains Mono', monospace; line-height: 2; }
+        .char { transition: all 0.1s; display: inline; position: relative; }
+        .char.correct { color: #f472b6; }
+        .char.incorrect { color: #fb7185; background: #fff1f2; border-radius: 4px; }
+        .char.current { border-bottom: 3px solid #f472b6; animation: cursor-blink 1s infinite; }
+        @keyframes cursor-blink { 0%, 100% { border-color: #f472b6; } 50% { border-color: transparent; } }
+        .diff-btn { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .diff-btn.active { background: #f472b6; color: white; transform: translateY(-3px); box-shadow: 0 10px 20px -5px rgba(244, 114, 182, 0.4); }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6 shadow-sm no-print">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-14">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-800 mb-4 animate-item">指尖律动：高效打字练习</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s italic italic">毫秒级反馈，多维难度进阶。在代码与文字间自由穿梭。⌨️</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-14 mb-12 bg-white shadow-2xl animate-item" style="animation-delay: 0.2s">
+            <!-- Setup Scene -->
+            <div id="setup" class="py-12 flex flex-col items-center">
+                <div class="w-full max-w-md mb-12">
+                    <p class="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em] mb-6">Choose Your Archetype (难度选择)</p>
+                    <div class="grid grid-cols-3 gap-4">
+                        <button onclick="setDiff('easy')" id="btn-easy" class="diff-btn py-5 bg-slate-50 border border-slate-100 rounded-3xl font-black text-slate-400 hover:bg-white hover:shadow-xl active">EASY</button>
+                        <button onclick="setDiff('medium')" id="btn-medium" class="diff-btn py-5 bg-slate-50 border border-slate-100 rounded-3xl font-black text-slate-400 hover:bg-white hover:shadow-xl">MED</button>
+                        <button onclick="setDiff('hard')" id="btn-hard" class="diff-btn py-5 bg-slate-50 border border-slate-100 rounded-3xl font-black text-slate-400 hover:bg-white hover:shadow-xl">HARD</button>
+                    </div>
+                </div>
+                <button onclick="start()" class="w-full max-w-md py-6 bg-pink-400 text-white font-black rounded-[2.5rem] shadow-2xl shadow-pink-100 hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-2xl flex items-center justify-center gap-4">
+                    🚀 开始挑战 (START MISSION)
+                </button>
+            </div>
+
+            <!-- Typing Scene -->
+            <div id="typing" class="hidden">
+                <div class="flex justify-between items-end mb-10 px-4">
+                    <div class="text-left">
+                        <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest leading-none mb-2">Chronograph</p>
+                        <p class="text-3xl font-black text-slate-800 tabular-nums"><span id="time">0</span>s</p>
+                    </div>
+                    <div class="p-4 bg-pink-50/50 rounded-2xl border border-pink-100 flex items-center gap-4">
+                        <div class="text-right">
+                             <p class="text-[8px] font-black text-pink-400 uppercase tracking-tight">Active Velocity</p>
+                             <p class="text-2xl font-black text-pink-500 tabular-nums leading-none"><span id="wpm">0</span> WPM</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative p-10 md:p-16 bg-slate-50/80 rounded-[4rem] border border-slate-100 mb-10 text-left text-xl md:text-2xl typing-box transition-all shadow-inner" id="displayBox">
+                    <div id="textDisplay" class="break-words select-none pointer-events-none text-slate-300 font-medium"></div>
+                </div>
+
+                <div class="relative group mb-14">
+                    <input type="text" id="input" class="w-full p-8 bg-white rounded-[3rem] border-2 border-slate-100 outline-none focus:border-pink-200 focus:shadow-2xl transition-all font-mono text-2xl text-slate-800 text-center tracking-widest placeholder:text-slate-200" placeholder="Focus here & start typing..." autocomplete="off" oninput="onType()">
+                    <div class="absolute inset-0 bg-pink-100/5 rounded-[3rem] -z-10 group-focus-within:scale-105 transition-transform"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="stats">
+                    <!-- Stats injected here after finish -->
+                </div>
+            </div>
+        </section>
+        
+        <p class="text-[10px] text-gray-300 font-bold uppercase tracking-[0.5em] pb-12 animate-item">
+            Professional Keystroke Analysis & Accuracy Infrastructure
+        </p>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const texts = {
+            easy: [
+                'the quick brown fox jumps over the lazy dog',
+                'patience is a virtue but action gets results',
+                'coding is like magic but with more typing',
+                'hello world I am ready to study hard today'
+            ],
+            medium: [
+                'Persistence is the key to success and every single step count.',
+                'The beauty of nature inspires creativity in every human soul.',
+                'Efficiency is doing things right but effectiveness is doing the right things.',
+                'Dream big work hard stay focused and surround yourself with good energy.'
+            ],
+            hard: [
+                'In the heart of the ancient library, the whispered secrets of history were waiting for those who sought wisdom beyond boundaries.',
+                'A masterpiece is not just a collection of details, but a perfect balance between the vision of the artist and the reality of the canvas.',
+                'The transition from a student to a professional require not only technical knowledge but also the cultivation of a disciplined mindset.'
+            ]
+        };
+
+        let currentDiff = 'easy';
+        let targetText = '', startTime = 0, timerInterval, totalTyped = 0, errors = 0, finished = false;
+
+        function setDiff(d) {
+            currentDiff = d;
+            document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btn-${d}`).classList.add('active');
+        }
+
+        function start() {
+            const options = texts[currentDiff];
+            targetText = options[Math.floor(Math.random() * options.length)];
+            document.getElementById('setup').classList.add('hidden');
+            document.getElementById('typing').classList.remove('hidden');
+            document.getElementById('textDisplay').innerHTML = targetText.split('').map((c, i) => `<span class="char">${c}</span>`).join('');
+            document.getElementById('input').value = '';
+            document.getElementById('input').disabled = false;
+            document.getElementById('stats').innerHTML = '';
+            totalTyped = 0; errors = 0; finished = false;
+            startTime = Date.now();
+            timerInterval = setInterval(updateStats, 500);
+            updateVisuals();
+            document.getElementById('input').focus();
+            Utils.toast('READY... GO! ⌨️', 'success');
+        }
+
+        function onType() {
+            if(finished) return;
+            const typed = document.getElementById('input').value;
+            totalTyped = typed.length;
+            updateVisuals();
+            if (typed.length >= targetText.length) finish();
+        }
+
+        function updateVisuals() {
+            const typed = document.getElementById('input').value;
+            const spans = document.getElementById('textDisplay').querySelectorAll('span');
+            errors = 0;
+
+            spans.forEach((span, i) => {
+                if (i < typed.length) {
+                    if (typed[i] === targetText[i]) {
+                        span.className = 'char correct';
+                    } else {
+                        span.className = 'char incorrect';
+                        errors++;
+                    }
+                } else if (i === typed.length) {
+                    span.className = 'char current';
+                } else {
+                    span.className = 'char text-slate-300';
+                }
+            });
+        }
+
+        function updateStats() {
+            if(finished) return;
+            const elapsed = (Date.now() - startTime) / 1000;
+            document.getElementById('time').textContent = Math.round(elapsed);
+            const wpm = elapsed > 0 ? Math.round((totalTyped / 5) / (elapsed / 60)) : 0;
+            document.getElementById('wpm').textContent = wpm;
+        }
+
+        function finish() {
+            finished = true;
+            clearInterval(timerInterval);
+            const elapsed = (Date.now() - startTime) / 1000;
+            const wpm = Math.round((targetText.length / 5) / (elapsed / 60));
+            const accuracy = Math.round((1 - errors / targetText.length) * 100);
+            
+            document.getElementById('stats').innerHTML = `
+                <div class="p-8 bg-pink-50/50 border border-pink-100 rounded-[2.5rem] text-center animate-fade-in">
+                    <p class="text-4xl font-black text-pink-400 tabular-nums">${wpm}</p>
+                    <p class="text-[9px] font-black text-slate-300 uppercase tracking-widest mt-2">Final WPM</p>
+                </div>
+                <div class="p-8 bg-indigo-50/50 border border-indigo-100 rounded-[2.5rem] text-center animate-fade-in" style="animation-delay: 0.1s">
+                    <p class="text-4xl font-black text-indigo-400 tabular-nums">${accuracy}%</p>
+                    <p class="text-[9px] font-black text-slate-300 uppercase tracking-widest mt-2">Accuracy Rate</p>
+                </div>
+                <div class="p-8 bg-slate-50 border border-slate-100 rounded-[2.5rem] text-center animate-fade-in" style="animation-delay: 0.2s">
+                    <p class="text-4xl font-black text-slate-500 tabular-nums">${elapsed.toFixed(1)}s</p>
+                    <p class="text-[9px] font-black text-slate-300 uppercase tracking-widest mt-2">Completion Time</p>
+                </div>
+            `;
+            document.getElementById('input').disabled = true;
+            Utils.toast('🎉 挑战完成！', 'success');
+            
+            setTimeout(() => {
+                const btn = document.createElement('button');
+                btn.className = "w-full py-5 bg-slate-800 text-white font-black rounded-3xl mt-10 hover:bg-black transition-all shadow-xl";
+                btn.innerText = "NEXT ROUND (继续练习)";
+                btn.onclick = () => {
+                    document.getElementById('setup').classList.remove('hidden');
+                    document.getElementById('typing').classList.add('hidden');
+                };
+                document.getElementById('stats').appendChild(btn);
+            }, 1000);
+        }
+
+        // Init
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button') || e.target.closest('input')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

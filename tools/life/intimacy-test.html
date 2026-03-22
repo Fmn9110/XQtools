@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>亲密关系测试 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50"><div class="container mx-auto flex justify-between items-center"><div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'"><div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div><span class="text-2xl font-bold gradient-text">小Q工具箱</span></div><a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a></div></nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">💕 亲密关系默契测试</h1>
+            <p class="text-gray-500">和伴侣一起回答问题，看看你们的默契指数</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div id="quiz" class="space-y-4"></div>
+            <button onclick="calcResult()" class="w-full py-4 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl text-lg mt-6">💗 查看默契度</button>
+            <div id="resultArea" class="hidden mt-6 text-center">
+                <div class="bg-gradient-to-r from-pink-100 to-red-100 rounded-3xl p-8">
+                    <p class="text-6xl mb-2" id="rEmoji"></p>
+                    <p class="text-4xl font-black text-pink-500 mb-2" id="rScore"></p>
+                    <p class="text-gray-600" id="rComment"></p>
+                </div>
+            </div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>和伴侣分别回答同一组问题。</li><li>答案相同得分，看看默契度。</li><li>答案越一致默契越高！</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">分数低怎么办？</div><div class="text-gray-500 text-sm">分数低说明有更多探索空间，多沟通了解彼此是好事！</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const questions = [
+            {q:'你们第一次约会去了哪？',opts:['餐厅','电影院','公园','其他']},
+            {q:'对方最喜欢吃的食物？',opts:['火锅','寿司','烧烤','甜品','面食']},
+            {q:'你们最常吵架的原因？',opts:['家务分配','沟通问题','消费观念','几乎不吵']},
+            {q:'对方压力大时你会？',opts:['安静陪伴','主动聊天','做好吃的','给空间']},
+            {q:'理想的约会方式？',opts:['看电影','旅行','宅家','运动']},
+            {q:'对方最让你心动的特质？',opts:['幽默','温柔','聪明','可靠']},
+            {q:'你们的共同爱好？',opts:['追剧','运动','美食','旅行','没有']},
+            {q:'如果送对方礼物？',opts:['实用的','浪漫的','惊喜的','直接发红包']},
+        ];
+
+        let quizHtml = '';
+        questions.forEach((q, i) => {
+            quizHtml += `<div class="bg-pink-50/50 rounded-xl p-4">
+                <p class="font-bold text-gray-700 mb-3">${i+1}. ${q.q}</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <div><p class="text-xs text-gray-400 mb-1">你的答案</p><select class="ans-a w-full p-2 bg-white rounded-lg border text-sm outline-none" data-q="${i}">
+                        ${q.opts.map(o => `<option>${o}</option>`).join('')}
+                    </select></div>
+                    <div><p class="text-xs text-gray-400 mb-1">TA的答案</p><select class="ans-b w-full p-2 bg-white rounded-lg border text-sm outline-none" data-q="${i}">
+                        ${q.opts.map(o => `<option>${o}</option>`).join('')}
+                    </select></div>
+                </div>
+            </div>`;
+        });
+        document.getElementById('quiz').innerHTML = quizHtml;
+
+        function calcResult() {
+            let match = 0;
+            const aEls = document.querySelectorAll('.ans-a');
+            const bEls = document.querySelectorAll('.ans-b');
+            aEls.forEach((a, i) => { if (a.value === bEls[i].value) match++; });
+            const pct = Math.round(match / questions.length * 100);
+
+            let emoji, comment;
+            if (pct >= 90) { emoji='💖💖💖';comment='天生一对！你们的默契值爆表！'; }
+            else if (pct >= 70) { emoji='💕💕';comment='非常默契！你们很了解彼此。'; }
+            else if (pct >= 50) { emoji='💗';comment='还不错！还有很多可以一起探索的。'; }
+            else { emoji='💫';comment='你们有很多差异，但差异也是互补的开始！多沟通多了解～'; }
+
+            document.getElementById('rEmoji').textContent = emoji;
+            document.getElementById('rScore').textContent = pct + '%';
+            document.getElementById('rComment').textContent = `答对 ${match}/${questions.length} 题 · ${comment}`;
+            document.getElementById('resultArea').classList.remove('hidden');
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

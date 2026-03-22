@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>速算挑战 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">极速心算强化训练</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">强化脑力速度，挑战瞬时反应极限。</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white shadow-2xl animate-item" style="animation-delay: 0.2s">
+            <div id="start" class="animate-fade-in space-y-8">
+                <div class="w-24 h-24 bg-pink-50 rounded-full flex items-center justify-center text-5xl mx-auto mb-6 animate-bounce shadow-inner">🔥</div>
+                <div class="bg-pink-50/50 p-8 rounded-3xl border border-pink-50">
+                    <p class="text-xl font-black text-slate-700 mb-3">限时积分挑战</p>
+                    <p class="text-sm text-gray-400 font-medium leading-relaxed">
+                        在 60 秒内连续答题，挑战最高得分纪录。<br>准确度与速度同样重要，冲击你的脑力极限！
+                    </p>
+                </div>
+                <button onclick="begin()" class="w-full py-5 bg-pink-400 text-white font-black rounded-2xl shadow-lg hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-xl">
+                    🚀 立即开启挑战
+                </button>
+            </div>
+
+            <div id="game" class="hidden animate-fade-in">
+                <div class="flex justify-between items-center mb-10 px-4">
+                    <div class="flex flex-col items-start translate-y-1">
+                        <p class="text-[10px] font-black text-rose-300 uppercase tracking-widest">Time Remaining</p>
+                        <p id="timer" class="text-4xl font-black text-rose-500 font-mono">60</p>
+                    </div>
+                    <div class="flex flex-col items-end translate-y-1">
+                        <p class="text-[10px] font-black text-pink-300 uppercase tracking-widest">Current Score</p>
+                        <p id="score" class="text-4xl font-black text-pink-500 font-mono">0</p>
+                    </div>
+                </div>
+
+                <div class="p-10 md:p-16 bg-pink-50/20 rounded-[3.5rem] border-2 border-dashed border-pink-100 mb-10 relative overflow-hidden">
+                    <p class="text-5xl md:text-8xl font-black text-slate-700 mb-12 select-none" id="q">Ready?</p>
+                    <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                        <input type="number" id="ans" class="w-full sm:w-48 p-5 bg-white rounded-2xl border-2 border-pink-200 outline-none text-center text-4xl font-black text-pink-500 shadow-xl focus:border-pink-400 transition-all" placeholder="?" onkeydown="if(event.key==='Enter')submit()">
+                        <button onclick="submit()" class="w-full sm:w-auto px-12 py-5 bg-pink-400 text-white rounded-2xl font-black shadow-lg hover:bg-pink-500 transition-all text-xl">NEXT</button>
+                    </div>
+                </div>
+                
+                <div class="w-full h-3 bg-pink-50 rounded-full overflow-hidden shadow-inner">
+                    <div id="progress" class="h-full bg-gradient-to-r from-pink-400 to-rose-400 transition-all duration-1000 w-full rounded-full"></div>
+                </div>
+            </div>
+
+            <div id="result" class="hidden animate-fade-in text-center">
+                 <div class="p-10 bg-gradient-to-br from-pink-400 to-rose-400 rounded-[3rem] text-white shadow-xl mb-10">
+                    <p class="text-[10px] font-black uppercase tracking-[0.2em] opacity-80 mb-3">Final Challenge Score 结算分数</p>
+                    <p id="finalScore" class="text-8xl font-black mb-4">0</p>
+                    <p id="finalDetail" class="text-base font-bold opacity-90"></p>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-10">
+                     <div class="p-6 bg-pink-50/50 rounded-3xl border border-pink-50">
+                          <p class="text-[10px] font-black text-pink-300 uppercase tracking-widest mb-1">Accuracy 正确率</p>
+                          <p id="finalAcc" class="text-2xl font-black text-slate-700">0%</p>
+                     </div>
+                     <div class="p-6 bg-pink-50/50 rounded-3xl border border-pink-50">
+                          <p class="text-[10px] font-black text-pink-300 uppercase tracking-widest mb-1">Efficiency 效率</p>
+                          <p id="finalEff" class="text-2xl font-black text-slate-700">0 Q/min</p>
+                     </div>
+                </div>
+                <button onclick="location.reload()" class="w-full py-5 bg-white border-2 border-pink-100 text-pink-500 font-black rounded-2xl hover:bg-pink-100 transition-all shadow-md text-lg">
+                    🔄 冲击更高记录 (Try Again)
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let score=0, correct=0, total=0, curAns=0, timeLeft=60, interval;
+
+        function gen(){
+            const range = score > 15 ? 100 : 50;
+            const a = Math.floor(Math.random()*range)+1;
+            const b = Math.floor(Math.random()*range)+1;
+            const op = Math.random()>0.5?'+':'-';
+            if(op==='-' && a<b) { gen(); return; }
+            curAns = op==='+' ? a+b : a-b;
+            document.getElementById('q').textContent = `${a} ${op} ${b} = `;
+        }
+
+        function begin(){
+            document.getElementById('start').classList.add('hidden');
+            document.getElementById('game').classList.remove('hidden');
+            gen();
+            interval=setInterval(()=>{
+                timeLeft--;
+                document.getElementById('timer').textContent=timeLeft;
+                document.getElementById('progress').style.width = (timeLeft/60*100) + '%';
+                if(timeLeft<=10) document.getElementById('timer').classList.add('animate-pulse', 'text-rose-600');
+                if(timeLeft<=0) end();
+            },1000);
+            Utils.toast('战斗开始！🔥');
+        }
+
+        function submit(){
+            const ansInput = document.getElementById('ans');
+            const v=parseInt(ansInput.value);
+            if(isNaN(v)) return;
+            total++;
+            if(v===curAns){
+                score++;
+                correct++;
+                Utils.toast('Correct! +1 ✨', 'success');
+            } else {
+                Utils.toast('Oops! Keep going 🍩', 'warning');
+            }
+            document.getElementById('score').textContent=score;
+            ansInput.value='';
+            ansInput.focus();
+            gen();
+        }
+
+        function end(){
+            clearInterval(interval);
+            document.getElementById('game').classList.add('hidden');
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('finalDetail').textContent = `共挑战 ${total} 题，答对 ${correct} 题`;
+            document.getElementById('finalAcc').textContent = total > 0 ? (correct/total*100).toFixed(0) + '%' : '0%';
+            document.getElementById('finalEff').textContent = (total).toFixed(0) + ' Q/min';
+            document.getElementById('result').classList.remove('hidden');
+            Utils.toast('挑战结束 🏁');
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

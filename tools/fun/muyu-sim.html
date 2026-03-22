@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>电子木鱼 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        @keyframes fly-功德 {
+            0% { transform: translate(-50%, 0); opacity: 1; }
+            100% { transform: translate(-50%, -100px); opacity: 0; }
+        }
+        .merit-fly {
+            animation: fly-功德 1s ease-out forwards;
+        }
+        .muyu-btn:active {
+            transform: scale(0.85);
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🪘 极简 <span class="gradient-text">电子木鱼</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">一敲一叩。消除生活中的微小焦躁。✨</p>
+        </header>
+
+        <section class="cute-card p-8 md:p-16 mb-12 bg-white text-center animate-item" style="animation-delay: 0.2s">
+            <div class="mb-10">
+                <p class="text-[10px] font-black text-amber-300 uppercase tracking-[0.4em] mb-2">Merit Points / 累计功德</p>
+                <p class="text-6xl md:text-7xl font-black text-amber-500 drop-shadow-sm" style="font-family: 'Outfit', sans-serif;" id="count">0</p>
+            </div>
+
+            <div class="relative inline-block mb-10 group">
+                <!-- Highlight effect -->
+                <div class="absolute inset-x-0 bottom-4 h-12 bg-amber-100/30 blur-2xl rounded-full scale-150 -z-10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                
+                <button onclick="tap()" class="muyu-btn text-[140px] md:text-[180px] leading-none transition-transform select-none cursor-pointer filter hover:drop-shadow-xl active:drop-shadow-none">🪘</button>
+                
+                <!-- Container for flying text -->
+                <div id="meritContainer" class="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none"></div>
+            </div>
+
+            <div class="flex gap-4 justify-center">
+                <button onclick="toggleAuto()" id="autoBtn" class="w-full max-w-[160px] py-4 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-2xl shadow-lg shadow-amber-100 transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <span id="autoIcon">🔄</span> <span id="autoText">自动修行</span>
+                </button>
+                <button onclick="resetCount()" class="px-8 py-4 bg-white border-2 border-amber-50 text-amber-400 hover:bg-amber-50 hover:border-amber-200 font-black rounded-2xl transition-all active:scale-95">
+                    🗑️ 修心清零
+                </button>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>在这个快节奏的世界里，寻找片刻的宁静是一种奢侈。电子木鱼不仅仅是个解压工具，它更是一种心理暗示：无论外界如何喧嚣，你始终可以掌握自己内在的节奏。敲击一次，烦恼减一。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let count=0,autoInterval=null,audioCtx=null;
+
+        function knock(){
+            if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+            const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+            o.type='sine';
+            o.frequency.setValueAtTime(220, audioCtx.currentTime); 
+            g.gain.setValueAtTime(0.3,audioCtx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.3);
+            o.connect(g);g.connect(audioCtx.destination);
+            o.start();o.stop(audioCtx.currentTime+0.3);
+        }
+
+        function tap(){
+            count++;
+            document.getElementById('count').textContent=count;
+            knock();
+            
+            // Flying text
+            const container = document.getElementById('meritContainer');
+            const fly = document.createElement('div');
+            fly.className = 'absolute top-0 left-1/2 -translate-x-1/2 text-amber-500 font-black text-xl whitespace-nowrap merit-fly';
+            fly.textContent = '功德 +1';
+            container.appendChild(fly);
+            setTimeout(() => fly.remove(), 1000);
+
+            // Shaking effect for the woodfish if desired
+            const btn = document.querySelector('.muyu-btn');
+            btn.classList.add('scale-75');
+            setTimeout(() => btn.classList.remove('scale-75'), 50);
+        }
+
+        function toggleAuto(){
+            const btnText = document.getElementById('autoText');
+            const btnIcon = document.getElementById('autoIcon');
+            const btn = document.getElementById('autoBtn');
+
+            if(autoInterval){
+                clearInterval(autoInterval);
+                autoInterval=null;
+                btnText.textContent='自动修行';
+                btnIcon.textContent='🔄';
+                btn.className = 'w-full max-w-[160px] py-4 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-2xl shadow-lg shadow-amber-100 transition-all active:scale-95 flex items-center justify-center gap-2';
+                Utils.toast('自动修行已停止', 'info');
+                return;
+            }
+
+            autoInterval=setInterval(tap, 600);
+            btnText.textContent='修行中...';
+            btnIcon.textContent='⏸';
+            btn.className = 'w-full max-w-[160px] py-4 bg-gray-800 hover:bg-black text-white font-black rounded-2xl shadow-lg shadow-gray-100 transition-all active:scale-95 flex items-center justify-center gap-2';
+            Utils.toast('功德持续增长中 ✨', 'success');
+        }
+
+        function resetCount() {
+            count = 0;
+            document.getElementById('count').textContent = '0';
+            Utils.toast('已回归初心 ✨', 'info');
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('.muyu-btn')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

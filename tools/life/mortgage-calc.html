@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>房贷计算器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div>
+                <span class="text-2xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">🏠 房贷计算器</h1>
+            <p class="text-gray-500">等额本息 / 等额本金，一键对比还款方案</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase mb-2">贷款总额 (万元)</label>
+                    <input type="number" id="loanAmount" value="100" class="w-full p-4 bg-gray-50 rounded-xl border border-pink-100 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase mb-2">年利率 (%)</label>
+                    <input type="number" id="rate" value="3.85" step="0.01" class="w-full p-4 bg-gray-50 rounded-xl border border-pink-100 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase mb-2">贷款年限</label>
+                    <select id="years" class="w-full p-4 bg-gray-50 rounded-xl border border-pink-100 outline-none">
+                        <option value="5">5年</option>
+                        <option value="10">10年</option>
+                        <option value="15">15年</option>
+                        <option value="20">20年</option>
+                        <option value="25">25年</option>
+                        <option value="30" selected>30年</option>
+                    </select>
+                </div>
+            </div>
+            <button onclick="calc()" class="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl text-lg">🧮 开始计算</button>
+
+            <div id="result" class="hidden mt-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-blue-50 rounded-2xl p-6">
+                        <h3 class="text-sm font-bold text-blue-500 mb-4">等额本息</h3>
+                        <div class="space-y-2">
+                            <p class="flex justify-between"><span class="text-gray-500">月供</span><span class="font-bold text-blue-600" id="dx_monthly">0</span></p>
+                            <p class="flex justify-between"><span class="text-gray-500">支付利息</span><span class="font-bold text-orange-500" id="dx_interest">0</span></p>
+                            <p class="flex justify-between"><span class="text-gray-500">还款总额</span><span class="font-bold text-gray-700" id="dx_total">0</span></p>
+                        </div>
+                    </div>
+                    <div class="bg-green-50 rounded-2xl p-6">
+                        <h3 class="text-sm font-bold text-green-500 mb-4">等额本金</h3>
+                        <div class="space-y-2">
+                            <p class="flex justify-between"><span class="text-gray-500">首月月供</span><span class="font-bold text-green-600" id="dj_first">0</span></p>
+                            <p class="flex justify-between"><span class="text-gray-500">逐月递减</span><span class="font-bold text-green-600" id="dj_decrease">0</span></p>
+                            <p class="flex justify-between"><span class="text-gray-500">支付利息</span><span class="font-bold text-orange-500" id="dj_interest">0</span></p>
+                            <p class="flex justify-between"><span class="text-gray-500">还款总额</span><span class="font-bold text-gray-700" id="dj_total">0</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-yellow-50 rounded-xl p-4 text-center text-sm text-gray-600">
+                    💡 等额本金比等额本息少付利息 <strong id="savedInterest" class="text-green-500">0</strong> 元
+                </div>
+            </div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">!</span>使用说明
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50">
+                    <ul class="space-y-4 text-gray-600 list-disc list-inside">
+                        <li>输入贷款总额（万元）、年利率和贷款年限。</li>
+                        <li>同时对比等额本息和等额本金两种还款方式。</li>
+                        <li>查看利息差额，做出更优选择。</li>
+                    </ul>
+                </div>
+            </section>
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2>
+                <div class="space-y-4">
+                    <div class="bg-white p-4 rounded-xl border border-pink-50">
+                        <div class="font-bold text-gray-700 mb-1">等额本息和本金哪个好？</div>
+                        <div class="text-gray-500 text-sm">等额本息每月固定、规划方便；等额本金总利息少，但前期负担重。</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        function fmtMoney(n) { return '¥' + Math.round(n).toLocaleString(); }
+
+        function calc() {
+            const loan = parseFloat(document.getElementById('loanAmount').value) * 10000;
+            const annualRate = parseFloat(document.getElementById('rate').value) / 100;
+            const years = parseInt(document.getElementById('years').value);
+            const months = years * 12;
+            const monthRate = annualRate / 12;
+
+            // 等额本息: M = P * r * (1+r)^n / ((1+r)^n - 1)
+            const pow = Math.pow(1 + monthRate, months);
+            const dxMonthly = loan * monthRate * pow / (pow - 1);
+            const dxTotal = dxMonthly * months;
+            const dxInterest = dxTotal - loan;
+
+            // 等额本金: 每月本金 = P/n, 第k月利息 = (P - (k-1)*P/n) * r
+            const djPrincipal = loan / months;
+            const djFirst = djPrincipal + loan * monthRate;
+            const djDecrease = djPrincipal * monthRate;
+            let djTotalInterest = 0;
+            for (let k = 1; k <= months; k++) {
+                djTotalInterest += (loan - (k - 1) * djPrincipal) * monthRate;
+            }
+            const djTotal = loan + djTotalInterest;
+
+            document.getElementById('dx_monthly').textContent = fmtMoney(dxMonthly);
+            document.getElementById('dx_interest').textContent = fmtMoney(dxInterest);
+            document.getElementById('dx_total').textContent = fmtMoney(dxTotal);
+            document.getElementById('dj_first').textContent = fmtMoney(djFirst);
+            document.getElementById('dj_decrease').textContent = '每月减少' + Math.round(djDecrease) + '元';
+            document.getElementById('dj_interest').textContent = fmtMoney(djTotalInterest);
+            document.getElementById('dj_total').textContent = fmtMoney(djTotal);
+            document.getElementById('savedInterest').textContent = fmtMoney(dxInterest - djTotalInterest);
+            document.getElementById('result').classList.remove('hidden');
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

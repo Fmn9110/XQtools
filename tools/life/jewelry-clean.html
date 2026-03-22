@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>首饰清洗指南 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50"><div class="container mx-auto flex justify-between items-center"><div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'"><div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div><span class="text-2xl font-bold gradient-text">小Q工具箱</span></div><a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a></div></nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">✨ 首饰清洗指南</h1>
+            <p class="text-gray-500">不同材质的首饰保养和清洗方法</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="flex gap-2 mb-6 flex-wrap justify-center">
+                <button onclick="show('gold')" class="mat-btn px-5 py-2 rounded-full font-bold bg-yellow-500 text-white">🥇 黄金</button>
+                <button onclick="show('silver')" class="mat-btn px-5 py-2 rounded-full font-bold bg-gray-300 text-gray-700">🥈 白银</button>
+                <button onclick="show('diamond')" class="mat-btn px-5 py-2 rounded-full font-bold bg-gray-100 text-gray-500">💎 钻石</button>
+                <button onclick="show('pearl')" class="mat-btn px-5 py-2 rounded-full font-bold bg-gray-100 text-gray-500">🫧 珍珠</button>
+                <button onclick="show('jade')" class="mat-btn px-5 py-2 rounded-full font-bold bg-gray-100 text-gray-500">🟢 翡翠/玉</button>
+            </div>
+            <div id="content"></div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>选择首饰材质。</li><li>查看清洗方法和注意事项。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">多久清洗一次？</div><div class="text-gray-500 text-sm">日常佩戴建议每月清洗一次，长期不戴放密封袋保存。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const guides = {
+            gold: {title:'黄金首饰',steps:['准备温水+中性洗洁精','将黄金浸泡15分钟','用软毛牙刷轻刷','清水冲洗干净','用软布擦干'],tips:['避免接触漂白水、含氯清洁剂','运动和洗澡时取下','单独存放避免刮花'],color:'yellow'},
+            silver: {title:'白银首饰',steps:['锡纸铺底+加小苏打','倒入热水浸泡','银饰放入浸泡5-10分钟','取出用清水冲洗','用擦银布擦亮'],tips:['银容易氧化发黑是正常的','不戴时放密封袋+干燥剂','避免接触香水和汗液'],color:'gray'},
+            diamond: {title:'钻石首饰',steps:['温水+几滴洗洁精','浸泡20-30分钟','用软毛牙刷刷洗底部','清水冲洗','自然晾干'],tips:['钻石亲油，容易沾油脂','定期去珠宝店做超声波清洗','检查爪子是否松动'],color:'blue'},
+            pearl: {title:'珍珠首饰',steps:['用微湿的软布轻擦','不要用清洁剂浸泡','佩戴后擦拭汗液','自然晾干','存放在绒布袋中'],tips:['珍珠怕酸、怕化学品','是所有宝石中最娇弱的','不要和其他首饰放在一起'],color:'pink'},
+            jade: {title:'翡翠/玉石',steps:['清水浸泡30分钟','软毛刷轻轻刷洗','清水冲洗','用软布擦干','定期"补水"(清水浸泡)'],tips:['翡翠怕高温，避免暴晒','怕碰撞，小心轻放','避免接触化学品和油烟'],color:'green'},
+        };
+
+        function show(type) {
+            const g = guides[type];
+            document.querySelectorAll('.mat-btn').forEach(b => b.className = 'mat-btn px-5 py-2 rounded-full font-bold bg-gray-100 text-gray-500');
+            event.target.className = `mat-btn px-5 py-2 rounded-full font-bold bg-${g.color}-500 text-white`;
+
+            let html = `<div class="bg-${g.color}-50 rounded-2xl p-6">
+                <h3 class="text-lg font-bold text-gray-700 mb-4">🧹 ${g.title}清洗步骤</h3>
+                <ol class="space-y-2 mb-6">`;
+            g.steps.forEach((s, i) => { html += `<li class="flex items-center gap-3 text-gray-600"><span class="w-7 h-7 bg-white rounded-full flex items-center justify-center font-bold text-sm text-${g.color}-500">${i+1}</span>${s}</li>`; });
+            html += `</ol><h3 class="text-lg font-bold text-gray-700 mb-3">⚠️ 注意事项</h3><ul class="space-y-2">`;
+            g.tips.forEach(t => { html += `<li class="text-gray-600 text-sm flex items-start gap-2"><span>•</span>${t}</li>`; });
+            html += '</ul></div>';
+            document.getElementById('content').innerHTML = html;
+        }
+        show('gold');
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

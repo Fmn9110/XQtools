@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>电子佛珠计数器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">📿 电子 <span class="gradient-text">佛珠计数器</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">静心念佛，身心合一。每拨一颗佛珠，内心便清净一分。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white text-center animate-item" style="animation-delay: 0.2s">
+            <div class="bg-gradient-to-br from-pink-50/50 to-orange-50/30 rounded-[2.5rem] p-8 md:p-12 mb-10 border-2 border-pink-100/50 shadow-inner">
+                <p class="text-[0.6rem] font-black text-pink-300 uppercase tracking-[0.5em] mb-4">Mantra Count</p>
+                <p class="text-7xl md:text-8xl font-black gradient-text tracking-tighter" id="count">0</p>
+                <p class="text-xs font-bold text-pink-300 mt-6 tracking-widest uppercase">已拨 <span id="rounds" class="text-pink-500 text-lg">0</span> 圈 <span class="mx-2 opacity-30">/</span> 每圈 <span id="targetText">108</span> 颗</p>
+            </div>
+            
+            <div class="flex flex-wrap gap-2 justify-center mb-10 max-w-md mx-auto" id="beads"></div>
+            
+            <div class="flex flex-col items-center gap-6">
+                <button onclick="tapBead()" class="w-48 h-48 md:w-56 md:h-56 rounded-full bg-gradient-to-br from-pink-400 to-rose-400 text-white shadow-[0_20px_50px_rgba(244,114,182,0.3)] hover:shadow-[0_25px_60px_rgba(244,114,182,0.4)] active:scale-95 transition-all flex flex-col items-center justify-center gap-2 group relative overflow-hidden">
+                    <div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <span class="text-5xl md:text-6xl group-hover:rotate-12 transition-transform">🙏</span>
+                    <span class="text-sm font-black uppercase tracking-[0.2em]">轻触拨珠</span>
+                </button>
+                
+                <div class="flex gap-3 mt-6">
+                    <button onclick="resetCount()" class="theme-secondary-btn py-3 px-8 text-sm">🔄 重置计数</button>
+                    <select id="target" class="px-6 py-3 bg-pink-50 rounded-2xl text-xs font-black text-pink-400 border-2 border-transparent focus:border-pink-200 outline-none cursor-pointer appearance-none transition-all uppercase tracking-widest" onchange="changeTarget()">
+                        <option value="108">108颗/圈</option>
+                        <option value="54">54颗/圈</option>
+                        <option value="21">21颗/圈</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.3s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">📖</span>
+                    禅意指引
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50">
+                    <ul class="space-y-4 text-gray-600 text-sm">
+                        <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full bg-pink-50 text-pink-400 flex items-center justify-center text-[10px] font-bold">1</span> 点击圆形按钮或按下空格键即可拨动一颗佛珠。</li>
+                        <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full bg-pink-50 text-pink-400 flex items-center justify-center text-[10px] font-bold">2</span> 每达成一圈计数（默认108颗），圈数将自动加一。</li>
+                        <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full bg-pink-50 text-pink-400 flex items-center justify-center text-[10px] font-bold">3</span> 通过下方选项可以切换不同的佛珠规格。</li>
+                    </ul>
+                </div>
+            </section>
+            <section class="animate-item" style="animation-delay: 0.4s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">🕊️</span>
+                    内心宁静
+                </h2>
+                <div class="bg-white p-6 rounded-2xl border border-pink-50 shadow-sm">
+                    <p class="text-gray-500 text-sm leading-relaxed italic">“心外无物，闲看庭前花开花落；去留无意，漫随天外云卷云舒。”</p>
+                    <p class="text-xs text-gray-400 mt-4 leading-relaxed">在现代忙碌的生活中，电子佛珠为您提供了一个便携的静心空间，随时随地开启修行之旅。</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let count = 0;
+        function getTarget() { return parseInt(document.getElementById('target').value); }
+
+        function renderBeads() {
+            const t = getTarget();
+            const display = Math.min(t, 42); // 最大显示42颗以保证视觉美感
+            const ratio = t / display;
+            const filled = Math.floor((count % t) / ratio);
+            let html = '';
+            for (let i = 0; i < display; i++) {
+                html += `<div class="w-3 h-3 rounded-full ${i < filled ? 'bg-pink-400 shadow-[0_0_8px_rgba(244,114,182,0.5)]' : 'bg-pink-100'} transition-all duration-300"></div>`;
+            }
+            document.getElementById('beads').innerHTML = html;
+        }
+
+        function tapBead() {
+            count++;
+            document.getElementById('count').textContent = count;
+            document.getElementById('rounds').textContent = Math.floor(count / getTarget());
+            renderBeads();
+            
+            // 简单的音效触发或触觉反馈模拟
+            if (navigator.vibrate) navigator.vibrate(10);
+            
+            // 随机漂浮心形
+            const heart = document.createElement('div');
+            heart.className = 'falling-heart';
+            heart.textContent = '🕊️';
+            heart.style.left = (window.innerWidth / 2 + (Math.random() - 0.5) * 100) + 'px';
+            heart.style.top = (window.innerHeight / 2 - 50) + 'px';
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 1000);
+        }
+
+        function resetCount() {
+            count = 0;
+            document.getElementById('count').textContent = 0;
+            document.getElementById('rounds').textContent = 0;
+            renderBeads();
+            Utils.toast('计数已清空', 'info');
+        }
+
+        function changeTarget() {
+            document.getElementById('targetText').textContent = getTarget();
+            resetCount();
+        }
+
+        document.addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); tapBead(); } });
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+            renderBeads();
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>一言·Plus - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Serif+SC:wght@700&display=swap" rel="stylesheet">
+    <style>
+        .quote-box {
+            position: relative;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 2.5rem;
+            border: 2px border-white;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+        }
+        .quote-box::after {
+            content: '“';
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            font-size: 8rem;
+            color: #f472b6;
+            opacity: 0.1;
+            font-family: serif;
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">💬 一言 <span class="gradient-text">· Plus</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">记录温暖，传递力量。每一句话都是一次灵魂的共鸣。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white text-center animate-item" style="animation-delay: 0.2s">
+            <div class="bg-gradient-to-br from-pink-50/70 to-indigo-50/70 rounded-[3rem] p-10 md:p-20 mb-10 min-h-[300px] flex flex-col items-center justify-center border-2 border-pink-100 shadow-inner group relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 text-9xl text-pink-500/10 opacity-30 group-hover:rotate-12 transition-transform">💕</div>
+                
+                <p class="text-xl md:text-2xl lg:text-3xl text-gray-800 leading-relaxed md:leading-extra-relaxed mb-6 font-black tracking-tight relative z-10" id="quote">
+                    加载中...
+                </p>
+                <div class="h-1 w-12 bg-pink-300 rounded-full mb-4 opacity-50"></div>
+                <p class="text-sm md:text-base font-bold text-pink-400/80 italic tracking-widest relative z-10" id="from"></p>
+            </div>
+            
+            <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
+                <button onclick="next()" class="theme-download-btn w-full max-w-sm py-5 text-xl flex items-center justify-center gap-2 group">
+                    <span class="group-hover:rotate-45 transition-transform">🔄</span> 获取能量
+                </button>
+                <button onclick="copyQuote()" class="w-full md:w-auto px-10 py-5 bg-white border-2 border-pink-100 text-pink-400 font-black rounded-2xl hover:bg-pink-50 transition-all active:scale-95 text-xl">
+                    📋 复制
+                </button>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-3 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🌿</span>
+                <p>愿你能从这些文字中得到片刻的宁静，或是继续前行的勇气。文字是思想的容器，而你是意义的赋予者。祝你有美好的一天。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const quotes = [
+            {text:'生活不是等待风暴过去，而是学会在雨中跳舞。',from:'维维安·格林'},
+            {text:'我们走得太快，灵魂都跟不上了。',from:'佚名'},
+            {text:'所有的大人都曾经是小孩，虽然只有少数人记得。',from:'《小王子》'},
+            {text:'你不必生来勇敢。只要能投入勤奋，诚实不自欺，你就能超越很多人。',from:'蔡崇信'},
+            {text:'人生就像骑自行车，想保持平衡就得往前走。',from:'爱因斯坦'},
+            {text:'纵有疾风起，人生不言弃。',from:'堀辰雄'},
+            {text:'世界上只有一种英雄主义，就是看清生活的真相之后依然热爱生活。',from:'罗曼·罗兰'},
+            {text:'温柔半两，从容一生。',from:'佚名'},
+            {text:'你今天的努力，是幸运的伏笔。',from:'佚名'},
+            {text:'少年不惧岁月长，彼方尚有荣光在。',from:'佚名'},
+            {text:'但愿日子清净，抬头遇到的都是柔情。',from:'佚名'},
+            {text:'慢慢来，也许会更快。',from:'佚名'},
+        ];
+
+        let idx = 0;
+        function shuffle() {
+            for(let i = quotes.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [quotes[i], quotes[j]] = [quotes[j], quotes[i]];
+            }
+        }
+        
+        shuffle();
+
+        function next() {
+            const qEl = document.getElementById('quote');
+            const fEl = document.getElementById('from');
+            
+            qEl.style.opacity = '0';
+            fEl.style.opacity = '0';
+            
+            setTimeout(() => {
+                const q = quotes[idx % quotes.length];
+                qEl.textContent = q.text;
+                fEl.textContent = '—— ' + q.from;
+                qEl.style.opacity = '1';
+                fEl.style.opacity = '1';
+                idx++;
+                
+                if(idx % 3 === 0) Utils.toast('New perspective added.', 'info');
+            }, 300);
+        }
+
+        function copyQuote() {
+            const text = document.getElementById('quote').textContent;
+            const from = document.getElementById('from').textContent;
+            navigator.clipboard.writeText(`${text}\n${from}`).then(() => {
+                Utils.toast('已复制到剪贴板 ✨', 'success');
+            });
+        }
+
+        next();
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>星座运势查询 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50"><div class="container mx-auto flex justify-between items-center"><div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'"><div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div><span class="text-2xl font-bold gradient-text">小Q工具箱</span></div><a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a></div></nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">⭐ 星座速配查询</h1>
+            <p class="text-gray-500">查看12星座间的配对指数和相处建议</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div><label class="block text-xs font-bold text-gray-400 mb-2">我的星座</label><select id="star1" class="w-full p-3 bg-gray-50 rounded-xl border outline-none" onchange="match()"></select></div>
+                <div><label class="block text-xs font-bold text-gray-400 mb-2">TA的星座</label><select id="star2" class="w-full p-3 bg-gray-50 rounded-xl border outline-none" onchange="match()"></select></div>
+            </div>
+            <div id="result" class="text-center">
+                <div class="bg-gradient-to-r from-purple-100 to-pink-100 rounded-3xl p-8">
+                    <p class="text-5xl mb-2" id="rEmoji">💫</p>
+                    <p class="text-4xl font-black text-purple-500 mb-2" id="rScore">?%</p>
+                    <p class="text-gray-600" id="rComment">选择两个星座查看速配</p>
+                </div>
+            </div>
+            <div class="mt-6 grid grid-cols-4 md:grid-cols-6 gap-2" id="starGrid"></div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>选择两个星座查看速配。</li><li>纯娱乐，仅供参考。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">准确吗？</div><div class="text-gray-500 text-sm">仅供娱乐参考，真正的感情靠两个人共同经营。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const stars = ['♈白羊座','♉金牛座','♊双子座','♋巨蟹座','♌狮子座','♍处女座','♎天秤座','♏天蝎座','♐射手座','♑摩羯座','♒水瓶座','♓双鱼座'];
+        const elements = ['火','土','风','水','火','土','风','水','火','土','风','水'];
+
+        // 速配矩阵(简化版，基于元素相性)
+        function getScore(i, j) {
+            if (i === j) return {score: 80, comment: '同星座，太了解彼此，有默契但也容易撞车'};
+            const e1 = elements[i], e2 = elements[j];
+            if (e1 === e2) return {score: 85, comment: '同元素星座，志趣相投，天然合拍！'};
+            const compat = {'火风':90,'风火':90,'土水':88,'水土':88,'火火':80,'风风':82,'土土':78,'水水':75,
+                           '火土':55,'土火':55,'火水':50,'水火':50,'风土':58,'土风':58,'风水':65,'水风':65};
+            const key = e1 + e2;
+            const score = compat[key] || 70;
+            const comments = {
+                90:'大吉配对！你们是互相成就的绝佳组合',85:'很般配！能量互补，相处融洽',
+                80:'不错的组合，懂得欣赏彼此',78:'踏实可靠的组合，细水长流',75:'深情似海的组合，需要空间',
+                65:'有趣的组合，需要多沟通',58:'需要磨合的组合，但差异也是魅力',55:'挑战型组合，互补但也互撞',50:'需要更多包容和理解的组合'
+            };
+            return {score, comment: comments[score] || '有趣的星座配对，值得尝试！'};
+        }
+
+        ['star1','star2'].forEach(id => {
+            const sel = document.getElementById(id);
+            stars.forEach((s, i) => { sel.innerHTML += `<option value="${i}">${s}</option>`; });
+        });
+        document.getElementById('star2').selectedIndex = 1;
+
+        let gridHtml = '';
+        stars.forEach((s, i) => {
+            gridHtml += `<button onclick="document.getElementById('star1').value=${i};match()" class="p-2 bg-purple-50 hover:bg-purple-100 rounded-lg text-center text-sm transition-colors">${s.slice(0,1)}<br>${s.slice(1)}</button>`;
+        });
+        document.getElementById('starGrid').innerHTML = gridHtml;
+
+        function match() {
+            const i = parseInt(document.getElementById('star1').value);
+            const j = parseInt(document.getElementById('star2').value);
+            const r = getScore(i, j);
+            let emoji = r.score >= 85 ? '💖' : r.score >= 70 ? '💕' : r.score >= 55 ? '💫' : '🤔';
+            document.getElementById('rEmoji').textContent = emoji;
+            document.getElementById('rScore').textContent = r.score + '%';
+            document.getElementById('rComment').textContent = `${stars[i]} × ${stars[j]} · ${r.comment}`;
+        }
+        match();
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

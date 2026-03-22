@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>文本多列排序 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen pb-20 md:pb-0">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4">文本多列排序</h1>
+            <p class="text-gray-500 italic">支持拼音、数字、字母等多种维度的行级排序工具。📊</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-8 bg-white shadow-xl mb-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="text-left">
+                    <label class="block text-[10px] font-bold text-pink-300 uppercase tracking-widest mb-2 ml-2">输入行文本</label>
+                    <textarea id="rawInput" class="w-full h-64 md:h-80 p-6 bg-pink-50/20 border-2 border-pink-50 rounded-3xl text-xs outline-none focus:border-pink-200 transition-all resize-none" placeholder="在这里输入内容，每行一个项目..."></textarea>
+                </div>
+                <div class="text-left">
+                    <label class="block text-[10px] font-bold text-pink-300 uppercase tracking-widest mb-2 ml-2">排序结果</label>
+                    <textarea id="resultOutput" readonly class="w-full h-64 md:h-80 p-6 bg-pink-50/10 border-2 border-pink-50 rounded-3xl text-xs outline-none resize-none" placeholder="排序后的结果将显示在这里..."></textarea>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-4 justify-center items-center bg-pink-50/30 p-6 rounded-[2rem] border border-pink-50/50">
+                <div class="flex gap-2">
+                    <select id="sortType" class="py-3 px-4 bg-white border border-pink-100 rounded-xl text-xs outline-none focus:border-pink-300 transition-colors">
+                        <option value="alpha">按字母/拼音 (A-Z)</option>
+                        <option value="numeric">按数字大小 (1-9)</option>
+                        <option value="length">按行长度 (Short-Long)</option>
+                    </select>
+                    <select id="order" class="py-3 px-4 bg-white border border-pink-100 rounded-xl text-xs outline-none focus:border-pink-300 transition-colors">
+                        <option value="asc">升序 (↑)</option>
+                        <option value="desc">降序 (↓)</option>
+                    </select>
+                </div>
+                
+                <div class="flex items-center gap-2 bg-white/50 px-4 py-2 rounded-xl border border-pink-50">
+                    <input type="checkbox" id="trimSpace" class="w-4 h-4 accent-pink-500 rounded border-pink-200 focus:ring-pink-400">
+                    <label for="trimSpace" class="text-xs text-pink-400 font-medium">排序前清理空格</label>
+                </div>
+
+                <div class="flex gap-2">
+                    <button id="execBtn" class="theme-download-btn px-8 py-3 text-sm">立即排序</button>
+                    <button id="copyBtn" class="theme-secondary-btn px-6 py-3 text-sm">复制结果</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const rawInput = document.getElementById('rawInput');
+        const resultOutput = document.getElementById('resultOutput');
+        const sortType = document.getElementById('sortType');
+        const order = document.getElementById('order');
+        const trimSpace = document.getElementById('trimSpace');
+        const execBtn = document.getElementById('execBtn');
+        const copyBtn = document.getElementById('copyBtn');
+
+        execBtn.onclick = () => {
+             const text = rawInput.value;
+             if (!text) {
+                 Utils.toast('请输入内容', 'warning');
+                 return;
+             }
+             
+             let lines = text.split('\n');
+             if (trimSpace.checked) {
+                 lines = lines.map(line => line.trim());
+             }
+             
+             lines.sort((a, b) => {
+                 let res = 0;
+                 if (sortType.value === 'alpha') {
+                     res = a.localeCompare(b, 'zh');
+                 } else if (sortType.value === 'numeric') {
+                     const na = parseFloat(a) || 0;
+                     const nb = parseFloat(b) || 0;
+                     res = na - nb;
+                 } else if (sortType.value === 'length') {
+                     res = a.length - b.length;
+                 }
+                 return order.value === 'asc' ? res : -res;
+             });
+             
+             resultOutput.value = lines.join('\n');
+             Utils.toast('排序成功', 'success');
+        };
+
+        copyBtn.onclick = () => {
+            if (!resultOutput.value) {
+                Utils.toast('没有可复制的内容', 'warning');
+                return;
+            }
+            navigator.clipboard.writeText(resultOutput.value).then(() => {
+                Utils.toast('已复制到剪贴板', 'success');
+            });
+        };
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>图片EXIF删除 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fffafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 transition-transform hover:rotate-0">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-4 md:py-8 px-4 max-w-6xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold mb-4 animate-item gradient-text">图片EXIF删除</h1>
+            <p class="text-gray-500 animate-item" style="animation-delay: 0.1s">彻底抹除隐私数据，让每一次分享都变得安全且纯粹。🛡️</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-8 mb-12 animate-item" style="animation-delay: 0.2s">
+            <div id="drop-zone" class="w-full border-4 border-dashed border-pink-100 rounded-3xl p-8 md:p-16 hover:border-pink-300 transition-all cursor-pointer bg-white group text-center">
+                <input type="file" id="file-input" class="hidden" accept="image/*">
+                <div class="space-y-6">
+                    <div class="text-7xl group-hover:scale-110 transition-transform">🔒</div>
+                    <div>
+                        <p class="text-xl font-bold text-gray-700">点击或拖拽图片到这里</p>
+                        <p class="text-pink-400 mt-2 text-sm italic">抹除地理位置、拍摄器材等元数据</p>
+                    </div>
+                    <p class="text-gray-300 text-xs">支持 JPG, PNG, WebP (我们将通过重绘擦除)</p>
+                </div>
+            </div>
+
+            <div id="preview-container" class="hidden space-y-8 animate-fade-in py-4">
+                <div class="flex flex-col md:flex-row gap-8 items-center justify-center">
+                    <div class="w-full md:w-1/2 flex flex-col items-center">
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">包含元数据的原图</p>
+                        <div class="p-3 bg-white rounded-3xl shadow-sm border border-pink-50">
+                            <img id="original-preview" class="max-h-64 rounded-2xl">
+                        </div>
+                    </div>
+                    <div id="clean-preview-wrapper" class="w-full md:w-1/2 flex flex-col items-center hidden">
+                        <p class="text-xs font-bold text-pink-500 uppercase tracking-widest mb-4">已擦除的纯净图</p>
+                        <div class="p-3 bg-pink-50/50 rounded-3xl shadow-sm border border-pink-200">
+                            <img id="clean-preview" class="max-h-64 rounded-2xl">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row justify-center gap-4">
+                    <button id="strip-btn" class="cute-button theme-download-btn px-12 py-4 rounded-full font-bold shadow-lg">擦除并下载纯净图</button>
+                    <button id="reset-btn" class="theme-secondary-btn px-8 py-4 rounded-full text-sm font-bold">重置</button>
+                </div>
+            </div>
+        </section>
+ 
+        <div class="grid md:grid-cols-2 gap-8 mb-12 animate-item" style="animation-delay: 0.3s">
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">🔍</span>
+                    隐私风险科普
+                </h2>
+                <div class="bg-white rounded-3xl p-8 shadow-sm border border-pink-50 relative overflow-hidden h-full">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-full blur-3xl -mr-10 -mt-10 opacity-50"></div>
+                    <ul class="space-y-4 text-gray-600 list-decimal list-inside text-sm leading-relaxed relative z-10 font-medium">
+                        <li>**地理定位**：照片可能包含精确的 GPS 坐标信息。</li>
+                        <li>**设备画像**：包含具体的相机品牌、手机型号信息。</li>
+                        <li>**软件痕迹**：处理照片的软件版本及编辑时间。</li>
+                    </ul>
+                </div>
+            </section>
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">💡</span>
+                    安全原理
+                </h2>
+                <div class="bg-white p-5 rounded-2xl border border-pink-50 shadow-sm hover:border-pink-200 transition-colors h-full">
+                    <div class="font-bold text-gray-700 mb-3 flex items-center">
+                        <span class="w-1.5 h-1.5 rounded-full bg-pink-400 mr-2"></span>
+                        Canvas 重绘技术
+                    </div>
+                    <div class="text-gray-500 text-sm leading-relaxed pl-3.5 space-y-3">
+                        <p>本工具采用 Canvas 像素级重绘机制。通过在浏览器内存中重新绘制图片并输出新的二进制流，从物理层面彻底斩断原始文件的元数据区块。</p>
+                        <p class="text-pink-400 italic">“重绘即新生，隐私永锁。”</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-10 text-center text-gray-400 text-xs border-t border-pink-50 mt-12 bg-white/50">
+        © 2026 小Q工具箱 · 纯前端离线实验室 · 保护隐私 💖
+    </footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const previewContainer = document.getElementById('preview-container');
+        const originalPreview = document.getElementById('original-preview');
+        const stripBtn = document.getElementById('strip-btn');
+        const resetBtn = document.getElementById('reset-btn');
+
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        let currentFile = null;
+
+        dropZone.onclick = () => fileInput.click();
+        dropZone.ondragover = e => { e.preventDefault(); dropZone.classList.add('border-pink-300', 'bg-pink-50/10'); };
+        dropZone.ondragleave = () => dropZone.classList.remove('border-pink-300', 'bg-pink-50/10');
+        dropZone.ondrop = e => {
+            e.preventDefault();
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) handleFile(file);
+        };
+
+        fileInput.onchange = e => { if (e.target.files[0]) handleFile(e.target.files[0]); };
+
+        async function handleFile(file) {
+            currentFile = file;
+            const dataUrl = await Utils.readFileAsDataURL(file);
+            originalPreview.src = dataUrl;
+            dropZone.classList.add('hidden');
+            previewContainer.classList.remove('hidden');
+        }
+
+        stripBtn.onclick = () => {
+            if (!currentFile) return;
+
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+
+                canvas.toBlob((blob) => {
+                    const cleanFileName = `safe_${currentFile.name.split('.')[0]}.jpg`;
+                    const url = URL.createObjectURL(blob);
+                    document.getElementById('clean-preview').src = url;
+                    document.getElementById('clean-preview-wrapper').classList.remove('hidden');
+                    stripBtn.textContent = '重新保存';
+                    
+                    Utils.downloadFile(blob, cleanFileName, 'image/jpeg');
+                    Utils.toast('已成功抹除 EXIF 并保存', 'success');
+                }, 'image/jpeg', 0.92);
+            };
+            img.src = originalPreview.src;
+        };
+
+        resetBtn.onclick = () => {
+            currentFile = null;
+            fileInput.value = '';
+            dropZone.classList.remove('hidden');
+            previewContainer.classList.add('hidden');
+            document.getElementById('clean-preview-wrapper').classList.add('hidden');
+            stripBtn.textContent = '擦除并下载纯净图';
+        };
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

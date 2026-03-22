@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>每日一练 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .opt-btn { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .opt-btn:not(:disabled):hover { transform: translateX(10px); background: white; border-color: #fce7f3; box-shadow: 0 10px 30px -5px rgba(244, 114, 182, 0.1); }
+        .success-accent { background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); }
+        .error-accent { background: linear-gradient(135deg, #fb7185 0%, #e11d48 100%); }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6 shadow-sm no-print">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-14">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-800 mb-4 animate-item">智力晨跑：每日一练</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s italic italic">每日知识微练习，告别遗忘，温故知新。🧠</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 lg:p-14 mb-12 bg-white shadow-2xl animate-item" style="animation-delay: 0.2s">
+            <div class="mb-10 flex justify-between items-center px-4">
+                <span id="category" class="text-[10px] font-black text-pink-500 bg-pink-50 px-5 py-2 rounded-full uppercase tracking-[0.2em] shadow-sm">📚 Loading...</span>
+                <div class="flex items-center gap-4">
+                    <div class="text-[10px] font-black text-slate-300 uppercase tracking-widest leading-none">
+                        Performance: <span id="score" class="text-indigo-400 tabular-nums">0</span> / <span id="total" class="text-indigo-400 tabular-nums">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="py-12 md:py-20 mb-10 relative overflow-hidden group">
+                <div class="absolute inset-0 bg-slate-50/50 rounded-[3rem] md:rounded-[4rem] border border-slate-100/50 transition-all group-hover:bg-white group-hover:shadow-inner"></div>
+                <p id="question" class="text-xl md:text-3xl font-black text-slate-800 px-6 md:px-12 leading-relaxed relative z-10 tracking-tight">
+                   鉴定中...
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-12" id="options">
+                <!-- Options dynamic -->
+            </div>
+
+            <div id="feedbackBox" class="min-h-[60px] mb-10 hidden animate-fade-in">
+                <div id="feedbackLine" class="p-6 rounded-[2rem] flex items-center justify-center gap-4">
+                    <span id="feedbackIcon" class="text-2xl"></span>
+                    <p id="feedback" class="text-lg font-black tracking-tight"></p>
+                </div>
+            </div>
+
+            <button onclick="nextQ()" id="nextBtn" class="w-full py-6 bg-pink-400 text-white font-black rounded-3xl shadow-2xl shadow-pink-100 hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-xl flex items-center justify-center gap-3 opacity-0 pointer-events-none no-print">
+                下一题 (NEXT CHALLENGE) 🚀
+            </button>
+        </section>
+        
+        <p class="text-[10px] text-gray-300 font-bold uppercase tracking-[0.5em] pb-12 animate-item" style="animation-delay: 0.3s">
+            Daily Knowledge Reinforcement & Cognitive Sprint Engine
+        </p>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const questions = [
+            { cat: '数学', q: '若一个三角形的三边长分别为 3, 4, 5，则它属于哪种类型？', opts: ['钝角三角形', '直角三角形', '等腰三角形', '等边三角形'], ans: 1 },
+            { cat: '语文', q: '“朝辞白帝彩云间”中的“白帝”指的是哪个地点？', opts: ['皇帝寝宫', '白帝城', '白云山', '夔门'], ans: 1 },
+            { cat: '英语', q: '“Metaphor”在文学修辞中对应的中文术语是？', opts: ['暗喻', '拟人', '夸张', '排比'], ans: 0 },
+            { cat: '物理', q: '声音在下列哪种介质中的传播速度最快？', opts: ['常温空气', '淡水', '实心钢铁', '真空环境'], ans: 2 },
+            { cat: '化学', q: '下列元素中，不属于稀有气体（惰性气体）的是？', opts: ['氦 (He)', '氖 (Ne)', '氮 (N)', '氩 (Ar)'], ans: 2 },
+            { cat: '历史', q: '中国历史上第一个实现大一统的中央集权王朝是？', opts: ['周朝', '秦朝', '汉朝', '唐朝'], ans: 1 },
+            { cat: '地理', q: '地球表面上最长的纬线圈被称为什么？', opts: ['北回归线', '南回归线', '赤道', '本初子午线'], ans: 2 },
+            { cat: '数学', q: '圆周率 π 的小数点后第 3 位数字是？', opts: ['3', '5', '1', '2'], ans: 2 } // 3.14159... so 3rd is 1
+        ];
+
+        let qi = -1, score = 0, total = 0, answered = false;
+        const order = Array.from({length: questions.length}, (_, i) => i).sort(() => Math.random() - 0.5);
+
+        function nextQ() {
+            qi = (qi + 1) % order.length;
+            answered = false;
+            const q = questions[order[qi]];
+            
+            document.getElementById('category').textContent = '📚 ' + q.cat;
+            document.getElementById('question').textContent = q.q;
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('feedbackBox').classList.add('hidden');
+            document.getElementById('nextBtn').classList.add('opacity-0', 'pointer-events-none');
+            
+            const optsContainer = document.getElementById('options');
+            optsContainer.innerHTML = q.opts.map((o, i) => `
+                <button onclick="answer(${i})" class="opt-btn group p-5 md:p-6 bg-slate-50 border border-slate-100 rounded-[1.5rem] md:rounded-[2rem] font-bold text-slate-600 flex items-center gap-4 md:gap-5">
+                    <span class="w-8 h-8 md:w-10 md:h-10 rounded-xl md:rounded-2xl bg-white shadow-sm flex items-center justify-center text-slate-300 group-hover:text-pink-400 transition-all font-mono text-xs">${String.fromCharCode(65 + i)}</span>
+                    <span class="flex-1 text-left text-sm md:text-base leading-snug">${o}</span>
+                </button>
+            `).join('');
+        }
+
+        function answer(idx) {
+            if (answered) return;
+            answered = true;
+            total++;
+            const q = questions[order[qi]];
+            const feedback = document.getElementById('feedback');
+            const feedbackIcon = document.getElementById('feedbackIcon');
+            const feedbackBox = document.getElementById('feedbackBox');
+            const feedbackLine = document.getElementById('feedbackLine');
+            const btns = document.querySelectorAll('.opt-btn');
+            
+            feedbackBox.classList.remove('hidden');
+            document.getElementById('nextBtn').classList.remove('opacity-0', 'pointer-events-none');
+
+            btns.forEach(b => b.disabled = true);
+
+            if (idx === q.ans) {
+                score++;
+                feedback.textContent = '🌟 太棒了，知识点掌握得非常牢固！';
+                feedbackIcon.textContent = '🎉';
+                feedbackLine.className = 'p-6 rounded-[2rem] bg-emerald-50 text-emerald-600 flex items-center justify-center gap-4 border border-emerald-100 font-bold';
+                btns[idx].classList.add('bg-emerald-100', 'border-emerald-300', 'text-emerald-700');
+                Utils.toast('Correct! ✨', 'success');
+            } else {
+                feedback.textContent = `💡 哎呀，正确答案应该是 ${String.fromCharCode(65 + q.ans)} 哦 ~`;
+                feedbackIcon.textContent = '📝';
+                feedbackLine.className = 'p-6 rounded-[2rem] bg-rose-50 text-rose-500 flex items-center justify-center gap-4 border border-rose-100 font-bold';
+                btns[idx].classList.add('bg-rose-100', 'border-rose-300', 'text-rose-700');
+                btns[q.ans].classList.add('bg-emerald-50', 'border-emerald-100', 'text-emerald-500');
+            }
+            
+            document.getElementById('score').textContent = score;
+            document.getElementById('total').textContent = total;
+        }
+
+        // Init
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    nextQ();
+                }, 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

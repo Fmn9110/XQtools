@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>隐私打码 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .brush-cursor {
+            pointer-events: none;
+            position: fixed;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            display: none;
+            mix-blend-mode: saturation;
+            background: rgba(244, 114, 182, 0.2);
+            backdrop-filter: blur(4px);
+        }
+        #canvas-container {
+            position: relative;
+            cursor: none;
+            border-radius: 2rem;
+            overflow: hidden;
+            border: 4px solid white;
+            box-shadow: 0 25px 50px -12px rgba(244, 114, 182, 0.1);
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fffafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <div id="cursor" class="brush-cursor"></div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 transition-transform hover:rotate-0">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-4 md:py-8 px-4 max-w-5xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold mb-4 animate-item gradient-text">隐私遮蔽实验室</h1>
+            <p class="text-gray-500 animate-item" style="animation-delay: 0.1s">保护隐私，打码也可以是一件优雅的像素艺术展示。🧱</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 animate-item" style="animation-delay: 0.2s">
+            <div id="upload-stage" class="text-center">
+                <div id="drop-zone" class="w-full border-4 border-dashed border-pink-100 rounded-3xl p-8 md:p-16 hover:border-pink-300 transition-all cursor-pointer bg-white group">
+                    <input type="file" id="fileInput" accept="image/*" class="hidden">
+                    <div class="text-7xl mb-6 group-hover:scale-110 transition-transform">🧱</div>
+                    <p class="text-xl font-bold text-gray-700">提交需要遮蔽的敏感样本</p>
+                    <p class="text-pink-400 mt-2 text-sm italic">手动涂抹，精准覆盖核心秘密</p>
+                </div>
+            </div>
+
+            <div id="editor-stage" class="hidden animate-fade-in flex flex-col items-center">
+                <div id="canvas-container" class="bg-gray-50 mb-10 overflow-hidden">
+                    <canvas id="canvas"></canvas>
+                </div>
+
+                <div class="w-full max-w-2xl bg-white p-8 rounded-[2.5rem] shadow-sm border border-pink-50 grid md:grid-cols-2 gap-8 items-center">
+                    <div class="space-y-6">
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center px-1">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">马赛克格径</label>
+                                <span id="label" class="font-black text-pink-500 font-mono">15px</span>
+                            </div>
+                            <input type="range" id="range" min="5" max="50" value="15" class="w-full h-2 bg-pink-100 rounded-lg appearance-none cursor-pointer accent-pink-500">
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center px-1">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">笔刷口经</label>
+                                <span id="brushLabel" class="font-black text-pink-500 font-mono">40px</span>
+                            </div>
+                            <input type="range" id="brushRange" min="10" max="150" value="40" class="w-full h-2 bg-pink-100 rounded-lg appearance-none cursor-pointer accent-pink-500">
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <button id="undoBtn" class="py-3 text-[10px] font-black uppercase text-gray-400 border border-gray-100 rounded-2xl hover:text-pink-500 transition-all disabled:opacity-30" disabled>撤回上步</button>
+                            <button id="clearBtn" class="py-3 text-[10px] font-black uppercase text-gray-400 border border-gray-100 rounded-2xl hover:text-pink-500 transition-all">全盘重置</button>
+                        </div>
+                        <button id="saveBtn" class="w-full py-5 bg-pink-500 text-white rounded-full font-black shadow-lg shadow-pink-100 hover:bg-pink-600 transition-all theme-download-btn">保存遮蔽件</button>
+                        <button id="resetBtn" class="w-full text-center text-[10px] text-gray-300 font-bold hover:text-pink-400 transition-all italic tracking-tighter mt-1 uppercase">更换实验物料</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.3s">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">💡</span>
+                遮蔽逻辑
+            </h2>
+            <div class="bg-white rounded-3xl p-8 shadow-sm border border-pink-50 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-full blur-3xl -mr-10 -mt-10 opacity-50"></div>
+                <div class="grid md:grid-cols-2 gap-8 relative z-10 text-xs text-gray-500 font-medium italic leading-relaxed">
+                    <p>1. <b>动态格径：</b>较小的马赛克格径可以保留更多画面轮廓，而较大的格径则能实现彻底的视觉粉碎，适合处理极为敏感的信息。</p>
+                    <p>2. <b>涂抹机制：</b>本实验室采用实时双层画布技术，笔刷所到之处会将预生成的像素网格映射到原始画面上。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-10 text-center text-gray-400 text-xs border-t border-pink-50 mt-12 bg-white/50">
+        © 2026 小Q工具箱 · 打码实验室 💖
+    </footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadStage = document.getElementById('upload-stage');
+        const editorStage = document.getElementById('editor-stage');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const cursor = document.getElementById('cursor');
+        const range = document.getElementById('range');
+        const label = document.getElementById('label');
+        const brushRange = document.getElementById('brushRange');
+        const brushLabel = document.getElementById('brushLabel');
+        const saveBtn = document.getElementById('saveBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const undoBtn = document.getElementById('undoBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        let originalImg = null, mosaicCanvasTemplate = null, isDrawing = false, history = [];
+
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.getElementById('drop-zone').onclick = () => fileInput.click();
+
+        fileInput.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            originalImg = new Image();
+            originalImg.src = await Utils.readFileAsDataURL(file);
+            originalImg.onload = () => {
+                uploadStage.classList.add('hidden');
+                editorStage.classList.remove('hidden');
+                resetEditor();
+            };
+        };
+
+        function resetEditor() {
+            canvas.width = originalImg.width; canvas.height = originalImg.height;
+            ctx.drawImage(originalImg, 0, 0); updateMosaicTemplate();
+            history = []; saveHistory();
+        }
+
+        function saveHistory() {
+            history.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+            if(history.length > 15) history.shift();
+            undoBtn.disabled = history.length <= 1;
+        }
+
+        undoBtn.onclick = () => {
+            if(history.length > 1) {
+                history.pop();
+                ctx.putImageData(history[history.length - 1], 0, 0);
+                undoBtn.disabled = history.length <= 1;
+            }
+        };
+
+        function updateMosaicTemplate() {
+            const size = parseInt(range.value);
+            mosaicCanvasTemplate = document.createElement('canvas');
+            mosaicCanvasTemplate.width = originalImg.width; mosaicCanvasTemplate.height = originalImg.height;
+            const mCtx = mosaicCanvasTemplate.getContext('2d');
+            const sw = Math.ceil(originalImg.width / size), sh = Math.ceil(originalImg.height / size);
+            const small = document.createElement('canvas');
+            small.width = sw; small.height = sh;
+            const sCtx = small.getContext('2d');
+            sCtx.drawImage(originalImg, 0, 0, sw, sh);
+            mCtx.imageSmoothingEnabled = false;
+            mCtx.drawImage(small, 0, 0, sw, sh, 0, 0, originalImg.width, originalImg.height);
+        }
+
+        const handleInteraction = (e) => {
+            if(!originalImg) return;
+            const rect = canvas.getBoundingClientRect();
+            const cx = e.clientX || (e.touches && e.touches[0].clientX), cy = e.clientY || (e.touches && e.touches[0].clientY);
+            if(!cx) return;
+            const x = (cx - rect.left) * (canvas.width / rect.width), y = (cy - rect.top) * (canvas.height / rect.height);
+            const bSize = parseInt(brushRange.value), scale = rect.width / canvas.width;
+            cursor.style.display = 'block'; cursor.style.width = (bSize * scale) + 'px'; cursor.style.height = (bSize * scale) + 'px';
+            cursor.style.left = (cx - (bSize * scale) / 2) + 'px'; cursor.style.top = (cy - (bSize * scale) / 2) + 'px';
+            if (isDrawing) {
+                ctx.save(); ctx.beginPath(); ctx.arc(x, y, bSize / 2, 0, Math.PI * 2); ctx.clip();
+                ctx.drawImage(mosaicCanvasTemplate, 0, 0); ctx.restore();
+            }
+        };
+
+        canvas.onmousedown = (e) => { isDrawing = true; handleInteraction(e); };
+        window.onmousemove = handleInteraction;
+        window.onmouseup = () => { if(isDrawing) { isDrawing = false; saveHistory(); } };
+        canvas.onmouseleave = () => { cursor.style.display = 'none'; };
+        range.oninput = () => { label.textContent = range.value + 'px'; updateMosaicTemplate(); };
+        brushRange.oninput = () => brushLabel.textContent = brushRange.value + 'px';
+        clearBtn.onclick = () => { ctx.drawImage(originalImg, 0, 0); saveHistory(); };
+        saveBtn.onclick = () => {
+            Utils.downloadFile(canvas.toDataURL('image/jpeg', 0.95), `q_mosaic_${Date.now()}.jpg`, 'image/jpeg');
+            Utils.toast('保存成功', 'success');
+        };
+        resetBtn.onclick = () => { fileInput.value = ''; uploadStage.classList.remove('hidden'); editorStage.classList.add('hidden'); };
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

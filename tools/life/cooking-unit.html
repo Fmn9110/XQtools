@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>烹饪调料克数/勺数换算 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50"><div class="container mx-auto flex justify-between items-center"><div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'"><div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div><span class="text-2xl font-bold gradient-text">小Q工具箱</span></div><a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a></div></nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">🥄 烹饪调料换算</h1>
+            <p class="text-gray-500">克、茶匙、汤匙、杯之间的快速换算</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div><label class="block text-xs font-bold text-gray-400 mb-2">数量</label><input type="number" id="amount" value="10" step="0.5" class="w-full p-3 bg-gray-50 rounded-xl border outline-none" oninput="calc()"></div>
+                <div><label class="block text-xs font-bold text-gray-400 mb-2">单位</label><select id="unit" class="w-full p-3 bg-gray-50 rounded-xl border outline-none" onchange="calc()"><option value="g">克 (g)</option><option value="tsp">茶匙 (~5ml)</option><option value="tbsp">汤匙 (~15ml)</option><option value="cup">杯 (~240ml)</option><option value="ml">毫升 (ml)</option></select></div>
+                <div><label class="block text-xs font-bold text-gray-400 mb-2">材料</label><select id="material" class="w-full p-3 bg-gray-50 rounded-xl border outline-none" onchange="calc()"><option value="1">水/牛奶</option><option value="0.9">食用油</option><option value="0.85">白砂糖</option><option value="0.6">面粉</option><option value="1.2">盐</option><option value="1.4">酱油</option><option value="0.35">可可粉</option></select></div>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3" id="results">
+                <div class="bg-blue-50 rounded-xl p-4 text-center"><p class="text-xl font-bold text-blue-500" id="rG">0</p><p class="text-xs text-gray-400">克</p></div>
+                <div class="bg-green-50 rounded-xl p-4 text-center"><p class="text-xl font-bold text-green-500" id="rTsp">0</p><p class="text-xs text-gray-400">茶匙</p></div>
+                <div class="bg-orange-50 rounded-xl p-4 text-center"><p class="text-xl font-bold text-orange-500" id="rTbsp">0</p><p class="text-xs text-gray-400">汤匙</p></div>
+                <div class="bg-purple-50 rounded-xl p-4 text-center"><p class="text-xl font-bold text-purple-500" id="rCup">0</p><p class="text-xs text-gray-400">杯</p></div>
+                <div class="bg-pink-50 rounded-xl p-4 text-center"><p class="text-xl font-bold text-pink-500" id="rMl">0</p><p class="text-xs text-gray-400">毫升</p></div>
+            </div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center"><span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">!</span>使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>输入数量并选择单位。</li><li>选择材料类型（密度不同结果不同）。</li><li>实时显示各种单位的换算结果。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">1茶匙等于多少？</div><div class="text-gray-500 text-sm">1茶匙(tsp)≈5ml, 1汤匙(tbsp)≈15ml, 1杯(cup)≈240ml。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        function calc() {
+            const amount = parseFloat(document.getElementById('amount').value) || 0;
+            const unit = document.getElementById('unit').value;
+            const density = parseFloat(document.getElementById('material').value);
+
+            // 先转换为ml
+            let ml;
+            if (unit === 'g') ml = amount / density;
+            else if (unit === 'tsp') ml = amount * 5;
+            else if (unit === 'tbsp') ml = amount * 15;
+            else if (unit === 'cup') ml = amount * 240;
+            else ml = amount;
+
+            const g = ml * density;
+            document.getElementById('rG').textContent = g.toFixed(1);
+            document.getElementById('rTsp').textContent = (ml / 5).toFixed(1);
+            document.getElementById('rTbsp').textContent = (ml / 15).toFixed(1);
+            document.getElementById('rCup').textContent = (ml / 240).toFixed(2);
+            document.getElementById('rMl').textContent = ml.toFixed(1);
+        }
+        calc();
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

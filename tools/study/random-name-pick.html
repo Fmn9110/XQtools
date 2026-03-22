@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>随机点名 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .res-rolling { animation: text-roll 0.08s infinite linear; }
+        @keyframes text-roll { 0% { transform: translateY(5px); opacity: 0.8; } 50% { transform: translateY(-5px); opacity: 1; } 100% { transform: translateY(5px); opacity: 0.8; } }
+        .win-glow { box-shadow: 0 0 40px rgba(244, 114, 182, 0.4); animation: glow-pulse 1s infinite alternate; }
+        @keyframes glow-pulse { from { box-shadow: 0 0 20px rgba(244, 114, 182, 0.2); } to { box-shadow: 0 0 50px rgba(244, 114, 182, 0.5); } }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">随机点名抽样器</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">公平公正的随机抽取，适用于课堂提问、团队互动与幸运抽奖。</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-14 mb-12 bg-white shadow-2xl animate-item flex flex-col items-center" style="animation-delay: 0.2s">
+            <div class="w-full mb-12 text-left relative group">
+                <label class="block text-[10px] font-black text-pink-300 mb-3 uppercase tracking-[0.2em] pl-4">Name List 名单列表 (每行一个姓名)</label>
+                <textarea id="names" class="w-full h-48 p-8 bg-slate-50 border-2 border-slate-50 rounded-[2.5rem] outline-none focus:border-pink-200 focus:bg-white transition-all text-center font-bold shadow-inner resize-none text-slate-700 leading-relaxed" placeholder="输入名单，例如：&#10;张三&#10;李四&#10;王五&#10;赵六">张三&#10;李四&#10;王五&#10;赵六</textarea>
+                <div class="absolute right-8 bottom-8 text-[10px] font-black text-pink-100 uppercase tracking-widest pointer-events-none group-hover:opacity-100 transition-opacity">Ready to Roll</div>
+            </div>
+            
+            <div id="res-box" class="w-full max-w-lg h-56 md:h-64 bg-pink-50/10 rounded-[4rem] border-2 border-dashed border-pink-100 mb-12 flex items-center justify-center overflow-hidden relative shadow-inner group transition-all duration-500">
+                <div id="res" class="text-5xl md:text-7xl font-black text-pink-500 drop-shadow-sm transition-all duration-300 transform">?</div>
+                <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-pink-50/20 to-transparent pointer-events-none"></div>
+            </div>
+            
+            <button onclick="pick()" id="pickBtn" class="w-full max-w-sm py-6 bg-pink-400 text-white font-black rounded-3xl shadow-xl hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-xl flex items-center justify-center gap-3">
+                🚀 <span id="btnText">开始抽取 (PICK ONE)</span>
+            </button>
+            
+            <div class="mt-12 p-6 bg-slate-50/50 rounded-3xl border border-slate-100 flex items-center justify-center gap-4">
+                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none">Total Candidates:</p>
+                <span id="countDisplay" class="text-sm font-black text-pink-400 bg-white px-3 py-1 rounded-full border border-pink-50">4</span>
+            </div>
+        </section>
+        
+        <footer class="text-gray-300 text-[10px] uppercase font-black tracking-[0.4em] pb-12 animate-item" style="animation-delay: 0.3s">
+            Interactive Engagement & Fairness Lab
+        </footer>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const nameInput = document.getElementById('names');
+        const countDisp = document.getElementById('countDisplay');
+
+        nameInput.addEventListener('input', () => {
+             const list = nameInput.value.trim().split('\n').filter(s => s.trim());
+             countDisp.textContent = list.length;
+        });
+
+        function pick() {
+            const list = nameInput.value.trim().split('\n').filter(s => s.trim());
+            if(list.length === 0) {
+                Utils.toast('请输入名字列表哦 📝', 'warning');
+                return;
+            }
+            
+            const btn = document.getElementById('pickBtn');
+            const btnText = document.getElementById('btnText');
+            const res = document.getElementById('res');
+            const box = document.getElementById('res-box');
+            
+            btn.disabled = true;
+            btnText.innerText = "正在抽取中...";
+            btn.classList.add('opacity-80', 'saturate-50');
+            
+            res.classList.add('res-rolling', 'opacity-60');
+            box.classList.add('bg-pink-50/40', 'border-pink-300', 'border-solid');
+            box.classList.remove('border-dashed');
+
+            let count = 0;
+            const timer = setInterval(() => {
+                res.innerText = list[Math.floor(Math.random() * list.length)];
+                count++;
+                if(count > 30) {
+                    clearInterval(timer);
+                    finalize(btn, btnText, res, box);
+                }
+            }, 50);
+        }
+
+        function finalize(btn, btnText, res, box) {
+            btn.disabled = false;
+            btnText.innerText = "再次抽取 (AGAIN)";
+            btn.classList.remove('opacity-80', 'saturate-50');
+            
+            res.classList.remove('res-rolling', 'opacity-60');
+            res.classList.add('scale-125', 'text-pink-600');
+            box.classList.add('win-glow', 'border-pink-500');
+            box.classList.remove('bg-pink-50/40', 'border-pink-300');
+
+            setTimeout(() => {
+                res.classList.remove('scale-125', 'text-pink-600');
+                box.classList.remove('win-glow');
+            }, 1000);
+
+            Utils.toast(`🎉 恭喜我们的幸运儿：[${res.innerText}]`, 'success');
+            
+            // Celebration effects
+            for(let i=0; i<8; i++) {
+                setTimeout(() => createCelebration(box), i * 100);
+            }
+        }
+
+        function createCelebration(box) {
+            const rect = box.getBoundingClientRect();
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${rect.left + Math.random() * rect.width}px`;
+            item.style.top = `${rect.top + rect.height/2}px`;
+            item.style.fontSize = '24px';
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

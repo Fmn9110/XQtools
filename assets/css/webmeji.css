@@ -1,0 +1,64 @@
+/* ✰ webmeji 桌宠样式 ✰ */
+/* 基于 webmeji 开源项目改造，添加移动端适配和防误触处理 */
+
+/* NOTE: 全局防止桌宠溢出导致横向滚动条 */
+html, body {
+  overflow-x: hidden !important;
+}
+
+/* 桌宠容器 - position: fixed 确保在视口中固定 */
+.webmeji-container {
+  position: fixed;
+  bottom: 0;
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+  /* NOTE: z-index 设为极高值，确保桌宠在所有页面元素之上 */
+  z-index: 99999;
+  /* NOTE: pointer-events: none 让容器不阻挡用户点击页面底部的链接和按钮 */
+  pointer-events: none;
+}
+
+/* 桌宠图片 - 实际可交互区域 */
+.webmeji-container img {
+  width: 100%;
+  height: auto;
+  user-select: none;
+  display: block;
+  transform-origin: center;
+  /* NOTE: pointer-events: auto 让图片本身可以响应鼠标/触摸事件（拖拽、抚摸等） */
+  pointer-events: auto;
+  /* 触摸设备长按不弹出菜单 */
+  -webkit-touch-callout: none;
+  /* 禁止触摸高亮 */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 边缘状态的容器旋转 */
+.webmeji-container.edge-left {
+  transform: rotate(90deg);
+}
+
+.webmeji-container.edge-right {
+  transform: rotate(-90deg);
+}
+
+.webmeji-container.edge-top {
+  transform: rotate(180deg);
+}
+
+/* NOTE: 移动端响应式缩放 - 屏幕宽度 < 768px 时缩小到 60px（约 0.6 倍） */
+@media (max-width: 768px) {
+  .webmeji-container {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+/* 超小屏幕进一步缩小 */
+@media (max-width: 480px) {
+  .webmeji-container {
+    width: 50px;
+    height: 50px;
+  }
+}

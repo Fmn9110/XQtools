@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>石头剪刀布 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">✊ 石头 <span class="gradient-text">剪刀布</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">最经典的博弈。你能看穿电脑的“出招逻辑”吗？✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white text-center animate-item" style="animation-delay: 0.2s">
+            <!-- Score Board -->
+            <div class="grid grid-cols-3 gap-3 mb-10 max-w-sm mx-auto animate-item" style="animation-delay: 0.3s">
+                <div class="bg-indigo-50/50 rounded-2xl p-4 border border-indigo-100/30">
+                    <p class="text-2xl font-black text-indigo-500" id="wins">0</p>
+                    <p class="text-[10px] font-black text-indigo-300 uppercase tracking-widest mt-1">胜 WIN</p>
+                </div>
+                <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100">
+                    <p class="text-2xl font-black text-gray-400" id="draws">0</p>
+                    <p class="text-[10px] font-black text-gray-300 uppercase tracking-widest mt-1">平 DRAW</p>
+                </div>
+                <div class="bg-pink-50/50 rounded-2xl p-4 border border-pink-100/30">
+                    <p class="text-2xl font-black text-pink-500" id="losses">0</p>
+                    <p class="text-[10px] font-black text-pink-300 uppercase tracking-widest mt-1">负 LOSE</p>
+                </div>
+            </div>
+
+            <!-- Game Arena -->
+            <div class="bg-gradient-to-br from-pink-50/30 to-indigo-50/30 rounded-[2.5rem] p-10 md:p-16 mb-12 border-2 border-pink-100/50 shadow-inner animate-item" style="animation-delay: 0.4s">
+                <div class="flex flex-col md:flex-row justify-center items-center gap-10 md:gap-20">
+                    <div class="flex flex-col items-center">
+                        <div class="w-32 h-32 md:w-40 md:h-40 bg-white rounded-3xl shadow-xl flex items-center justify-center text-7xl md:text-8xl transition-all" id="playerHand">❓</div>
+                        <p class="text-[10px] font-black text-pink-300 uppercase tracking-[0.5em] mt-6">YOU / 你</p>
+                    </div>
+                    
+                    <div class="hidden md:flex flex-col items-center justify-center">
+                        <span class="text-4xl font-black text-pink-200/50 select-none">VS</span>
+                    </div>
+
+                    <div class="flex flex-col items-center">
+                        <div class="w-32 h-32 md:w-40 md:h-40 bg-white rounded-3xl shadow-xl flex items-center justify-center text-7xl md:text-8xl transition-all" id="cpuHand">❓</div>
+                        <p class="text-[10px] font-black text-indigo-300 uppercase tracking-[0.5em] mt-6">CPU / 电脑</p>
+                    </div>
+                </div>
+                
+                <div class="mt-12 h-10">
+                    <p class="text-xl md:text-2xl font-black text-gray-400 tracking-tight" id="resultText">Waiting for your move...</p>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="flex gap-4 md:gap-6 justify-center animate-item" style="animation-delay: 0.5s">
+                <button onclick="play('石头')" class="w-20 h-20 md:w-24 md:h-24 bg-white rounded-2xl shadow-lg border-2 border-transparent hover:border-pink-300 text-4xl md:text-5xl hover:-translate-y-2 active:scale-90 transition-all">✊</button>
+                <button onclick="play('剪刀')" class="w-20 h-20 md:w-24 md:h-24 bg-white rounded-2xl shadow-lg border-2 border-transparent hover:border-pink-300 text-4xl md:text-5xl hover:-translate-y-2 active:scale-90 transition-all">✌️</button>
+                <button onclick="play('布')" class="w-20 h-20 md:w-24 md:h-24 bg-white rounded-2xl shadow-lg border-2 border-transparent hover:border-pink-300 text-4xl md:text-5xl hover:-translate-y-2 active:scale-90 transition-all">🖐️</button>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.6s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">📖</span>
+                    博弈哲学
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50 leading-relaxed text-gray-600 text-sm">
+                    <p>看似简单的随机游戏，实则是心理预判与复读机博弈。人们往往倾向于在输掉一局后改变方案。保持心态平稳，是获胜的关键。🧠</p>
+                </div>
+            </section>
+            <section class="animate-item" style="animation-delay: 0.7s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">✨</span>
+                    关于“玄学”
+                </h2>
+                <div class="bg-white p-6 rounded-2xl border border-pink-50 shadow-sm leading-relaxed text-gray-500 text-sm">
+                    <p>据说在感到幸运的时候出“剪刀”，胜率会提高？这当然没有科学依据，但在我们的工具箱里，快乐永远是第一优先级！💖</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const emojis = {石头:'✊',剪刀:'✌️',布:'🖐️'};
+        const choices = ['石头','剪刀','布'];
+        let wins=0,draws=0,losses=0,isAnimating=false;
+
+        function play(player) {
+            if(isAnimating) return;
+            isAnimating = true;
+
+            const cpu = choices[Math.floor(Math.random()*3)];
+            const playerEl = document.getElementById('playerHand');
+            const cpuEl = document.getElementById('cpuHand');
+            const resEl = document.getElementById('resultText');
+
+            // Shaking animation
+            playerEl.classList.add('animate-bounce');
+            cpuEl.classList.add('animate-bounce');
+            resEl.innerText = "Rock... Paper... Scissors!";
+            resEl.className = "text-xl md:text-2xl font-black text-gray-300 animate-pulse";
+
+            setTimeout(() => {
+                playerEl.classList.remove('animate-bounce');
+                cpuEl.classList.remove('animate-bounce');
+                resEl.classList.remove('animate-pulse');
+                
+                playerEl.textContent = emojis[player];
+                cpuEl.textContent = emojis[cpu];
+
+                let result, colorClass;
+                if (player === cpu) { 
+                    result = 'DRAW / 平局'; 
+                    colorClass = 'text-gray-400'; 
+                    draws++; 
+                } else if ((player==='石头'&&cpu==='剪刀')||(player==='剪刀'&&cpu==='布')||(player==='布'&&cpu==='石头')) {
+                    result = 'VICTORY / 胜利！'; 
+                    colorClass = 'text-indigo-500'; 
+                    wins++;
+                    Utils.toast('You won! 🎉', 'success');
+                } else {
+                    result = 'DEFEAT / 惜败'; 
+                    colorClass = 'text-pink-400'; 
+                    losses++;
+                }
+
+                resEl.textContent = result;
+                resEl.className = `text-xl md:text-2xl font-black tracking-tight mt-4 ${colorClass}`;
+                
+                document.getElementById('wins').textContent = wins;
+                document.getElementById('draws').textContent = draws;
+                document.getElementById('losses').textContent = losses;
+                
+                isAnimating = false;
+            }, 600);
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

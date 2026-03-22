@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>随机丟骰子 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .dice-container {
+            width: 100px;
+            height: 100px;
+            perspective: 800px;
+            margin: 0 auto;
+        }
+        .dice {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 2s cubic-bezier(0.1, 0.7, 0.1, 1);
+        }
+        .dice-face {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #ffffff, #fff1f2);
+            border: 3px solid #ffe4e6;
+            border-radius: 20px;
+            box-shadow: inset 0 0 10px rgba(244,114,182,0.1), 0 10px 25px rgba(244,114,182,0.1);
+            display: grid;
+            padding: 18px;
+        }
+        .dot {
+            width: 16px;
+            height: 16px;
+            background-color: #f472b6;
+            border-radius: 50%;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        /* Face Positioning */
+        .front  { transform: rotateY(  0deg) translateZ(50px); }
+        .back   { transform: rotateY(180deg) translateZ(50px); }
+        .right  { transform: rotateY( 90deg) translateZ(50px); }
+        .left   { transform: rotateY(-90deg) translateZ(50px); }
+        .top    { transform: rotateX( 90deg) translateZ(50px); }
+        .bottom { transform: rotateX(-90deg) translateZ(50px); }
+
+        .front { display: flex; align-items: center; justify-content: center; }
+        .front .dot { background-color: #ff4d4d; width: 24px; height: 24px; }
+        
+        .back { display: flex; justify-content: space-between; }
+        .back .col { display: flex; flex-direction: column; justify-content: space-between; height: 100%; }
+        
+        .right { display: flex; flex-direction: column; justify-content: space-between; }
+        .right .dot:nth-child(2) { align-self: flex-end; }
+        
+        .left { display: flex; flex-direction: column; justify-content: space-between; align-items: center; }
+        .left .row { display: flex; justify-content: space-between; width: 100%; }
+        
+        .top { display: flex; flex-direction: column; justify-content: space-between; }
+        .top .dot:nth-child(2) { align-self: center; }
+        .top .dot:nth-child(3) { align-self: flex-end; }
+        
+        .bottom { display: flex; flex-direction: column; justify-content: space-between; }
+        .bottom .row { display: flex; justify-content: space-between; width: 100%; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🎲 随机 <span class="gradient-text">丢骰子</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">绝对公平的 3D 模拟。每一次滚动，都是概率的优美缩影。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white flex flex-col items-center animate-item" style="animation-delay: 0.2s">
+            
+            <div class="flex gap-6 md:gap-10 mb-12 flex-wrap justify-center py-10 animate-item" id="diceWrapper" style="animation-delay: 0.3s">
+                <!-- Dice Template (ID will be changed by JS) -->
+                <div class="dice-container">
+                    <div class="dice" id="diceTemplate">
+                        <div class="dice-face front"><div class="dot"></div></div>
+                        <div class="dice-face back">
+                            <div class="col"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                            <div class="col"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                        </div>
+                        <div class="dice-face right">
+                            <div class="dot"></div><div class="dot"></div>
+                        </div>
+                        <div class="dice-face left">
+                            <div class="row"><div class="dot"></div><div class="dot"></div></div>
+                            <div class="dot"></div>
+                            <div class="row"><div class="dot"></div><div class="dot"></div></div>
+                        </div>
+                        <div class="dice-face top">
+                            <div class="row w-full flex justify-end"><div class="dot"></div></div>
+                            <div class="dot"></div>
+                            <div class="row w-full flex justify-start"><div class="dot"></div></div>
+                        </div>
+                        <div class="dice-face bottom">
+                            <div class="row"><div class="dot"></div><div class="dot"></div></div>
+                            <div class="row"><div class="dot"></div><div class="dot"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-6 mb-10 bg-pink-50/50 p-6 rounded-2xl border border-pink-100/30 animate-item" style="animation-delay: 0.4s">
+                <div class="text-center">
+                    <label class="block text-[10px] font-black text-pink-300 uppercase tracking-widest mb-1">COUNT / 数量</label>
+                    <select id="diceCount" class="bg-transparent border-none outline-none font-black text-gray-600 text-xl cursor-pointer">
+                        <option value="1">1 O</option>
+                        <option value="2" selected>2 OO</option>
+                        <option value="3">3 OOO</option>
+                        <option value="4">4 OOOO</option>
+                    </select>
+                </div>
+                <div class="w-px h-10 bg-pink-100"></div>
+                <div class="text-center min-w-[100px]">
+                    <label class="block text-[10px] font-black text-pink-300 uppercase tracking-widest mb-1">SUM / 总和</label>
+                    <p class="text-2xl font-black text-pink-500" id="resultText">-</p>
+                </div>
+            </div>
+
+            <button onclick="rollDice()" id="rollBtn" class="theme-download-btn w-full max-w-sm py-5 text-xl animate-item" style="animation-delay: 0.5s">
+                🎲 立即掷出！
+            </button>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.6s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">📖</span>
+                    物理模拟
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50 leading-relaxed text-gray-600 text-sm">
+                    <p>骰子作为古老的随机数发生器，承载了人们对“概率”与“天命”的敬畏。本工具通过 3D 渲染与随机旋转矩阵生成结果，每一个面朝上的概率均为严格的 1/6。</p>
+                </div>
+            </section>
+            <section class="animate-item" style="animation-delay: 0.7s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">✨</span>
+                    关于“一”
+                </h2>
+                <div class="bg-white p-6 rounded-2xl border border-pink-50 shadow-sm leading-relaxed text-gray-500 text-sm">
+                    <p>在传统的东方审美中，骰子的“一点”通常会涂成红色。本工具还原了这一经典细节，红色圆点不仅是数值，更是运气与转机的象征。</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs text-xs text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const diceWrapper = document.getElementById('diceWrapper');
+        const rollBtn = document.getElementById('rollBtn');
+        const resultText = document.getElementById('resultText');
+        const countSelect = document.getElementById('diceCount');
+
+        const diceTemplateHTML = diceWrapper.innerHTML;
+        const rotations = {
+            1: { x: 0, y: 0 },
+            2: { x: 0, y: -90 },
+            3: { x: -90, y: 0 },
+            4: { x: 90, y: 0 },
+            5: { x: 0, y: 90 },
+            6: { x: 0, y: 180 }
+        };
+
+        let isRolling = false;
+
+        countSelect.addEventListener('change', () => {
+            const count = parseInt(countSelect.value);
+            diceWrapper.innerHTML = '';
+            for(let i=0; i<count; i++) {
+                diceWrapper.innerHTML += diceTemplateHTML.replace('diceTemplate', `dice${i+1}`);
+            }
+            resultText.innerText = '-';
+        });
+        
+        countSelect.dispatchEvent(new Event('change'));
+
+        function rollDice() {
+            if(isRolling) return;
+            isRolling = true;
+
+            const count = parseInt(countSelect.value);
+            let total = 0;
+            rollBtn.classList.add('opacity-50', 'pointer-events-none', 'scale-95');
+            resultText.innerText = "...";
+
+            for(let i=0; i<count; i++) {
+                const dice = document.getElementById(`dice${i+1}`);
+                const result = Math.floor(Math.random() * 6) + 1;
+                total += result;
+
+                const spinX = (Math.floor(Math.random() * 6) + 6) * 360; 
+                const spinY = (Math.floor(Math.random() * 6) + 6) * 360; 
+
+                const targetX = spinX + rotations[result].x;
+                const targetY = spinY + rotations[result].y;
+
+                dice.style.transform = `rotateX(${targetX}deg) rotateY(${targetY}deg)`;
+            }
+
+            setTimeout(() => {
+                isRolling = false;
+                rollBtn.classList.remove('opacity-50', 'pointer-events-none', 'scale-95');
+                resultText.innerText = total;
+                Utils.toast(`总和: ${total}`, 'success');
+            }, 2000);
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

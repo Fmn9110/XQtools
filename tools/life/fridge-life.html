@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>食物保鲜期查询 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50"><div class="container mx-auto flex justify-between items-center"><div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'"><div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div><span class="text-2xl font-bold gradient-text">小Q工具箱</span></div><a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a></div></nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">🥦 食物保鲜期查询</h1>
+            <p class="text-gray-500">冰箱里的食物还能吃吗？快速查询常见食物的保鲜时间</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="mb-6"><input type="text" id="search" placeholder="🔍 搜索食物名称..." class="w-full p-4 bg-gray-50 rounded-xl border outline-none" oninput="filter()"></div>
+            <div class="flex gap-2 mb-4 flex-wrap" id="catBtns"></div>
+            <div class="space-y-2" id="foodList"></div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>搜索或选择分类查找食物。</li><li>查看室温、冷藏、冷冻的保质期。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">数据准确吗？</div><div class="text-gray-500 text-sm">为通用参考值，实际保鲜期受温度、包装等因素影响。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const foods = [
+            {name:'鲜牛奶',cat:'乳制品',room:'2小时',fridge:'5-7天',freeze:'1个月'},
+            {name:'酸奶',cat:'乳制品',room:'2小时',fridge:'14-21天',freeze:'1-2个月'},
+            {name:'鸡蛋',cat:'蛋类',room:'15天',fridge:'30-45天',freeze:'不推荐'},
+            {name:'新鲜猪肉',cat:'肉类',room:'4小时',fridge:'2-3天',freeze:'4-6个月'},
+            {name:'新鲜牛肉',cat:'肉类',room:'4小时',fridge:'3-5天',freeze:'6-12个月'},
+            {name:'新鲜鸡肉',cat:'肉类',room:'2小时',fridge:'1-2天',freeze:'6-9个月'},
+            {name:'鱼/海鲜',cat:'肉类',room:'2小时',fridge:'1-2天',freeze:'3-6个月'},
+            {name:'米饭(熟)',cat:'主食',room:'4小时',fridge:'1-2天',freeze:'1个月'},
+            {name:'面包',cat:'主食',room:'3-5天',fridge:'7天',freeze:'3个月'},
+            {name:'豆腐',cat:'豆制品',room:'4小时',fridge:'3-5天',freeze:'5个月'},
+            {name:'苹果',cat:'水果',room:'7天',fridge:'1-2个月',freeze:'不推荐'},
+            {name:'香蕉',cat:'水果',room:'3-5天',fridge:'不推荐',freeze:'1个月(去皮)'},
+            {name:'草莓',cat:'水果',room:'1天',fridge:'3-5天',freeze:'6个月'},
+            {name:'西瓜(切开)',cat:'水果',room:'2小时',fridge:'3-5天',freeze:'不推荐'},
+            {name:'番茄',cat:'蔬菜',room:'5天',fridge:'7-14天',freeze:'不推荐'},
+            {name:'绿叶菜',cat:'蔬菜',room:'1天',fridge:'3-5天',freeze:'不推荐'},
+            {name:'胡萝卜',cat:'蔬菜',room:'7天',fridge:'2-3周',freeze:'10-12个月'},
+            {name:'土豆',cat:'蔬菜',room:'2-3周',fridge:'不推荐',freeze:'10-12个月(熟)'},
+            {name:'剩菜(熟食)',cat:'熟食',room:'2小时',fridge:'3-4天',freeze:'2-3个月'},
+            {name:'黄油',cat:'乳制品',room:'1-2天',fridge:'1-3个月',freeze:'6-9个月'},
+        ];
+
+        const categories = [...new Set(foods.map(f => f.cat))];
+        let activeCat = '';
+
+        let catHtml = '<button onclick="setCat(\'\')" class="px-3 py-1 rounded-full text-sm bg-pink-500 text-white" id="cat-all">全部</button>';
+        categories.forEach(c => {
+            catHtml += `<button onclick="setCat('${c}')" class="px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-500" id="cat-${c}">${c}</button>`;
+        });
+        document.getElementById('catBtns').innerHTML = catHtml;
+
+        function setCat(cat) {
+            activeCat = cat;
+            document.querySelectorAll('#catBtns button').forEach(b => { b.className = 'px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-500'; });
+            const id = cat ? `cat-${cat}` : 'cat-all';
+            document.getElementById(id).className = 'px-3 py-1 rounded-full text-sm bg-pink-500 text-white';
+            filter();
+        }
+
+        function filter() {
+            const q = document.getElementById('search').value.trim().toLowerCase();
+            const filtered = foods.filter(f => {
+                const matchCat = !activeCat || f.cat === activeCat;
+                const matchQ = !q || f.name.toLowerCase().includes(q);
+                return matchCat && matchQ;
+            });
+            let html = '';
+            filtered.forEach(f => {
+                html += `<div class="bg-gray-50 rounded-xl p-4 flex flex-col md:flex-row md:items-center gap-2">
+                    <div class="flex-1"><span class="font-bold text-gray-700">${f.name}</span> <span class="text-xs text-gray-400">${f.cat}</span></div>
+                    <div class="flex gap-2 text-xs">
+                        <span class="px-2 py-1 bg-yellow-50 rounded-lg">🌡️ 室温 ${f.room}</span>
+                        <span class="px-2 py-1 bg-blue-50 rounded-lg">❄️ 冷藏 ${f.fridge}</span>
+                        <span class="px-2 py-1 bg-purple-50 rounded-lg">🧊 冷冻 ${f.freeze}</span>
+                    </div>
+                </div>`;
+            });
+            document.getElementById('foodList').innerHTML = html || '<p class="text-center text-gray-400 py-4">没有找到匹配的食物</p>';
+        }
+        filter();
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

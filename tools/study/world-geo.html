@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>地理博识录 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@500;800&display=swap" rel="stylesheet">
+    <style>
+        .geo-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .geo-card:hover { transform: translateY(-8px); box-shadow: 0 25px 50px -12px rgba(244, 114, 182, 0.15); }
+        .tab-active { background: #f472b6; color: white; box-shadow: 0 8px 16px -4px rgba(244, 114, 182, 0.4); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6 shadow-sm no-print">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-5xl text-center">
+        <header class="mb-10 md:mb-14">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-800 mb-4 animate-item">万类霜天：地理博识录</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s italic italic">俯瞰寰宇，洞察主权。每一个坐标，皆是文明的注脚。🌍</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-14 mb-12 bg-white shadow-2xl animate-item" style="animation-delay: 0.2s">
+            <div class="relative mb-12 max-w-2xl mx-auto no-print">
+                <input type="text" id="search" placeholder="搜索国家、首都或大洲..." class="w-full p-8 bg-slate-50 rounded-[3rem] border-2 border-transparent focus:border-pink-50 outline-none focus:bg-white focus:shadow-xl transition-all font-black text-slate-700 placeholder:text-slate-200 pl-16 shadow-inner" oninput="filter()">
+                <div class="absolute left-8 top-1/2 -translate-y-1/2 text-2xl pointer-events-none opacity-20">🔍</div>
+            </div>
+
+            <div class="flex gap-3 overflow-x-auto pb-6 mb-12 no-scrollbar no-print" id="continents">
+                <!-- Tabs dynamic -->
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="list">
+                <!-- Country cards injected here -->
+            </div>
+            
+            <div id="emptyState" class="hidden py-32 text-center opacity-10 select-none">
+                <p class="text-[8rem] mb-6">🔭</p>
+                <p class="text-[10px] font-black uppercase tracking-[0.5em] text-slate-400">Horizon Empty: No Sovereignty Detected</p>
+            </div>
+        </section>
+        
+        <p class="text-[10px] text-gray-300 font-bold uppercase tracking-[0.5em] pb-12 animate-item">
+            Global Geospatial Archive & Cartographic Reference Hub
+        </p>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const countries = [
+            {name:'中国',capital:'北京',area:'960万km²',pop:'14.12亿',continent:'亚洲',flag:'🇨🇳',tz:'UTC+8'},
+            {name:'美国',capital:'华盛顿',area:'937万km²',pop:'3.33亿',continent:'北美洲',flag:'🇺🇸',tz:'UTC-5'},
+            {name:'俄罗斯',capital:'莫斯科',area:'1710万km²',pop:'1.46亿',continent:'欧洲',flag:'🇷🇺',tz:'UTC+3'},
+            {name:'日本',capital:'东京',area:'37.8万km²',pop:'1.26亿',continent:'亚洲',flag:'🇯🇵',tz:'UTC+9'},
+            {name:'德国',capital:'柏林',area:'35.7万km²',pop:'8400万',continent:'欧洲',flag:'🇩🇪',tz:'UTC+1'},
+            {name:'英国',capital:'伦敦',area:'24.4万km²',pop:'6700万',continent:'欧洲',flag:'🇬🇧',tz:'UTC+0'},
+            {name:'法国',capital:'巴黎',area:'64万km²',pop:'6700万',continent:'欧洲',flag:'🇫🇷',tz:'UTC+1'},
+            {name:'巴西',capital:'巴西利亚',area:'851万km²',pop:'2.15亿',continent:'南美洲',flag:'🇧🇷',tz:'UTC-3'},
+            {name:'印度',capital:'新德里',area:'328万km²',pop:'14.08亿',continent:'亚洲',flag:'🇮🇳',tz:'UTC+5:30'},
+            {name:'澳大利亚',capital:'堪培拉',area:'769万km²',pop:'2570万',continent:'大洋洲',flag:'🇦🇺',tz:'UTC+10'},
+            {name:'加拿大',capital:'渥太华',area:'998万km²',pop:'3820万',continent:'北美洲',flag:'🇨🇦',tz:'UTC-5'},
+            {name:'韩国',capital:'首尔',area:'10万km²',pop:'5180万',continent:'亚洲',flag:'🇰🇷',tz:'UTC+9'},
+            {name:'埃及',capital:'开罗',area:'100万km²',pop:'1.09亿',continent:'非洲',flag:'🇪🇬',tz:'UTC+2'},
+            {name:'南非',capital:'比勒陀利亚',area:'122万km²',pop:'5900万',continent:'非洲',flag:'🇿🇦',tz:'UTC+2'},
+            {name:'意大利',capital:'罗马',area:'30万km²',pop:'5900万',continent:'欧洲',flag:'🇮🇹',tz:'UTC+1'},
+            {name:'阿根廷',capital:'布宜诺斯艾利斯',area:'278万km²',pop:'4580万',continent:'南美洲',flag:'🇦🇷',tz:'UTC-3'}
+        ];
+        const continents = ['全部', '亚洲', '欧洲', '非洲', '北美洲', '南美洲', '大洋洲'];
+        let activeCont = '全部';
+
+        function filter() {
+            const q = document.getElementById('search').value.toLowerCase();
+            const filtered = countries.filter(c => 
+                (activeCont === '全部' || c.continent === activeCont) && 
+                (!q || c.name.includes(q) || c.capital.includes(q) || c.continent.includes(q))
+            );
+            
+            const list = document.getElementById('list');
+            const empty = document.getElementById('emptyState');
+            
+            if(filtered.length === 0) {
+                list.innerHTML = '';
+                empty.classList.remove('hidden');
+            } else {
+                empty.classList.add('hidden');
+                list.innerHTML = filtered.map(c => `
+                    <div class="geo-card p-8 bg-slate-50/50 rounded-[2.5rem] border border-slate-50 flex flex-col items-center gap-6 group hover:bg-white hover:border-pink-50 transition-all cursor-default relative overflow-hidden">
+                        <div class="absolute -right-2 -top-2 w-12 h-12 bg-pink-50/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span class="text-[8px] font-black text-pink-300 uppercase rotate-45">Active</span>
+                        </div>
+                        <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-4xl shadow-sm border border-slate-50 group-hover:rotate-6 transition-transform">${c.flag}</div>
+                        <div class="w-full text-center">
+                            <p class="font-black text-slate-800 text-xl tracking-tight mb-4">${c.name}</p>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-white/60 p-3 rounded-2xl border border-slate-100/50">
+                                    <span class="text-[8px] font-black text-slate-300 uppercase tracking-widest block mb-1">Capital</span>
+                                    <span class="text-[10px] font-bold text-slate-600 block truncate">${c.capital}</span>
+                                </div>
+                                <div class="bg-white/60 p-3 rounded-2xl border border-slate-100/50">
+                                    <span class="text-[8px] font-black text-slate-300 uppercase tracking-widest block mb-1">Area</span>
+                                    <span class="text-[10px] font-bold text-slate-600 truncate block">${c.area}</span>
+                                </div>
+                                <div class="bg-white/60 p-3 rounded-2xl border border-slate-100/50">
+                                    <span class="text-[8px] font-black text-slate-300 uppercase tracking-widest block mb-1">Population</span>
+                                    <span class="text-[10px] font-bold text-slate-600 truncate block">${c.pop}</span>
+                                </div>
+                                <div class="bg-white/60 p-3 rounded-2xl border border-slate-100/50">
+                                    <span class="text-[8px] font-black text-slate-300 uppercase tracking-widest block mb-1">Zone</span>
+                                    <span class="text-[10px] font-bold text-slate-600 truncate block font-mono">${c.tz}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function renderTabs() {
+            document.getElementById('continents').innerHTML = continents.map(c => `
+                <button onclick="activeCont='${c}';renderTabs();filter()" 
+                        class="whitespace-nowrap px-8 py-3 rounded-[1.5rem] text-[10px] font-extrabold transition-all uppercase tracking-widest ${c === activeCont ? 'tab-active' : 'bg-slate-50 text-slate-400 hover:bg-white hover:shadow-lg'}">
+                    ${c}
+                </button>
+            `).join('');
+        }
+
+        // Init
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    renderTabs();
+                    filter();
+                }, 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button') || e.target.closest('input')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

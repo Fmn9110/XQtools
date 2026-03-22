@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>冷笑话生成 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        .joke-card {
+            background-color: #f0f9ff;
+            background-image: radial-gradient(#bae6fd 1.5px, transparent 1.5px);
+            background-size: 30px 30px;
+            border-radius: 40px;
+            position: relative;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border: 4px solid #fff;
+            box-shadow: 0 40px 100px -20px rgba(56, 189, 248, 0.2);
+            overflow: hidden;
+        }
+        .snow-flake {
+            position: absolute;
+            color: #fff;
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.8));
+            font-size: 24px;
+            opacity: 0.8;
+            animation: snow-fall linear infinite;
+            z-index: 1;
+        }
+        @keyframes snow-fall {
+            0% { transform: translateY(-50px) rotate(0deg); }
+            100% { transform: translateY(400px) rotate(360deg); }
+        }
+        .joke-text {
+            font-family: 'ZCOOL KuaiLe', 'Outfit', sans-serif;
+            font-size: clamp(1.4rem, 5vw, 2.2rem);
+            color: #0369a1;
+            line-height: 1.6;
+            text-align: center;
+            padding: 3rem;
+            z-index: 10;
+            transition: all 0.5s ease-out;
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🥶 降温 <span class="gradient-text">冷笑话</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">夏天太热？立刻为您开启极度降温模式。收获今日份的无语与快乐。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white flex flex-col items-center animate-item shadow-2xl" style="animation-delay: 0.2s">
+            
+            <div class="w-full max-w-2xl mb-12 joke-card group" id="jokeCard">
+                <!-- snowflakes injected here -->
+                <div class="joke-text" id="jokeText">
+                    准备好被冻僵了吗？<br>
+                    <span class="text-sky-400 text-sm font-black uppercase tracking-widest mt-4 block">Click the button below</span>
+                </div>
+            </div>
+
+            <div class="w-full max-w-md space-y-4">
+                <button onclick="getJoke()" class="w-full py-5 bg-sky-500 hover:bg-sky-600 text-white font-black rounded-2xl shadow-xl shadow-sky-100 transition-all active:scale-95 text-xl flex items-center justify-center gap-2">
+                    ☃️ 打开冰箱门
+                </button>
+                <button onclick="copyJoke()" class="w-full py-4 bg-white border-2 border-sky-50 text-sky-400 hover:bg-sky-50 hover:border-sky-200 font-black rounded-2xl transition-all text-sm flex items-center justify-center gap-2">
+                    📋 复制这份寒冷
+                </button>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>冷笑话的迷人之处不在于它的好笑，而在于那一瞬间的“冷”。它让繁忙的生活突然刹车，给你一个极其幼稚却又轻松的瞬间。愿这份寒意能驱散你哪怕一秒钟的烦躁。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const jokes = [
+            "小明理了头发，第二天来到学校，同学们看到他的新发型，笑道：小明，你的头型好像个风筝哦！小明觉得很委屈，就跑到外面哭。哭着哭着，他就飞起来了。",
+            "问：什么动物最容易被贴在墙上？\n答：海豹（报）。",
+            "有一天，绿豆企图跳楼，结果它跳下来变成了红豆。\n因为它流血了。",
+            "问：黑猫和白猫一起过马路，白猫被车撞死，黑猫对白猫说了什么？\n答：喵。",
+            "有一根火柴，它觉得头很痒，就挠啊挠，然后它就着火了。",
+            "问：蜘蛛侠是什么颜色的？\n答：白色。因为（Spider-Man）是百日梦。",
+            "包子和面条打架，面条见包子是个圆球，就对包子说：你信不信我把你打出翔？\n包子说：我只有肉没有翔。",
+            "问：哪位古人跑得最快？\n答：曹操。因为“说曹操，曹操到”。",
+            "有一天小明去医院。医生说：你拔牙会有点痛。小明：我不拔牙。\n医生：那你干嘛来了？小明：我来看病！",
+            "公鸡对母鸡说：其实我一直很喜欢你。母鸡说：真的吗？你愿意为我付出一切吗？\n公鸡：愿意。母鸡：那你下个蛋给我看看。"
+        ];
+
+        const card = document.getElementById('jokeCard');
+        const jokeText = document.getElementById('jokeText');
+
+        // Create Snowflakes
+        function createSnow() {
+            const snow = document.createElement('div');
+            snow.className = 'snow-flake';
+            snow.innerHTML = '❄';
+            snow.style.left = Math.random() * 100 + '%';
+            snow.style.animationDuration = Math.random() * 3 + 2 + 's';
+            snow.style.animationDelay = Math.random() * 2 + 's';
+            card.appendChild(snow);
+            setTimeout(() => snow.remove(), 5000);
+        }
+        setInterval(createSnow, 400);
+
+        function getJoke() {
+            jokeText.style.opacity = '0';
+            jokeText.style.transform = 'translateY(10px) scale(0.95)';
+            
+            setTimeout(() => {
+                const joke = jokes[Math.floor(Math.random() * jokes.length)];
+                jokeText.innerHTML = joke.replace(/\n/g, '<br>');
+                jokeText.style.opacity = '1';
+                jokeText.style.transform = 'translateY(0) scale(1)';
+                Utils.toast('寒气逼人 🥶', 'info');
+            }, 300);
+        }
+
+        function copyJoke() {
+            const text = jokeText.innerText;
+            if(text.includes('Click')) return;
+            navigator.clipboard.writeText(text).then(() => {
+                Utils.toast('已成功复制这份寒冷 ❄️', 'success');
+            });
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

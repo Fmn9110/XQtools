@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>笔记模板生成 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-5xl text-center">
+        <header class="mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">笔记模板生成器</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">一键生成高清笔记纸模板，支持标准 A4 打印预览。</p>
+        </header>
+
+        <section class="cute-card p-8 md:p-14 mb-12 bg-white shadow-2xl animate-item" style="animation-delay: 0.2s">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+                <!-- Cornell -->
+                <button onclick="gen('cornell')" class="group p-8 bg-pink-50/50 rounded-[2.5rem] border-2 border-transparent hover:border-pink-200 hover:bg-white transition-all transform hover:-translate-y-2 shadow-sm">
+                    <p class="text-5xl mb-4 group-hover:scale-110 transition-transform">📐</p>
+                    <p class="text-base font-black text-slate-700">康奈尔记录</p>
+                    <p class="text-[10px] text-pink-300 font-black mt-1 uppercase tracking-widest">Cornell</p>
+                </button>
+                <!-- Outline -->
+                <button onclick="gen('outline')" class="group p-8 bg-rose-50/50 rounded-[2.5rem] border-2 border-transparent hover:border-rose-200 hover:bg-white transition-all transform hover:-translate-y-2 shadow-sm">
+                    <p class="text-5xl mb-4 group-hover:scale-110 transition-transform">📝</p>
+                    <p class="text-base font-black text-slate-700">结构化大纲</p>
+                    <p class="text-[10px] text-rose-300 font-black mt-1 uppercase tracking-widest">Outline</p>
+                </button>
+                <!-- Grid -->
+                <button onclick="gen('grid')" class="group p-8 bg-amber-50/50 rounded-[2.5rem] border-2 border-transparent hover:border-amber-200 hover:bg-white transition-all transform hover:-translate-y-2 shadow-sm">
+                    <p class="text-5xl mb-4 group-hover:scale-110 transition-transform">📊</p>
+                    <p class="text-base font-black text-slate-700">全能方格纸</p>
+                    <p class="text-[10px] text-amber-500/60 font-black mt-1 uppercase tracking-widest">Grid</p>
+                </button>
+                <!-- To-Do -->
+                <button onclick="gen('todo')" class="group p-8 bg-emerald-50/50 rounded-[2.5rem] border-2 border-transparent hover:border-emerald-200 hover:bg-white transition-all transform hover:-translate-y-2 shadow-sm">
+                    <p class="text-5xl mb-4 group-hover:scale-110 transition-transform">✅</p>
+                    <p class="text-base font-black text-slate-700">任务核对表</p>
+                    <p class="text-[10px] text-emerald-500/60 font-black mt-1 uppercase tracking-widest">Todo</p>
+                </button>
+            </div>
+            
+            <div class="bg-slate-50 p-6 rounded-[2rem] border border-slate-100/50 inline-flex items-center gap-3">
+                <span class="w-3 h-3 bg-pink-400 rounded-full animate-ping"></span>
+                <p class="text-xs text-gray-400 font-bold uppercase tracking-widest">
+                    点击模板后将自动打开高清打印预览页面
+                </p>
+            </div>
+        </section>
+
+        <footer class="text-gray-300 text-[10px] uppercase font-black tracking-[0.4em] animate-item" style="animation-delay: 0.3s">
+            Note Architecture & Template System
+        </footer>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        function gen(type){
+            const win = window.open('', '_blank');
+            if(!win) { Utils.toast('请允许浏览器打开弹出窗口 🚀', 'warning'); return; }
+
+            const css = `
+                @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap');
+                body { font-family: 'Outfit', -apple-system, 'PingFang SC', sans-serif; padding: 40px; margin: 0; color: #333; background: #fff; }
+                .print-header { border-bottom: 2px solid #ffb7c5; padding-bottom: 15px; margin-bottom: 30px; display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; color: #ffb7c5; }
+                .title { text-align: center; margin-bottom: 40px; font-size: 26px; color: #333; font-weight: 800; letter-spacing: -0.02em; }
+                .grid-bg { background-image: linear-gradient(#ffb7c5 1px, transparent 1px), linear-gradient(90deg, #ffb7c5 1px, transparent 1px); background-size: 30px 30px; border: 2px solid #ffb7c5; height: 950px; border-radius: 4px; }
+            `;
+
+            let content = '';
+            if(type === 'cornell'){
+                content = `
+                <div class="print-header"><span>Q-Tools | Cornell Method</span><span>Date: 20___/___/___</span></div>
+                <div style="border: 2px solid #ffb7c5; height: 1000px; display: grid; grid-template-columns: 200px 1fr; grid-template-rows: 60px 1fr 180px; border-radius: 8px; overflow: hidden;">
+                    <div style="grid-column: 1/3; border-bottom: 2px solid #ffb7c5; padding: 15px; background: #fffafb; font-weight: bold;">Subject: ________________________________________________________________</div>
+                    <div style="border-right: 2px solid #ffb7c5; padding: 25px; font-size: 12px; color: #ffb7c5; font-weight: 800; text-transform: uppercase;">Cues & Key Questions</div>
+                    <div style="padding: 0 25px; background-image: repeating-linear-gradient(transparent, transparent 29px, #fff1f3 30px); background-clip: content-box;"></div>
+                    <div style="grid-column: 1/3; border-top: 2px solid #ffb7c5; padding: 25px; background: #fffafb;">
+                        <span style="font-size: 12px; font-weight: 800; color: #ffb7c5; text-transform: uppercase;">Summary</span>
+                    </div>
+                </div>`;
+            } else if(type === 'outline'){
+                let lines = ''; for(let i=0; i<28; i++) lines += '<div style="border-bottom: 1px solid #fff1f3; height: 35px; width: 100%;"></div>';
+                content = `
+                <div class="print-header"><span>Q-Tools | Outline Template</span><span>Subject: _______________</span></div>
+                <h1 class="title">Lecture Notes / Outline</h1>
+                <div style="border: 2px solid #ffb7c5; border-radius: 12px; overflow: hidden; padding: 0 30px; min-height: 900px;">${lines}</div>`;
+            } else if(type === 'grid'){
+                content = `
+                <div class="print-header"><span>Q-Tools | Master Grid</span><span>Topic: ___________________</span></div>
+                <h1 class="title">Engineering & Design Board</h1>
+                <div class="grid-bg"></div>`;
+            } else if(type === 'todo'){
+                let items = ''; for(let i=0; i<24; i++) items += `<div style="display:flex; align-items:center; gap:25px; border-bottom: 1px solid #fff3f5; padding: 15px 0;"><div style="width:26px; height:26px; border:3px solid #ffb7c5; border-radius:10px; background: #fff;"></div><div style="flex:1; border-bottom: 1px dashed #ffb7c5;"></div></div>`;
+                content = `
+                <div class="print-header"><span>Q-Tools | Check-list</span><span>Target Date: ____________</span></div>
+                <h1 class="title">Priority & Task Checklist</h1>
+                <div style="max-width: 650px; margin: auto;">${items}</div>`;
+            }
+
+            win.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Q-Print Template Preview</title>
+                    <style>${css}</style>
+                </head>
+                <body>
+                    ${content}
+                    <style>@media print { .no-print { display: none; } } </style>
+                    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+                </html>
+            `);
+            win.document.close();
+            Utils.toast('正在生成打印预览... 🖨️');
+            setTimeout(() => win.print(), 800);
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+</body>
+</html>

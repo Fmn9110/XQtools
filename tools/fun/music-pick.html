@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>音乐推荐 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        .record {
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            background: #111;
+            margin: 0 auto;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 6px solid #222;
+        }
+        .record::before, .record::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .record::before { width: 220px; height: 220px; }
+        .record::after { width: 160px; height: 160px; }
+        
+        .label {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 4px solid rgba(255,255,255,0.2);
+        }
+        .hole {
+            width: 18px;
+            height: 18px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .spin {
+            animation: spin 3s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-3xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🎙️ 探索 <span class="gradient-text">音乐灵感</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">跳出日常循环。遇见意想不到的律动。✨</p>
+        </header>
+
+        <section class="cute-card p-8 md:p-16 mb-12 bg-white flex flex-col items-center animate-item" style="animation-delay: 0.2s">
+            
+            <div class="w-full text-center mb-12 relative group">
+                <div class="record spin" id="vinylRecord">
+                    <div class="label" id="vinylLabel" style="background:#f472b6;">
+                        <div class="hole"></div>
+                    </div>
+                </div>
+                <!-- Arm visual -->
+                <div class="absolute top-0 right-1/2 translate-x-32 w-1 h-32 bg-gray-300 origin-top rotate-12 transition-transform group-hover:rotate-0 hidden md:block"></div>
+            </div>
+
+            <div class="text-center mb-12 min-h-[120px] flex flex-col justify-center animate-item">
+                <h2 class="text-3xl md:text-4xl font-black text-gray-800 mb-3" style="font-family: 'Outfit', sans-serif;" id="musicType">未知波段</h2>
+                <p class="text-gray-400 font-bold leading-relaxed italic md:text-lg" id="musicDesc">点击下方按钮探索新流派</p>
+            </div>
+
+            <button onclick="pickMusic()" class="w-full max-w-sm py-5 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-[2rem] shadow-xl shadow-pink-100 transition-all active:scale-95 flex items-center justify-center gap-3 text-xl">
+                🎧 切歌探索
+            </button>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🧿</span>
+                <p>听音乐是一场廉价却又奢侈的旅行。不同的节奏和旋律能瞬间改变一个人的心情底色。当你觉得自己陷入了某种情绪的死胡同，试着换一种风格，或许会有意想不到的惊喜。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const db = [
+            { type: "蒸汽波 (Vaporwave)", desc: "复古、迷幻、消费主义的赛博回忆。", color: "#d946ef" },
+            { type: "爵士乐 (Jazz)", desc: "慵懒的午后时光，萨克斯的灵魂伴侣。", color: "#f59e0b" },
+            { type: "合成器流行 (Synthpop)", desc: "80年代的电子节拍与绚丽合成器。", color: "#3b82f6" },
+            { type: "环境音乐 (Ambient)", desc: "没有歌词，纯粹的氛围与空间感。", color: "#10b981" },
+            { type: "独立摇滚 (Indie Rock)", desc: "保持真实，不随波逐流的地下呐喊。", color: "#ef4444" },
+            { type: "重金属 (Heavy Metal)", desc: "失真吉他与狂野的灵魂释放。", color: "#1f2937" },
+            { type: "Lo-Fi Hip Hop", desc: "学习/工作的最佳白噪音伴侣。", color: "#8b5cf6" },
+            { type: "R&B", desc: "节奏蓝调，丝滑且深情。", color: "#ec4899" },
+            { type: "古典交响 (Classical)", desc: "跨越数百年的宏伟史诗感。", color: "#fcd34d" },
+            { type: "乡村音乐 (Country)", desc: "一把吉他，唱出对田园与故乡的眷恋。", color: "#84cc16" }
+        ];
+
+        function pickMusic() {
+            const pick = db[Math.floor(Math.random() * db.length)];
+            const record = document.getElementById('vinylRecord');
+            const typeLabel = document.getElementById('musicType');
+            const descLabel = document.getElementById('musicDesc');
+            
+            // Speed up spin
+            record.style.animationDuration = '0.4s';
+            typeLabel.style.opacity = '0.3';
+            descLabel.style.opacity = '0.3';
+            
+            setTimeout(() => {
+                typeLabel.innerText = pick.type;
+                descLabel.innerText = pick.desc;
+                document.getElementById('vinylLabel').style.background = pick.color;
+                
+                typeLabel.style.opacity = '1';
+                descLabel.style.opacity = '1';
+                record.style.animationDuration = '3s';
+                
+                Utils.toast(`今日心情：${pick.type.split(' ')[0]} ✨`, 'success');
+            }, 600);
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+            // Initial pick
+            setTimeout(pickMusic, 600);
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

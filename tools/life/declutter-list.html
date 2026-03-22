@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>断舍离清单 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50"><div class="container mx-auto flex justify-between items-center"><div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'"><div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div><span class="text-2xl font-bold gradient-text">小Q工具箱</span></div><a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a></div></nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">🗑️ 断舍离清单</h1>
+            <p class="text-gray-500">用三个问题帮你决定：该不该扔？</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="mb-6">
+                <label class="block text-xs font-bold text-gray-400 mb-2">物品名称</label>
+                <input type="text" id="item" placeholder="输入要判断的物品" class="w-full p-4 bg-gray-50 rounded-xl border outline-none">
+            </div>
+            <div class="space-y-4 mb-6">
+                <div class="bg-pink-50 rounded-xl p-4"><p class="font-bold text-gray-700 mb-2">Q1: 你在过去一年用过它吗？</p><div class="flex gap-3"><button onclick="setQ(1,true)" class="q1-btn px-6 py-2 rounded-full bg-green-100 text-green-600 font-bold">是</button><button onclick="setQ(1,false)" class="q1-btn px-6 py-2 rounded-full bg-red-100 text-red-600 font-bold">否</button></div></div>
+                <div class="bg-blue-50 rounded-xl p-4"><p class="font-bold text-gray-700 mb-2">Q2: 它给你带来快乐吗？</p><div class="flex gap-3"><button onclick="setQ(2,true)" class="q2-btn px-6 py-2 rounded-full bg-green-100 text-green-600 font-bold">是</button><button onclick="setQ(2,false)" class="q2-btn px-6 py-2 rounded-full bg-red-100 text-red-600 font-bold">否</button></div></div>
+                <div class="bg-purple-50 rounded-xl p-4"><p class="font-bold text-gray-700 mb-2">Q3: 如果丢了它，你会再买一个吗？</p><div class="flex gap-3"><button onclick="setQ(3,true)" class="q3-btn px-6 py-2 rounded-full bg-green-100 text-green-600 font-bold">会</button><button onclick="setQ(3,false)" class="q3-btn px-6 py-2 rounded-full bg-red-100 text-red-600 font-bold">不会</button></div></div>
+            </div>
+            <button onclick="judge()" class="w-full py-4 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl text-lg">🤔 给出建议</button>
+            <div id="result" class="hidden mt-6 text-center">
+                <div class="rounded-3xl p-8" id="card">
+                    <p class="text-5xl mb-3" id="rEmoji"></p>
+                    <p class="text-2xl font-black mb-2" id="rVerdict"></p>
+                    <p class="text-gray-600" id="rAdvice"></p>
+                </div>
+            </div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>输入物品名称。</li><li>回答三个问题。</li><li>查看断舍离建议。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">断舍离的核心？</div><div class="text-gray-500 text-sm">"断"=不买不需要的，"舍"=舍弃没用的，"离"=脱离对物品的执念。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let answers = {};
+        function setQ(q, val) {
+            answers[q] = val;
+            document.querySelectorAll(`.q${q}-btn`).forEach(b => b.classList.remove('ring-2','ring-pink-400'));
+            event.target.classList.add('ring-2','ring-pink-400');
+        }
+        function judge() {
+            if (Object.keys(answers).length < 3) { alert('请回答所有问题'); return; }
+            const score = (answers[1]?1:0) + (answers[2]?1:0) + (answers[3]?1:0);
+            let emoji, verdict, advice, bg;
+            if (score === 0) { emoji='🗑️'; verdict='果断扔掉！'; advice='3个都是"否"，没有留下它的理由了。感谢它曾经的陪伴，放手吧！'; bg='bg-red-100'; }
+            else if (score === 1) { emoji='📦'; verdict='建议清理'; advice='只有1点留下的理由，可以考虑捐赠、送人或二手出售。'; bg='bg-orange-100'; }
+            else if (score === 2) { emoji='🤔'; verdict='再想想'; advice='有2点理由留下，可以先收纳整理，过段时间再重新评估。'; bg='bg-yellow-100'; }
+            else { emoji='💖'; verdict='留下它！'; advice='3个都是"是"，这是你珍视的物品，好好保管它。'; bg='bg-green-100'; }
+            document.getElementById('rEmoji').textContent = emoji;
+            document.getElementById('rVerdict').textContent = verdict;
+            document.getElementById('rAdvice').textContent = advice;
+            document.getElementById('card').className = `rounded-3xl p-8 ${bg}`;
+            document.getElementById('result').classList.remove('hidden');
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MBTI 测试模型 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        .progress-bar { transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .type-display {
+            font-family: 'Outfit', sans-serif;
+            font-size: 5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #f472b6, #818cf8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            filter: drop-shadow(0 4px 10px rgba(244, 114, 182, 0.2));
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .float-animation { animation: float 3s ease-in-out infinite; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-3xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🧩 极简 <span class="gradient-text">MBTI 模型</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">探索真实的自我。4道核心题快速开启人格探索之旅。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white flex flex-col items-center animate-item" style="animation-delay: 0.2s">
+            
+            <!-- Progress -->
+            <div class="w-full mb-10" id="progressContainer">
+                <div class="flex justify-between items-end mb-3">
+                    <span class="text-[10px] font-black text-pink-300 uppercase tracking-[0.2em]" id="progressText">Question 1 / 4</span>
+                    <span class="text-xs font-black text-pink-400" id="progressPct">25%</span>
+                </div>
+                <div class="w-full h-3 bg-pink-50 rounded-full overflow-hidden shadow-inner p-0.5 border border-white">
+                    <div class="h-full bg-gradient-to-r from-pink-300 to-indigo-400 rounded-full progress-bar shadow-sm" id="progressBar" style="width: 25%;"></div>
+                </div>
+            </div>
+
+            <!-- Quiz Area -->
+            <div class="w-full" id="quizArea">
+                <div class="min-h-[120px] flex items-center justify-center mb-10">
+                    <h2 class="text-xl md:text-2xl font-black text-gray-700 leading-relaxed text-center" id="questionText">
+                        正在加载问题...
+                    </h2>
+                </div>
+                
+                <div class="space-y-4" id="optionsBox">
+                    <!-- Options dynamic -->
+                </div>
+            </div>
+
+            <!-- Result Area -->
+            <div class="w-full text-center hidden animate-item" id="resultArea">
+                <div class="bg-gradient-to-br from-pink-50/50 to-indigo-50/50 rounded-[3rem] p-10 md:p-16 border-2 border-pink-100 shadow-inner group relative overflow-hidden mb-10">
+                    <div class="absolute -top-10 -left-10 text-9xl text-pink-500/10 opacity-30 group-hover:rotate-12 transition-transform">🎭</div>
+                    
+                    <div class="relative z-10">
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] mb-4">Your Personality Type / 你的人格类型</p>
+                        <div class="type-display mb-8 float-animation" id="mbtiResult">INTJ</div>
+                        
+                        <div class="bg-white/60 backdrop-blur-md rounded-3xl p-8 border border-white shadow-sm text-left max-w-md mx-auto relative group">
+                            <div class="absolute -top-3 -right-3 w-10 h-10 bg-pink-500 text-white rounded-full flex items-center justify-center shadow-lg transform rotate-12 group-hover:rotate-0 transition-transform">✨</div>
+                            <h3 class="font-black text-gray-800 text-2xl mb-3" id="mbtiName">建筑师</h3>
+                            <p class="text-gray-600 font-bold leading-relaxed text-sm md:text-base" id="mbtiDesc"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="resetQuiz()" class="px-12 py-4 rounded-2xl bg-white border-2 border-pink-100 text-pink-500 hover:bg-pink-50 transition-all font-black text-lg active:scale-95 shadow-sm">
+                    🔄 重新测试
+                </button>
+            </div>
+
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>心理测试仅仅是一个观察自我的切面，而非永恒的标签。我们每个人都是流动的生命体，MBTI可以帮助你更好地理解自己的偏好，但别让它限制了你的无限可能。去探索，去经历，去成为你想成为的任何人。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const questions = [
+            {
+                text: "周末到了，你终于有一堆自由时间，你会倾向于怎么安排？",
+                options: [
+                    { letter: "E", text: "找朋友聚餐、逛街、参加活动，通过社交补充能量。" },
+                    { letter: "I", text: "宅在家看书、打游戏、追剧，享受独处恢复能量。" }
+                ]
+            },
+            {
+                text: "当别人向你描述一件新奇的事情时，你更关注：",
+                options: [
+                    { letter: "S", text: "具体的细节、实际发生的事实和能感受到的东西。" },
+                    { letter: "N", text: "这件事背后的意义、未来的可能性和整体的概念。" }
+                ]
+            },
+            {
+                text: "朋友遇到困难来找你倾诉，你的第一反应通常是：",
+                options: [
+                    { letter: "T", text: "帮他分析问题原因，提供客观合理的解决建议。" },
+                    { letter: "F", text: "先安抚他的情绪，设身处地地站在他的立场表示同情。" }
+                ]
+            },
+            {
+                text: "对待工作或旅行计划，你通常是：",
+                options: [
+                    { letter: "J", text: "喜欢提前做好详细计划，按部就班，一切尽在掌握。" },
+                    { letter: "P", text: "走一步看一步，喜欢灵活变通，享受随机和惊喜。" }
+                ]
+            }
+        ];
+
+        const typesDesc = {
+            "INTJ": { name: "建筑师 (Architect)", desc: "富有想象力和战略性的思想家，一切皆在计划之中。你追求效率和逻辑，是天生的规划者。" },
+            "INTP": { name: "逻辑学家 (Logician)", desc: "具有创造力的发明家，对知识有强烈的渴望。你喜欢在思维的迷宫中寻找客观的真理。" },
+            "ENTJ": { name: "指挥官 (Commander)", desc: "大胆，富有想象力且意志强大的领导者，总能找到或创造解决问题的方法。你生来就是为了引领变革。" },
+            "ENTP": { name: "辩论家 (Debater)", desc: "聪明好奇的思考者，绝不放弃任何智力上的挑战。你享受打破常规，在思想交锋中寻找火花。" },
+            "INFJ": { name: "提倡者 (Advocate)", desc: "安静而神秘，同时鼓舞人心且不知疲倦的理想主义者。你拥有深刻的洞察力，渴望让世界变得更好。" },
+            "INFP": { name: "调停者 (Mediator)", desc: "诗意，善良的利他主义者，总是热情地为正当理由提供帮助。你忠于内心，是温柔的理想守护者。" },
+            "ENFJ": { name: "主人公 (Protagonist)", desc: "富有魅力且鼓舞人心的领导者，有使听众着迷的能力。你关注他人的成长，是充满温情的激励者。" },
+            "ENFP": { name: "竞选者 (Campaigner)", desc: "热情，有创造力，爱社交的自由精神，总能找到微笑的理由。你是点亮生活的火种。" },
+            "ISTJ": { name: "物流师 (Logistician)", desc: "实际且注重事实的个人，其可靠性不容怀疑。你务实稳重，是秩序和传统的坚定守护者。" },
+            "ISFJ": { name: "守卫者 (Defender)", desc: "非常专注而温暖的守护者，时刻准备着保护他们爱的人。你体贴入微，在宁静中散发力量。" },
+            "ESTJ": { name: "总经理 (Executive)", desc: "出色的管理者，在管理事物或人的方面无与伦比。你讲求规则和效率，是社会的坚实支柱。" },
+            "ESFJ": { name: "执政官 (Consul)", desc: "极度关心他人，社交，受欢迎的人，总是热心提供帮助。你让周围的人感受到关心和归属感。" },
+            "ISTP": { name: "鉴赏家 (Virtuoso)", desc: "大胆而实际的实验者，掌握所有工具的主人。你冷静沉稳，擅长在实践中解决各种谜题。" },
+            "ISFP": { name: "探险家 (Adventurer)", desc: "灵活有魅力的艺术家，时刻准备着探索和体验新鲜事物。你热爱美感，在寂静中探索生活的可能。" },
+            "ESTP": { name: "企业家 (Entrepreneur)", desc: "聪明，精力充沛且善于感知的人，真正享受生活在边缘。你行动力极强，从不畏惧任何挑战。" },
+            "ESFP": { name: "表演者 (Entertainer)", desc: "自发，精力充沛而热情的表演者，在他们身边绝不会无聊。你是快乐的传递者，活在当下的每一秒。" }
+        };
+
+        let currentStep = 0;
+        let userResult = "";
+
+        const quizArea = document.getElementById('quizArea');
+        const resultArea = document.getElementById('resultArea');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const progressPct = document.getElementById('progressPct');
+        const questionText = document.getElementById('questionText');
+        const optionsBox = document.getElementById('optionsBox');
+
+        function renderQuestion() {
+            const q = questions[currentStep];
+            progressText.innerText = `Question ${currentStep + 1} / 4`;
+            progressPct.innerText = `${(currentStep + 1) * 25}%`;
+            progressBar.style.width = `${(currentStep + 1) * 25}%`;
+
+            questionText.style.opacity = '0';
+            optionsBox.style.opacity = '0';
+            
+            setTimeout(() => {
+                questionText.innerText = q.text;
+                optionsBox.innerHTML = '';
+                
+                q.options.forEach((opt, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = "w-full p-6 rounded-3xl border-2 border-pink-50 text-left hover:border-pink-400 hover:bg-pink-50 text-gray-700 font-bold transition-all active:scale-[0.98] outline-none text-lg shadow-sm hover:shadow-md flex items-center gap-4 transition-all duration-300";
+                    btn.style.animation = `fade-in 0.5s ease-out ${idx * 0.1}s forwards`;
+                    btn.innerHTML = `<span class="w-8 h-8 rounded-full bg-pink-100 text-pink-500 flex items-center justify-center text-xs shrink-0">${idx === 0 ? 'A' : 'B'}</span> <span>${opt.text}</span>`;
+                    btn.onclick = () => answer(opt.letter);
+                    optionsBox.appendChild(btn);
+                });
+                
+                questionText.style.opacity = '1';
+                optionsBox.style.opacity = '1';
+            }, 300);
+        }
+
+        function answer(letter) {
+            userResult += letter;
+            currentStep++;
+            if(currentStep >= 4) {
+                showResult();
+            } else {
+                renderQuestion();
+                Utils.toast('已记录 ✨', 'info');
+            }
+        }
+
+        function showResult() {
+            quizArea.classList.add('hidden');
+            progressContainer.classList.add('hidden');
+            
+            document.getElementById('mbtiResult').innerText = userResult;
+            const desc = typesDesc[userResult] || { name:"未知", desc:"你是一个充满可能性的神秘人格！" };
+            document.getElementById('mbtiName').innerText = desc.name;
+            document.getElementById('mbtiDesc').innerText = desc.desc;
+            
+            resultArea.classList.remove('hidden');
+            Utils.toast('结果已生成 🎉', 'success');
+        }
+
+        function resetQuiz() {
+            currentStep = 0;
+            userResult = "";
+            resultArea.classList.add('hidden');
+            quizArea.classList.remove('hidden');
+            progressContainer.classList.remove('hidden');
+            renderQuestion();
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+            renderQuestion();
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

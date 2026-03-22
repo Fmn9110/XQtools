@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>复杂亲戚称呼计算器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50"><div class="container mx-auto flex justify-between items-center"><div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'"><div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div><span class="text-2xl font-bold gradient-text">小Q工具箱</span></div><a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a></div></nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">👪 亲戚称呼计算器</h1>
+            <p class="text-gray-500">过年回家不怕叫错人！点击关系链，自动计算称呼</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="bg-gray-50 rounded-2xl p-6 mb-6 text-center">
+                <p class="text-sm text-gray-400 mb-2">当前关系链</p>
+                <p class="text-xl font-bold text-gray-700 min-h-[2em]" id="chain">我</p>
+            </div>
+            <div class="grid grid-cols-4 gap-3 mb-6">
+                <button onclick="add('爸爸')" class="p-3 bg-blue-50 hover:bg-blue-100 rounded-xl text-sm font-bold text-blue-600 transition-colors">的爸爸</button>
+                <button onclick="add('妈妈')" class="p-3 bg-pink-50 hover:bg-pink-100 rounded-xl text-sm font-bold text-pink-600 transition-colors">的妈妈</button>
+                <button onclick="add('哥哥')" class="p-3 bg-green-50 hover:bg-green-100 rounded-xl text-sm font-bold text-green-600 transition-colors">的哥哥</button>
+                <button onclick="add('弟弟')" class="p-3 bg-green-50 hover:bg-green-100 rounded-xl text-sm font-bold text-green-600 transition-colors">的弟弟</button>
+                <button onclick="add('姐姐')" class="p-3 bg-purple-50 hover:bg-purple-100 rounded-xl text-sm font-bold text-purple-600 transition-colors">的姐姐</button>
+                <button onclick="add('妹妹')" class="p-3 bg-purple-50 hover:bg-purple-100 rounded-xl text-sm font-bold text-purple-600 transition-colors">的妹妹</button>
+                <button onclick="add('儿子')" class="p-3 bg-orange-50 hover:bg-orange-100 rounded-xl text-sm font-bold text-orange-600 transition-colors">的儿子</button>
+                <button onclick="add('女儿')" class="p-3 bg-orange-50 hover:bg-orange-100 rounded-xl text-sm font-bold text-orange-600 transition-colors">的女儿</button>
+                <button onclick="add('丈夫')" class="p-3 bg-blue-50 hover:bg-blue-100 rounded-xl text-sm font-bold text-blue-600 transition-colors">的丈夫</button>
+                <button onclick="add('妻子')" class="p-3 bg-pink-50 hover:bg-pink-100 rounded-xl text-sm font-bold text-pink-600 transition-colors">的妻子</button>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="undo()" class="flex-1 py-3 bg-gray-200 hover:bg-gray-300 rounded-xl text-gray-600 font-bold">⬅ 撤销</button>
+                <button onclick="reset()" class="flex-1 py-3 bg-gray-200 hover:bg-gray-300 rounded-xl text-gray-600 font-bold theme-secondary-btn">🔄 重置</button>
+            </div>
+            <div id="result" class="hidden mt-6 bg-gradient-to-r from-pink-100 to-orange-100 rounded-2xl p-6 text-center">
+                <p class="text-gray-500 text-sm">这个人你应该叫</p>
+                <p class="text-4xl font-black text-pink-500 my-2" id="rTitle"></p>
+            </div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center"><span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">!</span>使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>从"我"开始，点击关系按钮构建关系链。</li><li>例如"我的爸爸的哥哥"=伯父。</li><li>支持撤销和重置操作。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">覆盖所有称呼吗？</div><div class="text-gray-500 text-sm">包含了大部分常见亲戚关系，部分方言称呼可能有差异。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let path = [];
+
+        // 简化版亲属关系映射
+        const relMap = {
+            '爸爸': {'爸爸':'爷爷','妈妈':'奶奶','哥哥':'伯父','弟弟':'叔叔','姐姐':'姑姑','妹妹':'姑姑'},
+            '妈妈': {'爸爸':'外公','妈妈':'外婆','哥哥':'舅舅','弟弟':'舅舅','姐姐':'阿姨','妹妹':'阿姨'},
+            '爸爸,爸爸': '爷爷', '爸爸,妈妈': '奶奶',
+            '妈妈,爸爸': '外公', '妈妈,妈妈': '外婆',
+            '爸爸,哥哥': '伯父', '爸爸,弟弟': '叔叔',
+            '爸爸,姐姐': '姑姑', '爸爸,妹妹': '姑姑',
+            '妈妈,哥哥': '舅舅', '妈妈,弟弟': '舅舅',
+            '妈妈,姐姐': '阿姨', '妈妈,妹妹': '阿姨',
+            '哥哥': '哥哥', '弟弟': '弟弟', '姐姐': '姐姐', '妹妹': '妹妹',
+            '儿子': '儿子', '女儿': '女儿',
+            '丈夫': '丈夫', '妻子': '妻子',
+            '哥哥,儿子': '侄子', '哥哥,女儿': '侄女',
+            '弟弟,儿子': '侄子', '弟弟,女儿': '侄女',
+            '姐姐,儿子': '外甥', '姐姐,女儿': '外甥女',
+            '妹妹,儿子': '外甥', '妹妹,女儿': '外甥女',
+            '爸爸,哥哥,儿子': '堂哥/堂弟',
+            '爸爸,哥哥,女儿': '堂姐/堂妹',
+            '爸爸,弟弟,儿子': '堂哥/堂弟',
+            '爸爸,弟弟,女儿': '堂姐/堂妹',
+            '爸爸,姐姐,儿子': '表哥/表弟',
+            '爸爸,姐姐,女儿': '表姐/表妹',
+            '爸爸,妹妹,儿子': '表哥/表弟',
+            '爸爸,妹妹,女儿': '表姐/表妹',
+            '妈妈,哥哥,儿子': '表哥/表弟',
+            '妈妈,哥哥,女儿': '表姐/表妹',
+            '妈妈,弟弟,儿子': '表哥/表弟',
+            '妈妈,弟弟,女儿': '表姐/表妹',
+            '妈妈,姐姐,儿子': '表哥/表弟',
+            '妈妈,姐姐,女儿': '表姐/表妹',
+            '妈妈,妹妹,儿子': '表哥/表弟',
+            '妈妈,妹妹,女儿': '表姐/表妹',
+            '爸爸,爸爸,爸爸': '曾祖父',
+            '爸爸,爸爸,妈妈': '曾祖母',
+            '妈妈,爸爸,爸爸': '外曾祖父',
+            '妈妈,爸爸,妈妈': '外曾祖母',
+            '儿子,儿子': '孙子', '儿子,女儿': '孙女',
+            '女儿,儿子': '外孙', '女儿,女儿': '外孙女',
+            '爸爸,哥哥,妻子': '伯母',
+            '爸爸,弟弟,妻子': '婶婶',
+            '妈妈,哥哥,妻子': '舅妈',
+            '妈妈,弟弟,妻子': '舅妈',
+            '爸爸,姐姐,丈夫': '姑父',
+            '爸爸,妹妹,丈夫': '姑父',
+            '妈妈,姐姐,丈夫': '姨父',
+            '妈妈,妹妹,丈夫': '姨父',
+            '丈夫,爸爸': '公公', '丈夫,妈妈': '婆婆',
+            '妻子,爸爸': '岳父', '妻子,妈妈': '岳母',
+            '丈夫,哥哥': '大伯子', '丈夫,弟弟': '小叔子',
+            '丈夫,姐姐': '大姑子', '丈夫,妹妹': '小姑子',
+            '妻子,哥哥': '大舅子', '妻子,弟弟': '小舅子',
+            '妻子,姐姐': '大姨子', '妻子,妹妹': '小姨子',
+        };
+
+        function add(rel) {
+            path.push(rel);
+            update();
+        }
+
+        function undo() {
+            path.pop();
+            update();
+        }
+
+        function reset() {
+            path = [];
+            update();
+        }
+
+        function update() {
+            const chainStr = path.length > 0 ? '我 → ' + path.join(' → ') : '我';
+            document.getElementById('chain').textContent = chainStr;
+
+            if (path.length > 0) {
+                const key = path.join(',');
+                const title = relMap[key];
+                if (title) {
+                    document.getElementById('rTitle').textContent = title;
+                    document.getElementById('result').classList.remove('hidden');
+                } else {
+                    document.getElementById('rTitle').textContent = '🤔 关系较复杂，暂未收录';
+                    document.getElementById('result').classList.remove('hidden');
+                }
+            } else {
+                document.getElementById('result').classList.add('hidden');
+            }
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

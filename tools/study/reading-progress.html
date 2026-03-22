@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>阅读进度 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">悦读进度跟踪管家</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s italic">量化你的阅读路，见证每一页的成长。📚</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white shadow-2xl animate-item" style="animation-delay: 0.2s">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="relative group">
+                    <label class="block text-[10px] font-black text-pink-300 mb-2 uppercase tracking-[0.2em] pl-4 text-left">Book Title 书名</label>
+                    <input type="text" id="bookName" placeholder="例如：活着" class="w-full p-4 bg-slate-50 rounded-[1.5rem] border-2 border-slate-50 outline-none focus:border-pink-100 focus:bg-white text-sm font-bold shadow-inner text-slate-700">
+                </div>
+                <div class="relative group">
+                    <label class="block text-[10px] font-black text-pink-300 mb-2 uppercase tracking-[0.2em] pl-4 text-left">Total Pages 总页数</label>
+                    <input type="number" id="totalPages" placeholder="例如：320" class="w-full p-4 bg-slate-50 rounded-[1.5rem] border-2 border-slate-50 outline-none focus:border-pink-100 focus:bg-white text-sm font-bold shadow-inner text-slate-700">
+                </div>
+                <div class="relative group">
+                    <label class="block text-[10px] font-black text-pink-300 mb-2 uppercase tracking-[0.2em] pl-4 text-left">Current 当前页</label>
+                    <input type="number" id="currentPage" placeholder="例如：45" class="w-full p-4 bg-slate-50 rounded-[1.5rem] border-2 border-slate-50 outline-none focus:border-pink-100 focus:bg-white text-sm font-bold shadow-inner text-slate-700">
+                </div>
+            </div>
+            <button onclick="add()" class="w-full py-5 bg-pink-400 text-white font-black rounded-3xl shadow-xl hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-lg mb-12 flex items-center justify-center gap-3">
+                📗 <span>添加新书到书架</span> <span class="text-white/50 text-xs font-black uppercase tracking-widest">(ADD BOOK)</span>
+            </button>
+
+            <div class="text-left pt-10 border-t border-slate-50">
+                <h3 class="text-[10px] font-black text-pink-300 uppercase tracking-[0.4em] mb-10 flex items-center gap-2">
+                    <span class="w-3 h-3 bg-pink-400 rounded-full"></span> My Reading Library
+                </h3>
+                <div class="grid grid-cols-1 gap-6" id="books">
+                    <!-- Books loaded via JS -->
+                </div>
+            </div>
+        </section>
+        
+        <footer class="text-gray-300 text-[10px] uppercase font-black tracking-[0.4em] pb-12 animate-item" style="animation-delay: 0.3s">
+            Personal Knowledge Management System
+        </footer>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let books = JSON.parse(localStorage.getItem('qReadProgress') || '[]');
+        function save(){localStorage.setItem('qReadProgress', JSON.stringify(books));}
+        
+        function add(){
+            const name = document.getElementById('bookName').value.trim();
+            const total = parseInt(document.getElementById('totalPages').value);
+            const cur = parseInt(document.getElementById('currentPage').value) || 0;
+            
+            if(!name || !total || total <= 0){
+                Utils.toast('请填写完整的书名和有效总页数哦 📖', 'warning');
+                return;
+            }
+            if(cur < 0 || cur > total) {
+                Utils.toast('当前进度输入有误', 'warning');
+                return;
+            }
+            
+            books.unshift({name, total, current: cur, id: Date.now()});
+            save();
+            render();
+            document.getElementById('bookName').value = '';
+            document.getElementById('totalPages').value = '';
+            document.getElementById('currentPage').value = '';
+            Utils.toast('书籍已同步至云端 ✨', 'success');
+        }
+
+        function update(id, page){
+            const b = books.find(b => b.id === id);
+            if(b){
+                b.current = Math.max(0, Math.min(page, b.total));
+                save();
+                render();
+            }
+        }
+
+        function del(id){
+            if(confirm('确定要移出书架吗？')) {
+                books = books.filter(b => b.id !== id);
+                save();
+                render();
+                Utils.toast('书籍已从书架移除 🗑️');
+            }
+        }
+
+        function render(){
+            const container = document.getElementById('books');
+            if(books.length === 0) {
+                container.innerHTML = `
+                    <div class="p-16 bg-slate-50 rounded-[3rem] border-2 border-dashed border-slate-100 text-center flex flex-col items-center">
+                        <span class="text-5xl mb-4 opacity-20">📚</span>
+                        <p class="text-gray-300 italic text-sm font-medium tracking-tight">书架空空如也，开启你的阅读计划吧</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = books.map((b, i) => {
+                const pct = Math.round(b.current / b.total * 100);
+                const isDone = pct === 100;
+                return `
+                <div class="group p-8 bg-white border border-pink-50 rounded-[3rem] shadow-sm animate-fade-in relative overflow-hidden hover:shadow-xl transition-all" style="animation-delay: ${i * 0.1}s">
+                    <div class="flex justify-between items-start mb-6 relative z-10">
+                        <div class="flex flex-col gap-1">
+                            <h4 class="text-xl font-black text-slate-800 tracking-tight group-hover:text-pink-500 transition-colors">${b.name}</h4>
+                            <div class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full ${isDone ? 'bg-green-400' : 'bg-pink-400 animate-pulse'}"></span>
+                                <p class="text-[9px] text-gray-400 font-black uppercase tracking-[0.2em]">${isDone ? 'Mission Completed' : 'Growing Progress'}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="text-right">
+                                <span class="text-3xl font-black text-pink-400 tracking-tighter leading-none">${pct}%</span>
+                            </div>
+                            <button onclick="del(${b.id})" class="w-10 h-10 rounded-2xl bg-rose-50 text-rose-300 hover:bg-rose-500 hover:text-white transition-all text-sm flex items-center justify-center shadow-sm">🗑️</button>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full bg-slate-100 rounded-full h-4 mb-8 relative overflow-hidden shadow-inner">
+                        <div class="bg-gradient-to-r ${isDone ? 'from-green-400 to-green-500' : 'from-pink-300 via-rose-400 to-pink-500'} h-full rounded-full transition-all duration-1000 ease-out" style="width:${pct}%">
+                            <div class="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.2)25%,transparent 25%,transparent 50%,rgba(255,255,255,0.2)50%,rgba(255,255,255,0.2)75%,transparent 75%,transparent)] bg-[length:20px_20px]"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between mt-2">
+                        <div class="flex items-center gap-4 bg-slate-50 p-2 pl-4 rounded-2xl shadow-inner border border-slate-50">
+                             <span class="text-[10px] text-slate-300 font-black uppercase tracking-widest leading-none">P.</span>
+                             <input type="number" value="${b.current}" onchange="update(${b.id}, parseInt(this.value))" class="w-20 bg-transparent border-none text-sm font-black text-slate-700 outline-none text-center">
+                             <span class="text-[10px] text-slate-400 font-black tracking-widest leading-none opacity-50">/ ${b.total} 总页</span>
+                        </div>
+                        <div class="flex gap-2">
+                             <button onclick="update(${b.id}, ${b.current + 1})" class="p-2.5 bg-pink-50 text-pink-400 rounded-xl hover:bg-pink-400 hover:text-white transition-all text-xs font-black shadow-sm">+1</button>
+                             <button onclick="update(${b.id}, ${b.total})" class="p-2.5 bg-slate-100 text-slate-400 rounded-xl hover:bg-slate-800 hover:text-white transition-all text-xs font-black shadow-sm">FINISH</button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    render();
+                }, 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button') || e.target.closest('.group')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

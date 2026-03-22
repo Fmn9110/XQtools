@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CPS点击速度测试 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">⚡ CPS <span class="gradient-text">速度测试</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">挑战你的手指极限。你是钢琴家还是手残党？✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white text-center animate-item" style="animation-delay: 0.2s">
+            <div class="grid grid-cols-3 gap-4 mb-10 animate-item" style="animation-delay: 0.3s">
+                <div class="bg-pink-50/50 rounded-2xl p-4 md:p-6 border border-pink-100/30">
+                    <p class="text-2xl md:text-4xl font-black text-pink-500" id="cpsVal">0.0</p>
+                    <p class="text-[10px] font-black text-pink-300 uppercase tracking-widest mt-1">CPS的速度</p>
+                </div>
+                <div class="bg-indigo-50/50 rounded-2xl p-4 md:p-6 border border-indigo-100/30">
+                    <p class="text-2xl md:text-4xl font-black text-indigo-500" id="clicks">0</p>
+                    <p class="text-[10px] font-black text-indigo-300 uppercase tracking-widest mt-1">总计点击</p>
+                </div>
+                <div class="bg-orange-50/50 rounded-2xl p-4 md:p-6 border border-orange-100/30">
+                    <p class="text-2xl md:text-4xl font-black text-orange-500" id="timer">10</p>
+                    <p class="text-[10px] font-black text-orange-300 uppercase tracking-widest mt-1">剩余时间</p>
+                </div>
+            </div>
+
+            <button onmousedown="clickBtn()" id="clickArea" class="w-56 h-56 md:w-72 md:h-72 rounded-full bg-gradient-to-br from-pink-400 to-orange-300 text-white text-2xl font-black shadow-[0_20px_60px_-15px_rgba(244,114,182,0.4)] mx-auto block active:scale-90 transition-all select-none border-8 border-white animate-item relative overflow-hidden group" style="animation-delay: 0.4s">
+                <div class="absolute inset-0 bg-white opacity-0 group-active:opacity-20 transition-opacity"></div>
+                <span id="btnText">READY?<br><span class="text-sm font-bold opacity-70">点击开始</span></span>
+            </button>
+            
+            <div id="resultBox" class="hidden mt-10 animate-item">
+                <div class="bg-gradient-to-br from-pink-50 to-orange-50 rounded-[2.5rem] p-8 md:p-12 border-2 border-pink-100/50 shadow-inner group">
+                    <div class="text-6xl mb-6 group-hover:scale-110 transition-transform cursor-default" id="resultEmoji">🐢</div>
+                    <p class="text-2xl md:text-4xl font-black text-gray-800 mb-2" id="resultRank">正在评估...</p>
+                    <p class="text-gray-400 font-bold mb-8">最终得分: <span class="text-pink-500" id="resultCPS">0.0</span> 点击/秒</p>
+                    <button onclick="resetGame()" class="theme-download-btn px-10 py-5 text-xl">🔄 不服，再战一次</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.5s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">📖</span>
+                    段位规则
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50">
+                    <ul class="space-y-3 text-gray-600 text-sm">
+                        <li class="flex justify-between items-center"><span class="font-bold">⚡ 超神 (Godlike)</span> <span class="text-pink-400">12+ CPS</span></li>
+                        <li class="flex justify-between items-center"><span class="font-bold">🚀 闪电 (Flash)</span> <span class="text-indigo-400">9 - 12 CPS</span></li>
+                        <li class="flex justify-between items-center"><span class="font-bold">🏃 飞奔 (Runner)</span> <span class="text-emerald-400">7 - 9 CPS</span></li>
+                        <li class="flex justify-between items-center"><span class="font-bold">🚶 常人 (Normal)</span> <span class="text-orange-400">5 - 7 CPS</span></li>
+                        <li class="flex justify-between items-center"><span class="font-bold">🐌 慢爬 (Turtle)</span> <span class="text-gray-400">5 以下</span></li>
+                    </ul>
+                </div>
+            </section>
+            <section class="animate-item" style="animation-delay: 0.6s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">✨</span>
+                    技巧秘籍
+                </h2>
+                <div class="bg-white p-6 rounded-2xl border border-pink-50 shadow-sm leading-relaxed">
+                    <p class="text-gray-500 text-sm">手腕放松，指尖轻触。尝试使用“颤指”或“抖动”点击法，能有效突破物理瓶颈。建议使用实体鼠标或高采样率触摸屏。🔥</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let clicks = 0, started = false, ended = false, interval = null;
+        const DURATION = 10;
+        let timeLeft = DURATION;
+
+        function clickBtn() {
+            if (ended) return;
+            if (!started) {
+                started = true;
+                timeLeft = DURATION;
+                clicks = 0;
+                document.getElementById('btnText').innerHTML = 'GO! GO! GO!<br><span class="text-sm font-bold opacity-70">全力输出</span>';
+                document.getElementById('clickArea').classList.add('animate-pulse');
+                
+                interval = setInterval(() => {
+                    timeLeft--;
+                    document.getElementById('timer').textContent = timeLeft;
+                    const cps = (clicks / (DURATION - timeLeft)).toFixed(1);
+                    document.getElementById('cpsVal').textContent = isFinite(cps) ? cps : '0.0';
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(interval);
+                        finish();
+                    }
+                }, 1000);
+            }
+            clicks++;
+            document.getElementById('clicks').textContent = clicks;
+        }
+
+        function finish() {
+            ended = true;
+            document.getElementById('clickArea').classList.remove('animate-pulse');
+            document.getElementById('btnText').innerHTML = 'FINISH<br><span class="text-sm font-bold opacity-70">测试结束</span>';
+            
+            const finalCPS = (clicks / DURATION).toFixed(1);
+            document.getElementById('resultCPS').textContent = finalCPS;
+            
+            let rank = '', emoji = '';
+            if (finalCPS >= 12) { rank = '超神手速！'; emoji = '⚡'; }
+            else if (finalCPS >= 9) { rank = '雷鸣之手！'; emoji = '🚀'; }
+            else if (finalCPS >= 7) { rank = '疾风使者'; emoji = '🏃'; }
+            else if (finalCPS >= 5) { rank = '平庸之辈'; emoji = '🚶'; }
+            else { rank = '慢如蜗牛'; emoji = '🐌'; }
+            
+            document.getElementById('resultRank').textContent = rank;
+            document.getElementById('resultEmoji').textContent = emoji;
+            document.getElementById('resultBox').classList.remove('hidden');
+            document.getElementById('clickArea').classList.add('hidden');
+            Utils.toast('测试完成！', 'success');
+        }
+
+        function resetGame() {
+            clicks = 0; started = false; ended = false; timeLeft = DURATION;
+            document.getElementById('clicks').textContent = 0;
+            document.getElementById('timer').textContent = DURATION;
+            document.getElementById('cpsVal').textContent = '0.0';
+            document.getElementById('btnText').innerHTML = 'READY?<br><span class="text-sm font-bold opacity-70">点击开始</span>';
+            document.getElementById('resultBox').classList.add('hidden');
+            document.getElementById('clickArea').classList.remove('hidden');
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>虚拟颜值打分 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">✨ 虚拟 <span class="gradient-text">颜值打分</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">基于姓名哈希的趣味测评。虽然是开玩笑，但万一真的很准呢？💖</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white text-center animate-item" style="animation-delay: 0.2s">
+            <div class="max-w-md mx-auto">
+                <div class="relative mb-6 group">
+                    <input type="text" id="faceName" placeholder=" " class="w-full p-5 bg-pink-50/30 rounded-2xl border-2 border-transparent focus:border-pink-200 outline-none text-center text-xl font-bold text-gray-700 transition-all peer">
+                    <label class="absolute left-1/2 -translate-x-1/2 top-5 text-gray-400 pointer-events-none transition-all peer-focus:-top-3 peer-focus:text-xs peer-focus:text-pink-400 peer-focus:font-black peer-[&:not(:placeholder-shown)]:-top-3 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:text-pink-400 bg-white px-2">输入你的名字</label>
+                </div>
+                
+                <button onclick="genScore()" class="theme-download-btn w-full py-5 text-xl mb-10">💖 开启心动评分</button>
+            </div>
+
+            <div id="scoreResult" class="hidden mt-6 animate-item">
+                <div class="bg-gradient-to-br from-pink-50/70 to-indigo-50/50 rounded-[2.5rem] p-8 md:p-12 border-2 border-pink-100/50 shadow-inner group">
+                    <p class="text-7xl md:text-8xl font-black text-pink-500 mb-4 tracking-tighter" id="scoreVal">0</p>
+                    
+                    <div class="w-full max-w-sm mx-auto bg-white/50 rounded-full h-4 mb-8 border border-pink-100/30 overflow-hidden">
+                        <div id="scoreBar" class="bg-gradient-to-r from-pink-400 to-indigo-400 h-full rounded-full transition-all duration-1000 ease-out shadow-lg" style="width: 0%"></div>
+                    </div>
+
+                    <p class="text-2xl md:text-3xl font-black text-gray-800 mb-3" id="scoreTitle"></p>
+                    <p class="text-gray-500 text-sm leading-relaxed max-w-xs mx-auto" id="scoreDesc"></p>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.5s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">📖</span>
+                    关于算法
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50 leading-relaxed text-gray-600 text-sm">
+                    <p>我们的“心动算法”通过对您的姓名进行高阶哈希映射，计算出在该姓名维度下的唯一魅力指标。这意味着同一个名字，在我们的宇宙里永远拥有恒定的颜值定位。</p>
+                </div>
+            </section>
+            <section class="animate-item" style="animation-delay: 0.6s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">✨</span>
+                    娱乐至上
+                </h2>
+                <div class="bg-white p-6 rounded-2xl border border-pink-50 shadow-sm leading-relaxed text-gray-500 text-sm">
+                    <p>容貌只是表象，灵魂自有芳香。本工具仅供聚会调侃、破冰互动使用。无论评分如何，请记住：自信的你，本身就是最美的风景。🌟</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        function hashStr(str) { 
+            let h=0; 
+            for(let i=0;i<str.length;i++){
+                h=((h<<5)-h)+str.charCodeAt(i);
+                h|=0;
+            } 
+            return Math.abs(h); 
+        }
+
+        const levels = [
+            {min:95,title:'绝世颜王',desc:'属于那种“全人类共同审美”的存在，空气都为你凝固了！',emoji:'👑'},
+            {min:88,title:'倾国倾城',desc:'回头率300%，你是落入凡间的小仙女/小王子吗？',emoji:'🌟'},
+            {min:80,title:'心动讯号',desc:'你的笑容拥有治愈世界的超能力，妥妥的高颜值代表。',emoji:'💕'},
+            {min:70,title:'氧气青年',desc:'邻家般清新自然，干净透亮。走在路上非常抓眼球！',emoji:'😊'},
+            {min:60,title:'气质之选',desc:'耐看型选手，属于越相处越觉得魅力无穷的类型。',emoji:'🙂'},
+            {min:0,title:'实力偶像',desc:'颜值与才华并存，靠人格魅力就能征服银河系！',emoji:'💪'},
+        ];
+
+        function genScore() {
+            const name = document.getElementById('faceName').value.trim();
+            if (!name) { 
+                Utils.toast('请输入你的名字哦', 'info');
+                return; 
+            }
+            
+            // Result box shown
+            document.getElementById('scoreResult').classList.remove('hidden');
+            
+            // Map hash to 65-99 range for more optimism
+            const score = 65 + (hashStr(name) % 35);
+            const level = levels.find(l => score >= l.min);
+            
+            // Animated number counting
+            let current = 0;
+            const target = score;
+            const step = () => {
+                if(current < target) {
+                    current += Math.ceil((target - current) / 10);
+                    document.getElementById('scoreVal').innerText = current;
+                    setTimeout(step, 30);
+                } else {
+                    document.getElementById('scoreVal').innerText = target;
+                }
+            };
+            step();
+
+            setTimeout(() => {
+                document.getElementById('scoreBar').style.width = score + '%';
+            }, 100);
+            
+            document.getElementById('scoreTitle').textContent = `${level.emoji} ${level.title}`;
+            document.getElementById('scoreDesc').textContent = level.desc;
+            Utils.toast('测评已生成 ✨', 'success');
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

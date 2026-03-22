@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>子网计算器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen pb-20 md:pb-0">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4">子网计算 (CIDR)</h1>
+            <p class="text-gray-500 italic">计算 IP 地址范围、子网掩码、广播地址及可用主机数。🌐</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 bg-white shadow-xl mb-12">
+            <div class="flex flex-col md:flex-row gap-4 mb-10">
+                 <div class="flex-1 relative group">
+                    <label class="block text-[10px] font-bold text-pink-300 uppercase tracking-widest mb-2 ml-2 text-left">IP 地址</label>
+                    <input type="text" id="ip" class="w-full p-6 bg-pink-50/20 border-2 border-pink-50 rounded-[2.5rem] text-xl font-black text-center outline-none focus:border-pink-200 transition-all shadow-inner" value="192.168.1.1">
+                 </div>
+                 <div class="w-full md:w-32 relative group">
+                    <label class="block text-[10px] font-bold text-pink-300 uppercase tracking-widest mb-2 ml-2 text-left">掩码 (CIDR)</label>
+                    <input type="number" id="mask" class="w-full p-6 bg-pink-50/20 border-2 border-pink-50 rounded-[2.5rem] text-xl font-black text-center outline-none focus:border-pink-200 transition-all shadow-inner" value="24" min="0" max="32">
+                 </div>
+            </div>
+            
+            <div id="resBox" class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                 <div class="p-8 bg-pink-50/30 rounded-[2.5rem] border border-pink-50 shadow-inner">
+                     <p class="text-[10px] text-pink-300 font-bold uppercase tracking-widest mb-2">网段范围</p>
+                     <p id="range" class="text-lg font-mono font-bold text-gray-700">192.168.1.0 - 192.168.1.255</p>
+                 </div>
+                 <div class="p-8 bg-pink-50/30 rounded-[2.5rem] border border-pink-50 shadow-inner">
+                     <p class="text-[10px] text-pink-300 font-bold uppercase tracking-widest mb-2">子网掩码</p>
+                     <p id="subnet" class="text-lg font-mono font-bold text-gray-700">255.255.255.0</p>
+                 </div>
+            </div>
+        </section>
+    </main>
+
+
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const ipInput = document.getElementById('ip');
+        const maskInput = document.getElementById('mask');
+        const rangeEl = document.getElementById('range');
+        const subnetEl = document.getElementById('subnet');
+
+        function ipToLong(ip) {
+            return ip.split('.').reduce((long, octet) => (long << 8) + parseInt(octet), 0) >>> 0;
+        }
+
+        function longToIp(long) {
+            return [
+                (long >>> 24) & 0xFF,
+                (long >>> 16) & 0xFF,
+                (long >>> 8) & 0xFF,
+                long & 0xFF
+            ].join('.');
+        }
+
+        function update() {
+            const ip = ipInput.value.trim();
+            const mask = parseInt(maskInput.value);
+
+            if (!/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(ip)) return;
+            if (isNaN(mask) || mask < 0 || mask > 32) return;
+
+            const ipLong = ipToLong(ip);
+            const netmaskLong = (0xFFFFFFFF << (32 - mask)) >>> 0;
+            const networkLong = (ipLong & netmaskLong) >>> 0;
+            const broadcastLong = (networkLong | ~netmaskLong) >>> 0;
+
+            rangeEl.innerText = `${longToIp(networkLong)} - ${longToIp(broadcastLong)}`;
+            subnetEl.innerText = longToIp(netmaskLong);
+            
+            // Toasts can be overwhelming during typing
+        }
+
+        ipInput.oninput = update;
+        maskInput.oninput = update;
+        update();
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SMART 学习规划 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        textarea { transition: all 0.3s ease; }
+        textarea:focus { transform: translateY(-2px); }
+        @media print { .no-print { display: none !important; } .cute-card { box-shadow: none !important; padding: 0 !important; } }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6 shadow-sm no-print">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-5xl text-center">
+        <header class="mb-10 md:mb-14 no-print">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-800 mb-4 animate-item">SMART 战略目标画布</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s italic italic">将模糊的愿望转化为具体的路径。科学规划，使命必达。🎯</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-14 mb-12 bg-white shadow-2xl animate-item text-left relative overflow-hidden" style="animation-delay: 0.2s">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <!-- S -->
+                <div class="group">
+                    <div class="flex items-center gap-4 mb-4">
+                        <span class="w-12 h-12 rounded-[1.2rem] bg-rose-100 flex items-center justify-center text-rose-500 font-black text-xl shadow-sm">S</span>
+                        <div class="flex flex-col">
+                             <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none mb-1">Specific</label>
+                             <span class="text-xs font-black text-rose-400">明确性</span>
+                        </div>
+                    </div>
+                    <textarea id="s_val" class="goal-input w-full p-6 bg-slate-50 border-2 border-slate-50 rounded-[2.5rem] outline-none focus:bg-white focus:border-rose-100 focus:shadow-xl transition-all text-sm font-bold text-slate-700 resize-none shadow-inner leading-relaxed" rows="4" placeholder="具体目标是什么？&#10;好的：下月英语四级模拟达到 550 分&#10;坏的：提高英语水平"></textarea>
+                </div>
+                <!-- M -->
+                <div class="group">
+                    <div class="flex items-center gap-4 mb-4">
+                        <span class="w-12 h-12 rounded-[1.2rem] bg-sky-100 flex items-center justify-center text-sky-500 font-black text-xl shadow-sm">M</span>
+                        <div class="flex flex-col">
+                             <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none mb-1">Measurable</label>
+                             <span class="text-xs font-black text-sky-400">可衡量性</span>
+                        </div>
+                    </div>
+                    <textarea id="m_val" class="goal-input w-full p-6 bg-slate-50 border-2 border-slate-50 rounded-[2.5rem] outline-none focus:bg-white focus:border-sky-100 focus:shadow-xl transition-all text-sm font-bold text-slate-700 resize-none shadow-inner leading-relaxed" rows="4" placeholder="如何衡量是否成功？&#10;例如：真题卷准确率稳定在 80% 以上，听力错误不超过 5 个"></textarea>
+                </div>
+                <!-- A -->
+                <div class="group">
+                    <div class="flex items-center gap-4 mb-4">
+                        <span class="w-12 h-12 rounded-[1.2rem] bg-violet-100 flex items-center justify-center text-violet-500 font-black text-xl shadow-sm">A</span>
+                        <div class="flex flex-col">
+                             <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none mb-1">Attainable</label>
+                             <span class="text-xs font-black text-violet-400">可实现性</span>
+                        </div>
+                    </div>
+                    <textarea id="a_val" class="goal-input w-full p-6 bg-slate-50 border-2 border-slate-50 rounded-[2.5rem] outline-none focus:bg-white focus:border-violet-100 focus:shadow-xl transition-all text-sm font-bold text-slate-700 resize-none shadow-inner leading-relaxed" rows="4" placeholder="需要哪些资源和行动？&#10;例如：每日早上 7:00 背诵单词，每周六进行一套限时模拟"></textarea>
+                </div>
+                <!-- R -->
+                <div class="group">
+                    <div class="flex items-center gap-4 mb-4">
+                        <span class="w-12 h-12 rounded-[1.2rem] bg-amber-100 flex items-center justify-center text-amber-600 font-black text-xl shadow-sm">R</span>
+                        <div class="flex flex-col">
+                             <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none mb-1">Relevant</label>
+                             <span class="text-xs font-black text-amber-500">相关性</span>
+                        </div>
+                    </div>
+                    <textarea id="r_val" class="goal-input w-full p-6 bg-slate-50 border-2 border-slate-50 rounded-[2.5rem] outline-none focus:bg-white focus:border-amber-100 focus:shadow-xl transition-all text-sm font-bold text-slate-700 resize-none shadow-inner leading-relaxed" rows="4" placeholder="该目标对你而言为何重要？&#10;例如：拿到四级证书是研学申请的门槛，能提升我的职场竞争力"></textarea>
+                </div>
+                <!-- T -->
+                <div class="col-span-1 md:col-span-2 group">
+                    <div class="flex items-center gap-4 mb-4">
+                        <span class="w-12 h-12 rounded-[1.2rem] bg-emerald-100 flex items-center justify-center text-emerald-500 font-black text-xl shadow-sm">T</span>
+                        <div class="flex flex-col">
+                             <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none mb-1">Time-bound</label>
+                             <span class="text-xs font-black text-emerald-400">时限性</span>
+                        </div>
+                    </div>
+                    <textarea id="t_val" class="goal-input w-full p-6 bg-slate-50 border-2 border-slate-50 rounded-[2.5rem] outline-none focus:bg-white focus:border-emerald-100 focus:shadow-xl transition-all text-sm font-bold text-slate-700 resize-none shadow-inner leading-relaxed" rows="3" placeholder="明确的截止日期是？&#10;例如：2026 年 6 月 15 日前完成所有真题回顾并参加考试"></textarea>
+                </div>
+            </div>
+
+            <div class="mt-12 pt-10 border-t border-slate-100 flex flex-col md:flex-row gap-4 no-print">
+                 <button onclick="window.print()" class="flex-[2] py-6 bg-pink-400 text-white font-black rounded-3xl shadow-xl hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-xl flex items-center justify-center gap-3">
+                    🖨️ 导出目标蓝图 (PRINT)
+                 </button>
+                 <button onclick="clearAll()" class="flex-1 py-6 bg-slate-50 text-slate-400 font-bold rounded-3xl hover:bg-slate-100 transition-all text-sm uppercase tracking-widest">
+                    Reset Matrix 🧹
+                 </button>
+            </div>
+            
+            <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-pink-50/20 rounded-full blur-3xl pointer-events-none"></div>
+        </section>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 animate-item no-print" style="animation-delay: 0.3s">
+            <div class="p-8 bg-white rounded-[3rem] border border-pink-50 text-left shadow-sm">
+                <div class="w-10 h-10 bg-pink-50 text-pink-400 rounded-2xl flex items-center justify-center mb-4 text-xl">💡</div>
+                <p class="text-slate-800 font-black mb-3 tracking-tight text-lg leading-none">什么是 SMART？</p>
+                <p class="text-[11px] text-slate-400 leading-loose font-medium">SMART 是一套经典的效能模型，旨在将模糊的愿望量化为可执行的指令，确保精力投入产出比最大化。</p>
+            </div>
+            <div class="p-8 bg-white rounded-[3rem] border border-pink-50 text-left shadow-sm">
+                <div class="w-10 h-10 bg-sky-50 text-sky-400 rounded-2xl flex items-center justify-center mb-4 text-xl">⏳</div>
+                <p class="text-slate-800 font-black mb-3 tracking-tight text-lg leading-none">为何需要它？</p>
+                <p class="text-[11px] text-slate-400 leading-loose font-medium">人类的大脑倾向于逃避不明确的任务。通过限时与量化，能瞬间降低“启动成本”，终结严重的学习拖延症。⏳</p>
+            </div>
+             <div class="p-8 bg-white rounded-[3rem] border border-pink-50 text-left shadow-sm">
+                <div class="w-10 h-10 bg-emerald-50 text-emerald-400 rounded-2xl flex items-center justify-center mb-4 text-xl">🗺️</div>
+                <p class="text-slate-800 font-black mb-3 tracking-tight text-lg leading-none">如何应用？</p>
+                <p class="text-[11px] text-slate-400 leading-loose font-medium">将此蓝图贴在桌面显眼处。每周日晚进行一次进度 Review，根据反馈动态优化你的 Attainable (路径) 资源。🗺️</p>
+            </div>
+        </div>
+
+        <p class="text-[10px] text-gray-300 font-bold uppercase tracking-[0.4em] pb-12 animate-item no-print" style="animation-delay: 0.4s">
+            High-Performance Goal Achievement Infrastructure
+        </p>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const inputs = ['s_val', 'm_val', 'a_val', 'r_val', 't_val'];
+
+        // Initial Load
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    loadStorage();
+                }, 500);
+            }
+        });
+
+        function loadStorage() {
+            inputs.forEach(id => {
+                const val = localStorage.getItem('qSmartGoal_' + id);
+                if (val) document.getElementById(id).value = val;
+                
+                // Auto-save setup
+                document.getElementById(id).addEventListener('input', (e) => {
+                    localStorage.setItem('qSmartGoal_' + id, e.target.value);
+                });
+            });
+        }
+
+        function clearAll() {
+            if(confirm('确定要清空当前的 SMART 画布吗？')) {
+                inputs.forEach(id => {
+                    document.getElementById(id).value = '';
+                    localStorage.removeItem('qSmartGoal_' + id);
+                });
+                Utils.toast('画布已重置 🗃️', 'info');
+            }
+        }
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button') || e.target.closest('textarea')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>世界时钟 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50"><div class="container mx-auto flex justify-between items-center"><div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'"><div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div><span class="text-2xl font-bold gradient-text">小Q工具箱</span></div><a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a></div></nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">🌍 世界时钟</h1>
+            <p class="text-gray-500">一目了然地查看全球各大城市的当前时间</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4" id="clocks"></div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center"><span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">!</span>使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>页面打开后自动显示各城市当前时间。</li><li>时间每秒自动更新。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">时间准确吗？</div><div class="text-gray-500 text-sm">基于你的系统时间和时区偏移量计算，准确性取决于你的系统时间设置。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const cities = [
+            {name:'北京',tz:'Asia/Shanghai',emoji:'🇨🇳',color:'bg-red-50 border-red-200'},
+            {name:'东京',tz:'Asia/Tokyo',emoji:'🇯🇵',color:'bg-pink-50 border-pink-200'},
+            {name:'纽约',tz:'America/New_York',emoji:'🇺🇸',color:'bg-blue-50 border-blue-200'},
+            {name:'伦敦',tz:'Europe/London',emoji:'🇬🇧',color:'bg-purple-50 border-purple-200'},
+            {name:'巴黎',tz:'Europe/Paris',emoji:'🇫🇷',color:'bg-indigo-50 border-indigo-200'},
+            {name:'悉尼',tz:'Australia/Sydney',emoji:'🇦🇺',color:'bg-green-50 border-green-200'},
+            {name:'迪拜',tz:'Asia/Dubai',emoji:'🇦🇪',color:'bg-yellow-50 border-yellow-200'},
+            {name:'新加坡',tz:'Asia/Singapore',emoji:'🇸🇬',color:'bg-orange-50 border-orange-200'},
+            {name:'首尔',tz:'Asia/Seoul',emoji:'🇰🇷',color:'bg-sky-50 border-sky-200'},
+            {name:'莫斯科',tz:'Europe/Moscow',emoji:'🇷🇺',color:'bg-emerald-50 border-emerald-200'},
+            {name:'洛杉矶',tz:'America/Los_Angeles',emoji:'🇺🇸',color:'bg-amber-50 border-amber-200'},
+            {name:'柏林',tz:'Europe/Berlin',emoji:'🇩🇪',color:'bg-gray-50 border-gray-200'},
+        ];
+
+        function updateClocks() {
+            const now = new Date();
+            let html = '';
+            cities.forEach(c => {
+                try {
+                    const timeStr = now.toLocaleTimeString('zh-CN', {timeZone: c.tz, hour12: false});
+                    const dateStr = now.toLocaleDateString('zh-CN', {timeZone: c.tz, month:'short', day:'numeric', weekday:'short'});
+                    const hour = parseInt(timeStr.split(':')[0]);
+                    const isNight = hour < 6 || hour >= 20;
+                    html += `<div class="rounded-2xl p-5 border-2 ${c.color} text-center">
+                        <p class="text-xl mb-1">${c.emoji}</p>
+                        <p class="font-bold text-gray-700">${c.name}</p>
+                        <p class="text-3xl font-black text-gray-800 my-2">${timeStr}</p>
+                        <p class="text-xs text-gray-400">${dateStr} ${isNight ? '🌙' : '☀️'}</p>
+                    </div>`;
+                } catch(e) {
+                    html += `<div class="rounded-2xl p-5 border-2 ${c.color} text-center"><p>${c.emoji} ${c.name}</p><p class="text-gray-400">不可用</p></div>`;
+                }
+            });
+            document.getElementById('clocks').innerHTML = html;
+        }
+
+        updateClocks();
+        setInterval(updateClocks, 1000);
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

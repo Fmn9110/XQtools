@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>八音盒 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .piano-key {
+            transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), inset 0 -4px 10px rgba(0, 0, 0, 0.05);
+        }
+        .piano-key:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 4px rgba(0, 0, 0, 0.1);
+        }
+        @keyframes note-float {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-30px); opacity: 0; }
+        }
+        .note-float { animation: note-float 0.8s ease-out forwards; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🎹 简易 <span class="gradient-text">八音盒</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">用指尖编织优美的旋律。✨</p>
+        </header>
+
+        <section class="cute-card p-4 md:p-12 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            
+            <div class="bg-gray-50/50 rounded-[4rem] p-8 md:p-16 mb-12 border-2 border-transparent shadow-inner flex flex-col items-center">
+                <div class="flex justify-center gap-1 w-full max-w-lg mb-10 overflow-x-auto pb-4 no-scrollbar" id="piano">
+                    <!-- Piano keys dynamic -->
+                </div>
+
+                <div class="flex gap-4 justify-center">
+                    <button onclick="playMelody()" class="py-4 px-8 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-2xl shadow-lg shadow-pink-100 transition-all active:scale-95 flex items-center gap-2">
+                        🎶 示范曲目
+                    </button>
+                    <button onclick="clearNotes()" class="py-4 px-8 bg-white border-2 border-pink-50 text-pink-400 hover:bg-pink-50 hover:border-pink-200 font-black rounded-2xl transition-all active:scale-95">
+                        🗑️ 清空记录
+                    </button>
+                </div>
+            </div>
+
+            <div class="relative">
+                <div class="absolute -top-3 left-6 px-4 bg-white text-[10px] font-black text-pink-300 uppercase tracking-widest z-10">Melody History / 旋律足迹</div>
+                <div class="bg-gray-50/50 rounded-3xl p-6 min-h-[60px] flex flex-wrap gap-2 justify-center border-2 border-pink-50/50" id="noteHistory">
+                    <span class="text-gray-300 font-bold italic">点击琴键留下一串音符...</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🎼</span>
+                <p>音乐是心灵的避难所。每一个简单的音符组合，都能在寂静的瞬间开出花来。无论是随性地点击，还是认真地编排，让身心随着律动放松，这就是这个小小八音盒存在的意义。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const notes = [
+            {name:'Do',freq:261.63,color:'bg-rose-400'},
+            {name:'Re',freq:293.66,color:'bg-orange-400'},
+            {name:'Mi',freq:329.63,color:'bg-amber-400'},
+            {name:'Fa',freq:349.23,color:'bg-emerald-400'},
+            {name:'Sol',freq:392.00,color:'bg-sky-400'},
+            {name:'La',freq:440.00,color:'bg-indigo-400'},
+            {name:'Si',freq:493.88,color:'bg-purple-400'},
+            {name:'Do\'',freq:523.25,color:'bg-pink-400'},
+        ];
+        let audioCtx = null;
+        const history = [];
+
+        function initAudio() { 
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); 
+        }
+
+        function playNote(freq, name, color, isAuto = false) {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.8);
+            
+            history.push({name, color});
+            renderHistory();
+
+            if(!isAuto) {
+                // visual effect
+                const key = Array.from(document.querySelectorAll('.piano-key')).find(el => el.textContent.trim() === name);
+                if(key) {
+                    const rect = key.getBoundingClientRect();
+                    const note = document.createElement('div');
+                    note.textContent = '🎵';
+                    note.className = 'fixed pointer-events-none z-50 text-xl note-float';
+                    note.style.left = `${rect.left + rect.width/2 - 10}px`;
+                    note.style.top = `${rect.top - 20}px`;
+                    document.body.appendChild(note);
+                    setTimeout(() => note.remove(), 800);
+                }
+            }
+        }
+
+        function renderHistory() {
+            const box = document.getElementById('noteHistory');
+            if(history.length === 0) {
+                box.innerHTML = '<span class="text-gray-300 font-bold italic">点击琴键留下一串音符...</span>';
+                return;
+            }
+            box.innerHTML = history.slice(-16).map(n => `<span class="px-3 py-1 ${n.color} text-white rounded-full text-[10px] font-black uppercase shadow-sm animate-item">${n.name}</span>`).join('');
+        }
+
+        function clearNotes() { 
+            history.length = 0; 
+            renderHistory(); 
+            Utils.toast('已清空记录 ✨', 'info');
+        }
+
+        async function playMelody() {
+            Utils.toast('正在自动演奏中... 🎵', 'success');
+            const melody = [0,0,4,4,5,5,4,-1,3,3,2,2,1,1,0];
+            for (const idx of melody) {
+                if (idx === -1) { await new Promise(r=>setTimeout(r,400)); continue; }
+                const n = notes[idx];
+                playNote(n.freq, n.name, n.color, true);
+                
+                // key highlight
+                const keys = document.querySelectorAll('.piano-key');
+                keys[idx].classList.add('translate-y-2', 'opacity-80');
+                setTimeout(() => keys[idx].classList.remove('translate-y-2', 'opacity-80'), 200);
+                
+                await new Promise(r => setTimeout(r, 400));
+            }
+        }
+
+        function renderPiano() {
+            let html = '';
+            notes.forEach(n => {
+                html += `<button onclick="playNote(${n.freq},'${n.name}','${n.color}')" 
+                    class="w-12 md:w-16 h-40 md:h-56 ${n.color} piano-key rounded-b-3xl text-white text-xs md:text-sm font-black border-2 border-white/20">
+                    ${n.name}
+                </button>`;
+            });
+            document.getElementById('piano').innerHTML = html;
+        }
+
+        // Initialize
+        renderPiano();
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('.piano-key')) return; // ignore piano clicks for heart drops
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

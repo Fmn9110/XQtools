@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>真心话大冒险 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🔥 聚会 <span class="gradient-text">真心话大冒险</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">开启灵魂考问，挑战生理极限。让今晚的聚会不再有冷场。✨</p>
+        </header>
+
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+             <div class="cute-card p-10 bg-white shadow-2xl flex flex-col items-center animate-item" style="animation-delay: 0.2s">
+                  <div class="w-20 h-20 bg-rose-50 text-rose-500 rounded-3xl flex items-center justify-center text-3xl mb-6 shadow-sm border border-rose-100/50">💬</div>
+                  <h3 class="text-2xl font-black text-gray-800 mb-6 font-serif">真心话</h3>
+                  <div class="w-full bg-rose-50/30 rounded-3xl p-6 mb-8 min-h-[140px] flex items-center justify-center border-2 border-rose-100 shadow-inner group">
+                      <p id="truthText" class="text-gray-600 font-bold text-center leading-relaxed">点击下方按钮抽取内容</p>
+                  </div>
+                  <button onclick="draw('truth')" class="w-full py-4 bg-rose-500 hover:bg-rose-600 text-white font-black rounded-2xl shadow-xl shadow-rose-100 transition-all active:scale-95 text-lg">
+                      💓 诚实告白
+                  </button>
+             </div>
+             
+             <div class="cute-card p-10 bg-white shadow-2xl flex flex-col items-center animate-item" style="animation-delay: 0.3s">
+                  <div class="w-20 h-20 bg-indigo-50 text-indigo-500 rounded-3xl flex items-center justify-center text-3xl mb-6 shadow-sm border border-indigo-100/50">⚡</div>
+                  <h3 class="text-2xl font-black text-gray-800 mb-6 font-serif">大冒险</h3>
+                  <div class="w-full bg-indigo-50/30 rounded-3xl p-6 mb-8 min-h-[140px] flex items-center justify-center border-2 border-indigo-100 shadow-inner group">
+                      <p id="dareText" class="text-gray-600 font-bold text-center leading-relaxed">点击下方按钮抽取内容</p>
+                  </div>
+                  <button onclick="draw('dare')" class="w-full py-4 bg-indigo-500 hover:bg-indigo-600 text-white font-black rounded-2xl shadow-xl shadow-indigo-100 transition-all active:scale-95 text-lg">
+                      🔥 勇敢挑战
+                  </button>
+             </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>游戏虽好，可不要贪玩哦。请在尊重每位参与者的前提下进行。真心话不涉及极端隐私，大冒险不涉及人身安全。让我们在欢笑中增进友谊，在碰撞中发现彼此。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const data = {
+            truth: [
+                "你最后一次哭是因为什么？", "你谈过几次恋爱？", "你认为在场谁最帅/美？", 
+                "如果你能换一种性别生活一天，你会做什么？", "你最尴尬的高中往事是什么？",
+                "你做过最亏心的一件事是什么？", "你第一眼见到这里某人的印象是什么？",
+                "如果可以重来，你会改变人生的哪一刻？", "你最害怕失去什么？",
+                "你有没有暗恋过在座的人？"
+            ],
+            dare: [
+                "对着窗外大喊三声：我是大猪蹄子！", "选择在场的一位异性深情对视10秒。", 
+                "做一个你觉得自己最丑的表情并拍照留念。", "跳一段时下最流行的魔性舞蹈。",
+                "模仿一种动物直到有人猜出来。", "让在座的一位朋友为你画一个搞怪妆容。",
+                "闭眼通过触摸猜测在座的一位是谁。", "向最近的一个非群组好友发'我想你了'。",
+                "做一个倒立或者下腰的动作。", "喝掉一杯由三种不同饮料混合而成的'特调'。"
+            ]
+        };
+
+        function draw(type) {
+            const arr = data[type];
+            const out = document.getElementById(type + 'Text');
+            
+            out.style.opacity = '0';
+            out.style.transform = 'scale(0.95)';
+            
+            setTimeout(() => {
+                out.innerText = arr[Math.floor(Math.random()*arr.length)];
+                out.style.opacity = '1';
+                out.style.transform = 'scale(1)';
+                out.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                Utils.toast('已抽取内容 ✨', 'success');
+            }, 300);
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy  -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

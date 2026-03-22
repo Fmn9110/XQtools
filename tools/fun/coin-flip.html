@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>随机抛硬币 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .coin-box {
+            perspective: 1000px;
+            width: 160px;
+            height: 160px;
+            margin: 0 auto;
+        }
+        .coin {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .coin-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            font-weight: 900;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1), inset 0 0 20px rgba(255,255,255,0.4);
+            border: 8px solid #ffffff;
+        }
+        .coin-front {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .coin-back {
+            background: linear-gradient(135deg, #f472b6, #ec4899);
+            color: #ffffff;
+            transform: rotateY(180deg);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🪙 随机 <span class="gradient-text">抛硬币</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">犹豫不决？抛个硬币，把答案交给命运的齿轮。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white flex flex-col items-center animate-item" style="animation-delay: 0.2s">
+            
+            <div class="w-full text-center mb-10 h-[260px] flex items-center justify-center relative">
+                <div class="absolute inset-0 bg-gradient-to-b from-pink-50/20 to-transparent rounded-[3rem] -z-10"></div>
+                <div class="coin-box animate-item" style="animation-delay: 0.3s">
+                    <div class="coin" id="coinEl">
+                        <div class="coin-face coin-front">正</div>
+                        <div class="coin-face coin-back">反</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mb-10 h-16 flex items-center justify-center">
+                <h2 class="text-3xl md:text-4xl font-black text-gray-300 transition-all duration-300" id="resultText">READY?</h2>
+            </div>
+
+            <button onclick="flipCoin()" id="flipBtn" class="theme-download-btn w-full max-w-sm py-5 text-xl shadow-xl hover:-translate-y-1 transition-all group">
+                👆 立即抛出！
+            </button>
+
+            <div class="w-full max-w-sm mx-auto flex justify-between mt-12 px-6 animate-item" style="animation-delay: 0.5s">
+                <div class="text-center group">
+                    <div class="text-3xl font-black text-amber-500 mb-1 group-hover:scale-110 transition-transform" id="countFront">0</div>
+                    <div class="text-[10px] font-black text-gray-300 uppercase tracking-widest">Heads / 正面</div>
+                </div>
+                <div class="w-px h-10 bg-gray-100 self-center"></div>
+                <div class="text-center group">
+                    <div class="text-3xl font-black text-rose-500 mb-1 group-hover:scale-110 transition-transform" id="countBack">0</div>
+                    <div class="text-[10px] font-black text-gray-300 uppercase tracking-widest">Tails / 反面</div>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.6s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">📖</span>
+                    决策建议
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50 leading-relaxed">
+                    <p class="text-gray-600 text-sm">所谓抛硬币，并不是为了让它帮你做决定，而是在硬币抛起的那一刹那，你突然就知道自己真正想要什么了。</p>
+                </div>
+            </section>
+            <section class="animate-item" style="animation-delay: 0.7s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">✨</span>
+                    公平性
+                </h2>
+                <div class="bg-white p-6 rounded-2xl border border-pink-50 shadow-sm leading-relaxed">
+                    <p class="text-gray-500 text-sm">系统采用原生随机数引擎模拟物理惯性，正反概率严格遵循 50/50 分布。每一次抛掷都是独立的随机事件。</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const coin = document.getElementById('coinEl');
+        const resultText = document.getElementById('resultText');
+        const flipBtn = document.getElementById('flipBtn');
+        let currentRotation = 0;
+        let isFlipping = false;
+        let stats = { front: 0, back: 0 };
+
+        function flipCoin() {
+            if(isFlipping) return;
+            isFlipping = true;
+
+            flipBtn.classList.add('opacity-50', 'pointer-events-none', 'scale-95');
+            resultText.innerText = "TRANSITING...";
+            resultText.className = "text-3xl md:text-4xl font-black text-pink-200 animate-pulse";
+
+            const isHeads = Math.random() < 0.5;
+            const spins = 1800; // 5 full rotations min
+            const extra = isHeads ? 0 : 180;
+            
+            const currentMod = currentRotation % 360;
+            const target = isHeads ? 0 : 180;
+            currentRotation = currentRotation - currentMod + spins + target;
+            
+            if (currentMod === target) {
+                currentRotation += 360; // ensure visual movement
+            }
+
+            coin.style.transform = `rotateY(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                isFlipping = false;
+                flipBtn.classList.remove('opacity-50', 'pointer-events-none', 'scale-95');
+                
+                if(isHeads) {
+                    resultText.innerText = "✨ HEADS / 正面";
+                    resultText.className = "text-3xl md:text-4xl font-black gradient-text animate-bounce";
+                    stats.front++;
+                    document.getElementById('countFront').innerText = stats.front;
+                    Utils.toast('结果：正面！', 'success');
+                } else {
+                    resultText.innerText = "✨ TAILS / 反面";
+                    resultText.className = "text-3xl md:text-4xl font-black text-pink-500 animate-bounce";
+                    stats.back++;
+                    document.getElementById('countBack').innerText = stats.back;
+                    Utils.toast('结果：反面！', 'success');
+                }
+            }, 3000);
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

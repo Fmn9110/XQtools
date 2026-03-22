@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>诗词占卜 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">📜 古韵 <span class="gradient-text">诗词占卜</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">闭眼默念心中所求，以此千年绝响作为你的指引。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-16 mb-12 bg-white animate-item text-center" style="animation-delay: 0.2s">
+            <div class="mb-12 flex flex-col items-center">
+                <div class="w-24 h-24 bg-amber-50 rounded-full flex items-center justify-center text-4xl mb-6 shadow-inner ring-4 ring-amber-50/50 float-animation">🏮</div>
+                <button onclick="divine()" class="w-full max-w-sm py-5 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-2xl shadow-xl shadow-amber-100 transition-all active:scale-95 text-xl">
+                    🙏 诚心抽取诗签
+                </button>
+            </div>
+
+            <div id="result" class="hidden bg-gradient-to-br from-amber-50/50 to-white rounded-[3rem] p-10 md:p-16 border-2 border-amber-100 shadow-inner group relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 text-9xl text-amber-500 opacity-10 group-hover:rotate-12 transition-transform">🖋️</div>
+                
+                <p class="text-[10px] font-black text-amber-400 uppercase tracking-[0.4em] mb-4" id="author">—— 作者</p>
+                <p class="text-2xl md:text-3xl font-black text-gray-800 mb-8 leading-relaxed tracking-wider" id="poem"></p>
+                
+                <div class="max-w-md mx-auto bg-white/60 backdrop-blur-md rounded-2xl p-6 border border-white text-sm md:text-base text-gray-500 italic" id="meaning">
+                    签解：...
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>诗词是跨越千年的共鸣，它们承载了古人的哀愁与豪迈，也映射出我们当下的心境。无论抽到哪一签，都请保持一份从容与敬畏。愿诗意能成为你生活中的光亮。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const poems = [
+            {author:'李白',poem:'长风破浪会有时\n直挂云帆济沧海',meaning:'前方虽有困难，但终将到达彼岸。大吉！'},
+            {author:'苏轼',poem:'竹杖芒鞋轻胜马\n谁怕？一蓑烟雨任平生',meaning:'放下执念，自在前行。心境豁达即是吉。'},
+            {author:'陆游',poem:'山重水复疑无路\n柳暗花明又一村',meaning:'眼前困局即将转机，静候佳音。中吉！'},
+            {author:'王维',poem:'行到水穷处\n坐看云起时',meaning:'顺其自然，不必强求。放松心态就好。'},
+            {author:'杜甫',poem:'会当凌绝顶\n一览众山小',meaning:'志向远大，努力攀登。终会看到不同风景。大吉！'},
+            {author:'李清照',poem:'此情无计可消除\n才下眉头却上心头',meaning:'感情之事牵挂于心，需耐心等待。'},
+            {author:'辛弃疾',poem:'众里寻他千百度\n蓦然回首那人却在灯火阑珊处',meaning:'你要找的答案就在身边。回头看看。中吉！'},
+            {author:'白居易',poem:'同是天涯沦落人\n相逢何必曾相识',meaning:'人生路上，知己难得。珍惜眼前人。'},
+        ];
+
+        function divine() {
+            const p = poems[Math.floor(Math.random() * poems.length)];
+            const res = document.getElementById('result');
+            
+            res.style.opacity = '0';
+            res.style.transform = 'translateY(10px)';
+            
+            setTimeout(() => {
+                document.getElementById('author').textContent = '—— ' + p.author;
+                document.getElementById('poem').innerText = p.poem;
+                document.getElementById('meaning').textContent = '签解：' + p.meaning;
+                res.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    res.style.opacity = '1';
+                    res.style.transform = 'translateY(0)';
+                    res.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                }, 50);
+                
+                Utils.toast('诗签已现 ✨', 'success');
+            }, 300);
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

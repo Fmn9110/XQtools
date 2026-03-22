@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>典故猜谜 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">📖 典故 <span class="gradient-text">猜谜</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">探索中华文化之美，猜出隐藏在文字后的历史典故。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white text-center animate-item" style="animation-delay: 0.2s">
+            <div class="bg-gradient-to-br from-pink-50/50 to-orange-50/30 rounded-[2.5rem] p-8 md:p-12 mb-8 border-2 border-pink-100/50 shadow-inner relative overflow-hidden group">
+                <div class="absolute top-4 left-4 opacity-10 text-4xl group-hover:scale-110 transition-transform">📜</div>
+                <p class="text-xs font-black text-pink-300 uppercase tracking-widest mb-4" id="hint">第 1 题</p>
+                <p class="text-xl md:text-2xl font-bold text-gray-700 leading-relaxed mb-4" id="desc">点击出题</p>
+            </div>
+            
+            <div class="flex flex-col md:flex-row gap-4 justify-center mb-8">
+                <button onclick="showAns()" class="theme-secondary-btn px-8 py-4">💡 查看答案</button>
+                <button onclick="next()" class="theme-download-btn px-8 py-4">➡️ 下一题</button>
+            </div>
+            
+            <div id="ansBox" class="hidden animate-item">
+                <div class="bg-pink-50 rounded-2xl p-6 border border-pink-100 flex items-center justify-center gap-2">
+                    <span class="text-xl">✨</span>
+                    <p class="font-bold text-pink-500 text-lg" id="ans"></p>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.3s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">📖</span>
+                    规则介绍
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50">
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        根据给出的描述，猜出对应的成语、典故或历史人物。点击“下一题”切换题目，遇到困难点击“查看答案”。
+                    </p>
+                </div>
+            </section>
+            <section class="animate-item" style="animation-delay: 0.4s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">💡</span>
+                    趣味科普
+                </h2>
+                <div class="bg-white p-6 rounded-2xl border border-pink-50 shadow-sm">
+                    <p class="text-gray-500 text-sm leading-relaxed">典故是中国古代文化的重要组成部分，许多成语背后都隐藏着一段惊心动魄的历史故事。</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const data=[
+            {desc:'一个人为了复仇，卧薪尝胆，忍辱负重二十年',ans:'卧薪尝胆（勾践）'},
+            {desc:'一个丞相竭尽全力辅佐幼主，鞠躬尽瘁死而后已',ans:'鞠躬尽瘁（诸葛亮）'},
+            {desc:'一位将军背靠河水列阵，断绝退路以激励士气',ans:'背水一战（韩信）'},
+            {desc:'两个老人在棋局中对弈，一人用围魏的策略来救赵',ans:'围魏救赵（孙膑）'},
+            {desc:'一个人站在草船上，利用大雾向敌人"借"来十万支箭',ans:'草船借箭（诸葛亮）'},
+            {desc:'一个楚国人既卖矛又卖盾，说两者都天下无敌',ans:'自相矛盾'},
+            {desc:'一个人守在树桩旁等兔子自己撞上来',ans:'守株待兔'},
+            {desc:'一位画家画龙不画眼，一点睛龙就飞走了',ans:'画龙点睛（张僧繇）'},
+            {desc:'有人掩住自己耳朵去偷铃铛，以为别人听不到',ans:'掩耳盗铃'},
+            {desc:'一个人对着牛弹琴，牛完全不理解',ans:'对牛弹琴'},
+        ];
+        let idx=0;
+        function shuffle(){for(let i=data.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[data[i],data[j]]=[data[j],data[i]];}}
+        shuffle();
+        function next(){
+            const item = data[idx % data.length];
+            document.getElementById('desc').textContent = item.desc;
+            document.getElementById('ans').textContent = item.ans;
+            document.getElementById('ansBox').classList.add('hidden');
+            document.getElementById('hint').textContent = `第 ${idx + 1} 题`;
+            idx++;
+            Utils.toast('已切换题目', 'info');
+        }
+        function showAns(){
+            document.getElementById('ansBox').classList.remove('hidden');
+            Utils.toast('谜底揭晓', 'success');
+        }
+        
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+            next();
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

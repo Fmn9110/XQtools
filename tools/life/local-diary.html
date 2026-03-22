@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>本地加密极简日记本 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50"><div class="container mx-auto flex justify-between items-center"><div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'"><div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div><span class="text-2xl font-bold gradient-text">小Q工具箱</span></div><a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a></div></nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">📔 极简日记本</h1>
+            <p class="text-gray-500">本地存储、简单加密，写下你今天的心情</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div id="lockScreen">
+                <div class="text-center mb-4"><span class="text-5xl">🔒</span></div>
+                <div class="max-w-sm mx-auto">
+                    <input type="password" id="password" placeholder="设置/输入密码" class="w-full p-4 bg-gray-50 rounded-xl border outline-none mb-3 text-center">
+                    <button onclick="unlock()" class="w-full py-3 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl">解锁日记本</button>
+                </div>
+            </div>
+            <div id="diaryApp" class="hidden">
+                <div class="flex gap-3 mb-4">
+                    <input type="date" id="diaryDate" class="p-3 bg-gray-50 rounded-xl border outline-none">
+                    <select id="mood" class="p-3 bg-gray-50 rounded-xl border outline-none"><option>😊 开心</option><option>😌 平静</option><option>😔 低落</option><option>😤 生气</option><option>🥰 幸福</option><option>😴 疲惫</option></select>
+                </div>
+                <textarea id="content" rows="5" class="w-full p-4 bg-gray-50 rounded-xl border outline-none mb-3" placeholder="写下今天的心情..."></textarea>
+                <button onclick="saveDiary()" class="w-full py-3 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl mb-6">💾 保存日记</button>
+                <div class="space-y-3" id="diaryList"></div>
+                <button onclick="lock()" class="mt-4 w-full py-2 bg-gray-200 hover:bg-gray-300 rounded-xl text-sm text-gray-600">🔒 锁定日记本</button>
+            </div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center"><span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">!</span>使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>首次使用设置一个密码。</li><li>用密码解锁后可以写日记。</li><li>日记用简单加密存在本地。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">加密安全吗？</div><div class="text-gray-500 text-sm">使用简单的异或加密，适合个人隐私保护，不是军事级加密。忘记密码将无法恢复。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const KEY = 'xq_diary';
+        let currentPwd = '';
+
+        // 简单异或加密
+        function xorCrypt(text, key) {
+            return text.split('').map((c, i) => String.fromCharCode(c.charCodeAt(0) ^ key.charCodeAt(i % key.length))).join('');
+        }
+
+        function btoa2(str) { return btoa(unescape(encodeURIComponent(str))); }
+        function atob2(str) { return decodeURIComponent(escape(atob(str))); }
+
+        function unlock() {
+            const pwd = document.getElementById('password').value;
+            if (!pwd) { alert('请输入密码'); return; }
+            currentPwd = pwd;
+            document.getElementById('lockScreen').classList.add('hidden');
+            document.getElementById('diaryApp').classList.remove('hidden');
+            document.getElementById('diaryDate').value = new Date().toISOString().slice(0, 10);
+            renderList();
+        }
+
+        function lock() {
+            currentPwd = '';
+            document.getElementById('password').value = '';
+            document.getElementById('lockScreen').classList.remove('hidden');
+            document.getElementById('diaryApp').classList.add('hidden');
+        }
+
+        function saveDiary() {
+            const date = document.getElementById('diaryDate').value;
+            const mood = document.getElementById('mood').value;
+            const content = document.getElementById('content').value.trim();
+            if (!content) { alert('请写点什么'); return; }
+
+            const encrypted = btoa2(xorCrypt(JSON.stringify({ date, mood, content, ts: Date.now() }), currentPwd));
+            const list = getList();
+            list.unshift(encrypted);
+            localStorage.setItem(KEY, JSON.stringify(list));
+            document.getElementById('content').value = '';
+            renderList();
+        }
+
+        function getList() { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } }
+
+        function renderList() {
+            const list = getList();
+            let html = '';
+            list.forEach((item, i) => {
+                try {
+                    const decrypted = JSON.parse(xorCrypt(atob2(item), currentPwd));
+                    html += `<div class="bg-pink-50/50 rounded-xl p-4 border border-pink-100">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-bold text-gray-700">${decrypted.date} ${decrypted.mood}</span>
+                            <button onclick="deleteDiary(${i})" class="text-gray-300 hover:text-red-400 text-xs">删除</button>
+                        </div>
+                        <p class="text-gray-600 text-sm">${decrypted.content}</p>
+                    </div>`;
+                } catch {
+                    html += `<div class="bg-gray-50 rounded-xl p-4 text-center text-gray-400 text-sm">🔒 密码不匹配，无法解密</div>`;
+                }
+            });
+            document.getElementById('diaryList').innerHTML = html || '<p class="text-center text-gray-400 text-sm">还没有日记，开始写第一篇吧 ✍️</p>';
+        }
+
+        function deleteDiary(idx) {
+            if (!confirm('确定删除？')) return;
+            const list = getList();
+            list.splice(idx, 1);
+            localStorage.setItem(KEY, JSON.stringify(list));
+            renderList();
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>今日伪运势 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        .tarot-card {
+            width: 260px;
+            height: 400px;
+            background: linear-gradient(135deg, #f472b6, #db2777, #9d174d);
+            border-radius: 24px;
+            position: relative;
+            margin: 0 auto;
+            border: 4px solid #ffffff;
+            box-shadow: 0 20px 50px rgba(219, 39, 119, 0.3), inset 0 0 40px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+            color: #ffffff;
+            font-family: 'Noto Serif SC', serif;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        .tarot-inner {
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-around;
+            padding: 1.5rem;
+            position: relative;
+        }
+        .tarot-inner::before, .tarot-inner::after {
+            content: '✧';
+            position: absolute;
+            color: #ffffff;
+            font-size: 1.2rem;
+            opacity: 0.6;
+        }
+        .tarot-inner::before { top: 8px; left: 8px; }
+        .tarot-inner::after { bottom: 8px; right: 8px; }
+        
+        .fortune-level {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #fef08a; /* yellow-200 */
+            text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            margin: 1rem 0;
+        }
+        .flip-animation {
+            animation: flip-over 1s forwards cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        @keyframes flip-over {
+            0% { transform: rotateY(0deg) scale(1) translateY(0); }
+            50% { transform: rotateY(90deg) scale(1.1) translateY(-20px); }
+            100% { transform: rotateY(180deg) scale(1) translateY(0); }
+        }
+        .tarot-face-front {
+            position: absolute;
+            backface-visibility: hidden;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .tarot-face-back {
+            position: absolute;
+            backface-visibility: hidden;
+            width: 100%;
+            height: 100%;
+            transform: rotateY(180deg);
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🔮 今日 <span class="gradient-text">伪运势卜卦</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">信不信由你，反正我说是就是。让星星告诉你答案。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white flex flex-col items-center animate-item" style="animation-delay: 0.2s">
+            
+            <div class="mb-12 w-full flex justify-center animate-item" style="animation-delay: 0.3s">
+                <div class="tarot-card" id="tarotCard">
+                    <!-- Front (Seal) -->
+                    <div class="tarot-face-front">
+                        <div class="tarot-inner flex flex-col items-center justify-center gap-4">
+                            <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center text-4xl shadow-inner">🔯</div>
+                            <p class="text-sm font-black tracking-[0.3em] opacity-80">封印磁场中...</p>
+                        </div>
+                    </div>
+                    <!-- Back (Result) -->
+                    <div class="tarot-face-back">
+                        <div class="tarot-inner items-center justify-around py-8">
+                            <p class="text-[10px] font-black tracking-[0.5em] opacity-60">TODAY'S ORACLE</p>
+                            <div class="fortune-level" id="fortuneLevel">吉</div>
+                            <div class="text-sm md:text-base leading-relaxed font-medium px-4" id="fortuneDesc">今日宜：放空，摸鱼，吃好吃的。</div>
+                            <div class="mt-4 px-4 py-1 bg-white/10 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/20">
+                                幸运色: <span id="fortuneColor">星空紫</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="drawFortune()" id="drawBtn" class="theme-download-btn w-full max-w-md py-5 text-xl animate-item" style="animation-delay: 0.4s">
+                🌟 召唤今日启示
+            </button>
+            <p class="mt-6 text-[10px] text-gray-300 font-black uppercase tracking-widest">Randomly generated by destiny engine</p>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.5s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">📖</span>
+                    卜卦哲思
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50 leading-relaxed">
+                    <p class="text-gray-600 text-sm">运势虽由天定，而心境由己造。每一个“大吉”都是对未来的期许，每一个“末吉”都是对当下的警示。请以平常心对待，生活自会温柔以待。</p>
+                </div>
+            </section>
+            <section class="animate-item" style="animation-delay: 0.6s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">✨</span>
+                    关于本工具
+                </h2>
+                <div class="bg-white p-6 rounded-2xl border border-pink-50 shadow-sm leading-relaxed">
+                    <p class="text-gray-500 text-sm">本工具采用基于混沌语法的伪随机算法，旨在为您忙碌的一天增添一份意料之外的小惊喜与谈资。仅供娱乐，切莫过分迷信。</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const db = [
+            { level: "大吉", color: "樱花粉", desc: "万事顺意，心想事成！\n今日宜：大胆表白，买彩票\n今日忌：犹豫不决" },
+            { level: "上吉", color: "薄荷绿", desc: "好运连连，贵人相助。\n今日宜：与人交流，尝试新事物\n今日忌：宅在家里" },
+            { level: "中吉", color: "暖阳黄", desc: "平平淡淡才是真，有些小确幸。\n今日宜：喝奶茶，晒太阳\n今日忌：熬夜" },
+            { level: "小吉", color: "天空蓝", desc: "没有什么大风大浪，安稳度日。\n今日宜：听音乐，看书\n今日忌：暴饮暴食" },
+            { level: "末吉", color: "冷峻灰", desc: "可能有点小倒霉，但无伤大雅。\n今日宜：谨言慎行，早点睡觉\n今日忌：冲动消费" },
+            { level: "凶", color: "暗夜黑", desc: "今天可能不太顺利，请保持佛系。\n今日宜：沉默是金，摸鱼打盹\n今日忌：做重大决定" }
+        ];
+
+        let isAnimating = false;
+        
+        function drawFortune() {
+            if(isAnimating) return;
+            isAnimating = true;
+
+            const card = document.getElementById('tarotCard');
+            const btn = document.getElementById('drawBtn');
+            btn.classList.add('opacity-50', 'pointer-events-none', 'scale-95');
+            
+            // If already flipped, reset visual rotation for seamless re-flip
+            card.classList.remove('flip-animation');
+            void card.offsetWidth; // trigger reflow
+            
+            card.classList.add('flip-animation');
+
+            setTimeout(() => {
+                const f = db[Math.floor(Math.random() * db.length)];
+                document.getElementById('fortuneLevel').innerText = f.level;
+                document.getElementById('fortuneDesc').innerHTML = f.desc.replace(/\n/g, '<br>');
+                document.getElementById('fortuneColor').innerText = f.color;
+                
+                // Color mapping for level
+                const levelColors = {
+                    "大吉": "#fef08a",
+                    "上吉": "#fef9c3",
+                    "中吉": "#fefce8",
+                    "小吉": "#ffffff",
+                    "末吉": "#e5e7eb",
+                    "凶": "#fca5a5"
+                };
+                document.getElementById('fortuneLevel').style.color = levelColors[f.level] || "#ffffff";
+            }, 500); // midway point of flip
+
+            setTimeout(() => {
+                isAnimating = false;
+                btn.classList.remove('opacity-50', 'pointer-events-none', 'scale-95');
+                btn.innerHTML = '🔄 再次唤醒命运';
+                Utils.toast('启示已降临', 'success');
+            }, 1000);
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

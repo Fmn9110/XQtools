@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CSV与JSON互转 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body>
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white/80 backdrop-blur-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 transition-transform hover:rotate-0">
+                    Q
+                </div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <div class="hidden md:flex space-x-6 text-gray-500 text-sm font-semibold">
+                <a href="../../index.html" class="hover:text-pink-500 transition-colors">首页</a>
+                <a href="../../categories.html" class="hover:text-pink-500 transition-colors">全部分类</a>
+                <a href="../../tools.html" class="hover:text-pink-500 transition-colors">所有工具</a>
+            </div>
+            <div class="md:hidden">
+                <a href="../../tools.html" class="text-gray-400 hover:text-pink-500 transition-colors">
+                    <span class="text-2xl">🛠️</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-12 animate-item">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4">CSV ↔️ JSON 转换</h1>
+            <p class="text-gray-500 italic text-sm md:text-base">在表格 CSV 格式与结构化 JSON 格式之间自由转换。📊</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 bg-white shadow-2xl mb-12 animate-item" style="animation-delay: 0.1s">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                <div class="text-left">
+                    <label class="block text-[10px] font-bold text-gray-400 mb-2 uppercase">CSV 文本</label>
+                    <textarea id="csv" class="w-full h-80 p-6 bg-gray-50 border border-gray-100 rounded-3xl text-xs font-mono outline-none" placeholder="id,name,age\n1,lee,18..."></textarea>
+                </div>
+                <div class="text-left">
+                    <label class="block text-[10px] font-bold text-gray-400 mb-2 uppercase">JSON 数据</label>
+                    <textarea id="json" class="w-full h-80 p-6 bg-slate-50 border border-slate-100 rounded-3xl text-xs font-mono outline-none" placeholder='[{"id":1,"name":"lee","age":18}]...'></textarea>
+                </div>
+            </div>
+
+            <div class="flex gap-4 justify-center">
+                 <button onclick="toJS()" class="theme-download-btn px-12 py-4">CSV ➡️ JSON</button>
+                 <button onclick="toCSV()" class="theme-secondary-btn px-12 py-4">JSON ➡️ CSV</button>
+            </div>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const csvArea = document.getElementById('csv');
+        const jsonArea = document.getElementById('json');
+
+        function toJS() {
+            const val = csvArea.value.trim();
+            if(!val) return;
+            const lines = val.split('\n');
+            const headers = lines[0].split(',');
+            const result = lines.slice(1).map(line => {
+                const data = line.split(',');
+                return headers.reduce((obj, header, i) => {
+                    obj[header.trim()] = data[i]?.trim();
+                    return obj;
+                }, {});
+            });
+            jsonArea.value = JSON.stringify(result, null, 4);
+            Utils.toast('转换完成', 'success');
+        }
+
+        function toCSV() {
+            try {
+                const arr = JSON.parse(jsonArea.value);
+                if(!Array.isArray(arr) || !arr.length) throw new Error();
+                const headers = Object.keys(arr[0]);
+                const csv = [
+                    headers.join(','),
+                    ...arr.map(obj => headers.map(h => obj[h]).join(','))
+                ].join('\n');
+                csvArea.value = csv;
+                Utils.toast('转换完成', 'success');
+            } catch(e) {
+                Utils.toast('JSON 格式不符合数组要求', 'error');
+            }
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

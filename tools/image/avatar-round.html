@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>圆形头像剪裁 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        #preview-canvas {
+            max-width: 100%;
+            height: auto;
+            border-radius: 50%;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            background-color: white;
+            border: 4px solid white;
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fffafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 transition-transform hover:rotate-0">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-4 md:py-8 px-4 max-w-6xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold mb-4 animate-item gradient-text">圆形头像剪裁</h1>
+            <p class="text-gray-500 animate-item" style="animation-delay: 0.1s">将任何图片剪裁成完美的圆形，一键适配主流社交平台。⭕</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-8 mb-12 flex flex-col md:flex-row gap-8 md:gap-12 items-center animate-item" style="animation-delay: 0.2s">
+            <div class="flex-1 w-full flex flex-col items-center">
+                <div id="drop-zone" class="w-full border-4 border-dashed border-pink-100 rounded-3xl p-8 md:p-16 text-center hover:border-pink-300 transition-all cursor-pointer bg-white group">
+                    <input type="file" id="file-input" class="hidden" accept="image/*">
+                    <div class="text-7xl mb-6 group-hover:scale-110 transition-transform">📁</div>
+                    <p class="text-xl font-bold text-gray-700">选择图片文件</p>
+                    <p class="text-pink-400 mt-2 text-sm italic">点击或拖拽上传</p>
+                </div>
+
+                <div id="preview-stage" class="hidden w-full animate-fade-in flex flex-col items-center">
+                    <canvas id="preview-canvas"></canvas>
+                </div>
+            </div>
+
+            <div class="w-full md:w-80 space-y-6">
+                <div id="control-panel" class="hidden space-y-6 bg-pink-50/30 p-6 md:p-8 rounded-3xl">
+                    <h3 class="font-bold text-gray-800 flex items-center">
+                        <span class="w-1.5 h-6 bg-pink-400 rounded-full mr-3"></span>
+                        剪裁设置
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <label class="block text-sm font-bold text-gray-600">输出尺寸 (像素)</label>
+                        <select id="size-select" class="cute-input w-full px-4 py-3 bg-white">
+                            <option value="200">200 x 200</option>
+                            <option value="400" selected>400 x 400</option>
+                            <option value="600">600 x 600</option>
+                            <option value="800">800 x 800</option>
+                        </select>
+                    </div>
+
+                    <div class="pt-4 space-y-3">
+                        <button id="download-btn" class="cute-button w-full theme-download-btn px-6 py-4 rounded-full font-bold">保存圆形头像</button>
+                        <button onclick="location.reload()" class="w-full theme-secondary-btn px-6 py-3 rounded-full text-sm">重新上传</button>
+                    </div>
+                </div>
+
+                <div id="placeholder-panel" class="p-12 bg-gray-50 rounded-3xl text-center text-gray-400 italic text-sm border-2 border-dashed border-gray-100">
+                    ✨ 上传图片后显示预览
+                </div>
+            </div>
+        </section>
+    
+        <div class="grid md:grid-cols-2 gap-8 mb-12 animate-item" style="animation-delay: 0.3s">
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">🎯</span>
+                    专属指南及提示
+                </h2>
+                <div class="bg-white rounded-3xl p-8 shadow-sm border border-pink-50 relative overflow-hidden h-full">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-full blur-3xl -mr-10 -mt-10 opacity-50"></div>
+                    <ul class="space-y-4 text-gray-600 list-decimal list-inside text-sm leading-relaxed relative z-10 font-medium">
+                        <li>上传图片后，系统会默认截取图片中心部位。</li>
+                        <li>建议上传正方形或比例接近 1:1 的原始图片。</li>
+                        <li>导出的图片格式为 PNG，自带透明背景。</li>
+                    </ul>
+                </div>
+            </section>
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">💬</span>
+                    常见答疑
+                </h2>
+                <div class="space-y-4 h-full">
+                    <div class="bg-white p-5 rounded-2xl border border-pink-50 shadow-sm hover:border-pink-200 transition-colors">
+                        <div class="font-bold text-gray-700 mb-2 flex items-center">
+                            <span class="w-1.5 h-1.5 rounded-full bg-pink-400 mr-2"></span>
+                            为什么导出的图片边缘是透明的？
+                        </div>
+                        <div class="text-gray-500 text-sm leading-relaxed pl-3.5">
+                            为了保证剪裁出的圆形效果，我们使用了 PNG 格式的透明通道。这能让您的头像在任何背景色下都保持完美的圆润轮廓。
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-10 text-center text-gray-400 text-xs border-t border-pink-50 mt-12 bg-white/50">
+        © 2026 小Q工具箱 · 纯前端离线实验室 · 保护隐私 💖
+    </footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const previewCanvas = document.getElementById('preview-canvas');
+        const ctx = previewCanvas.getContext('2d');
+        const sizeSelect = document.getElementById('size-select');
+        const downloadBtn = document.getElementById('download-btn');
+        const controlPanel = document.getElementById('control-panel');
+        const previewStage = document.getElementById('preview-stage');
+        const placeholderPanel = document.getElementById('placeholder-panel');
+
+        let originalImg = null;
+
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        dropZone.onclick = () => fileInput.click();
+        fileInput.onchange = e => { if (e.target.files[0]) handleFile(e.target.files[0]); };
+
+        function handleFile(file) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                originalImg = new Image();
+                originalImg.onload = () => {
+                    dropZone.classList.add('hidden');
+                    previewStage.classList.remove('hidden');
+                    controlPanel.classList.remove('hidden');
+                    placeholderPanel.classList.add('hidden');
+                    render();
+                };
+                originalImg.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function render() {
+            if (!originalImg) return;
+            const size = parseInt(sizeSelect.value);
+            previewCanvas.width = size;
+            previewCanvas.height = size;
+
+            ctx.clearRect(0, 0, size, size);
+            
+            // 绘制圆形路径
+            ctx.beginPath();
+            ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.clip();
+
+            // 计算居中填充
+            const scale = Math.max(size / originalImg.width, size / originalImg.height);
+            const w = originalImg.width * scale;
+            const h = originalImg.height * scale;
+            const x = (size - w) / 2;
+            const y = (size - h) / 2;
+
+            ctx.drawImage(originalImg, x, y, w, h);
+        }
+
+        sizeSelect.onchange = render;
+
+        downloadBtn.onclick = () => {
+            if (!originalImg) return;
+            Utils.downloadFile(previewCanvas.toDataURL('image/png'), 'round_avatar_' + Date.now() + '.png', 'image/png');
+            Utils.toast('保存成功！', 'success');
+        };
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

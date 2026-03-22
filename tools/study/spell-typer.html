@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>单词拼写挑战 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .kbd-btn { transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1); }
+        .kbd-btn:active { transform: scale(0.9); background: #fdf2f8; border-color: #ffb7c5; }
+        .kbd-btn.pressed { background: #fdf2f8; border-color: #ffb7c5; transform: scale(0.95); }
+        @keyframes success-pop { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        .success-word { animation: success-pop 0.4s ease-out; color: #10b981; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-14">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-800 mb-4 animate-item">指尖辞海：盲打训练营</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s italic italic">在律动中记忆，在速度中升华。开启你的单词肌肉记忆之旅。⌨️</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-14 mb-12 bg-white shadow-2xl animate-item flex flex-col items-center" style="animation-delay: 0.2s">
+            <!-- Stats -->
+            <div class="w-full flex justify-between mb-10 px-4">
+                <div class="flex flex-col items-start gap-1">
+                    <p class="text-[10px] font-black text-pink-300 uppercase tracking-[0.2em] pl-1 leading-none">Words Mastered</p>
+                    <span id="done" class="text-3xl font-black text-slate-800 tabular-nums">0</span>
+                </div>
+                <div class="flex flex-col items-end gap-1">
+                    <p class="text-[10px] font-black text-pink-300 uppercase tracking-[0.2em] pr-1 leading-none">Accuracy Rate</p>
+                    <span id="acc" class="text-3xl font-black text-pink-400 tabular-nums">-%</span>
+                </div>
+            </div>
+
+            <!-- Hint Area -->
+            <div class="w-full p-10 md:p-16 bg-pink-50/10 rounded-[4rem] border-2 border-dashed border-pink-50 mb-12 text-center animate-fade-in relative overflow-hidden group">
+                <div class="absolute -right-8 -bottom-8 text-9xl opacity-5 pointer-events-none rotate-12">📚</div>
+                <p class="text-[10px] font-black text-pink-300 uppercase tracking-[0.4em] mb-4">Translate to English</p>
+                <p class="text-4xl md:text-6xl font-black text-slate-800 tracking-tight" id="hint">正在召唤单词...</p>
+            </div>
+
+            <!-- Typing Display -->
+            <div class="flex items-center gap-4 justify-center mb-12 h-20">
+                <span class="font-black text-4xl md:text-6xl tracking-[0.2em] text-pink-400 font-mono transition-all lowercase" id="typed"></span>
+                <span class="animate-pulse w-1.5 h-12 bg-pink-200 rounded-full shadow-[0_0_8px_rgba(244,114,182,0.4)]"></span>
+            </div>
+
+            <!-- Virtual Keyboard -->
+            <div class="w-full max-w-3xl">
+                <div class="flex flex-col gap-2.5" id="kb">
+                    <!-- Dynamic Keyboard -->
+                </div>
+                <div class="grid grid-cols-2 gap-4 mt-6">
+                     <button onclick="backspace()" class="py-5 bg-slate-50 text-slate-400 font-black rounded-3xl hover:bg-slate-100 transition-all text-xs uppercase tracking-[0.2em] shadow-sm">
+                        ⌫ Backspace
+                     </button>
+                     <button onclick="submit()" class="py-5 bg-pink-400 text-white font-black rounded-3xl shadow-xl hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-xs uppercase tracking-[0.2em]">
+                        Enter ↵
+                     </button>
+                </div>
+            </div>
+
+            <p id="msg" class="mt-10 font-black text-xl transition-all h-8"></p>
+        </section>
+        
+        <footer class="text-gray-300 text-[10px] uppercase font-black tracking-[0.4em] pb-12 animate-item" style="animation-delay: 0.3s">
+            Linguistic Muscle Memory & Typing Reflex Engine
+        </footer>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const words = [
+            // Fruits
+            {en:'apple',zh:'苹果'},{en:'banana',zh:'香蕉'},{en:'cherry',zh:'樱桃'},{en:'grape',zh:'葡萄'},{en:'orange',zh:'橙子'},{en:'peach',zh:'桃子'},{en:'pear',zh:'梨'},{en:'lemon',zh:'柠檬'},{en:'mango',zh:'芒果'},{en:'berry',zh:'莓果'},
+            // Animals
+            {en:'panda',zh:'熊猫'},{en:'tiger',zh:'老虎'},{en:'lion',zh:'狮子'},{en:'eagle',zh:'老鹰'},{en:'whale',zh:'鲸鱼'},{en:'shark',zh:'鲨鱼'},{en:'horse',zh:'马'},{en:'rabbit',zh:'兔子'},{en:'monkey',zh:'猴子'},{en:'snake',zh:'蛇'},
+            // Common Objects
+            {en:'system',zh:'系统'},{en:'module',zh:'模块'},{en:'script',zh:'脚本'},{en:'layout',zh:'布局'},{en:'design',zh:'设计'},{en:'client',zh:'客户端'},{en:'server',zh:'服务器'},{en:'logic',zh:'逻辑'},{en:'button',zh:'按钮'},{en:'window',zh:'窗口'}
+        ];
+        
+        let wi = Math.floor(Math.random() * words.length);
+        let typed = '', correct_count = 0, total_tries = 0;
+        const rows = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
+
+        function renderKB() {
+            const kb = document.getElementById('kb');
+            kb.innerHTML = rows.map((r, i) => `
+                <div class="flex justify-center gap-2">
+                    ${[...r].map(k => `
+                        <button id="key-${k}" onclick="type('${k}')" class="kbd-btn w-10 h-14 md:w-16 md:h-16 bg-slate-50 border-2 border-slate-50 rounded-2xl font-black text-sm md:text-xl text-slate-500 hover:bg-white hover:text-pink-400 hover:shadow-lg hover:border-pink-50 transition-all uppercase">
+                            ${k}
+                        </button>
+                    `).join('')}
+                </div>
+            `).join('');
+        }
+
+        function showWord() {
+            typed = '';
+            document.getElementById('hint').textContent = words[wi].zh;
+            document.getElementById('typed').textContent = '';
+            const msgEl = document.getElementById('msg');
+            msgEl.textContent = '';
+            msgEl.className = 'mt-10 font-black text-xl transition-all h-8';
+        }
+
+        function type(k) {
+            if(typed.length >= 20) return;
+            typed += k.toLowerCase();
+            const typedEl = document.getElementById('typed');
+            typedEl.textContent = typed;
+            
+            // Physical vibration feel
+            typedEl.style.transform = 'scale(1.05)';
+            setTimeout(() => typedEl.style.transform = 'scale(1)', 50);
+            
+            // Visual feedback on key
+            const keyEl = document.getElementById('key-' + k.toUpperCase());
+            if(keyEl) {
+                keyEl.classList.add('pressed');
+                setTimeout(() => keyEl.classList.remove('pressed'), 100);
+            }
+        }
+
+        function backspace() {
+            typed = typed.slice(0, -1);
+            document.getElementById('typed').textContent = typed;
+        }
+
+        function submit() {
+            if(!typed) return;
+            total_tries++;
+            const msgEl = document.getElementById('msg');
+            const typedDisplay = document.getElementById('typed');
+            
+            if(typed === words[wi].en) {
+                correct_count++;
+                msgEl.textContent = '✨ EXCELLENT! 完美正确';
+                msgEl.className = 'mt-10 font-black text-xl text-emerald-500 animate-bounce h-8';
+                typedDisplay.classList.add('success-word');
+                Utils.toast('太棒了！继续保持 ✨', 'success');
+                
+                wi = Math.floor(Math.random() * words.length);
+                setTimeout(() => {
+                    typedDisplay.classList.remove('success-word');
+                    showWord();
+                }, 1200);
+            } else {
+                msgEl.textContent = `❌ OPS! 正确应为: ${words[wi].en.toUpperCase()}`;
+                msgEl.className = 'mt-10 font-black text-xl text-pink-400 h-8';
+                Utils.toast('再接再厉，记住了吗？', 'info');
+                setTimeout(showWord, 2000);
+            }
+            
+            document.getElementById('done').textContent = correct_count;
+            document.getElementById('acc').textContent = Math.round(correct_count/total_tries*100) + '%';
+        }
+
+        // Global Event Listeners
+        document.addEventListener('keydown', e => {
+            if(e.key === 'Backspace') { e.preventDefault(); backspace(); }
+            else if(e.key === 'Enter') { e.preventDefault(); submit(); }
+            else if(e.key.length === 1 && /[a-zA-Z]/.test(e.key)) {
+                e.preventDefault();
+                type(e.key);
+            }
+        });
+
+        // 加载动画 & 初始化
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    renderKB();
+                    showWord();
+                }, 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>考研分秒专注屏 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700&display=swap" rel="stylesheet">
+    <style>
+        .timer-circle { transition: stroke-dashoffset 1s linear; }
+        .bg-glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
+        select { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%23f472b6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>'); background-repeat: no-repeat; background-position: right 1rem center; -webkit-appearance: none; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">考研备考专注大屏</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s italic">心无旁骛，分秒必争。为梦想中的象牙塔蓄力。</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-14 mb-12 bg-white shadow-2xl animate-item flex flex-col items-center relative overflow-hidden" style="animation-delay: 0.2s">
+            <!-- Background Decoration -->
+            <div class="absolute -right-16 -top-16 w-64 h-64 bg-pink-50/50 rounded-full -z-10 blur-3xl"></div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 text-left w-full">
+                <div class="relative group">
+                    <label class="block text-[10px] font-black text-pink-300 mb-2 uppercase tracking-[0.2em] pl-4">Subject 科目类型</label>
+                    <select id="subject" class="w-full p-5 bg-slate-50 rounded-[2rem] border-2 border-slate-50 outline-none focus:border-pink-200 text-sm font-black shadow-inner text-slate-600 cursor-pointer">
+                        <option value="政治 (Politics)">政治 (Politics)</option>
+                        <option value="英语 (English)">英语 (English)</option>
+                        <option value="数学 (Math)">数学 (Math)</option>
+                        <option value="专业课一 (Major 1)">专业课一 (Major 1)</option>
+                        <option value="专业课二 (Major 2)">专业课二 (Major 2)</option>
+                    </select>
+                </div>
+                <div class="relative group">
+                    <label class="block text-[10px] font-black text-pink-300 mb-2 uppercase tracking-[0.2em] pl-4">Target 专注目标</label>
+                    <input type="text" id="task" placeholder="例如：背诵考研词汇 50 个.." class="w-full p-5 bg-slate-50 rounded-[2rem] border-2 border-slate-50 outline-none focus:border-pink-200 text-sm font-bold shadow-inner text-slate-700">
+                </div>
+            </div>
+
+            <!-- Timer Area -->
+            <div class="flex flex-col items-center mb-14 relative">
+                <div class="relative w-72 h-72 md:w-85 md:h-85 flex items-center justify-center">
+                    <svg class="w-full h-full transform -rotate-90 filter drop-shadow-md">
+                        <circle cx="50%" cy="50%" r="46%" stroke="#fff1f3" stroke-width="12" fill="none" />
+                        <circle id="progress" cx="50%" cy="50%" r="46%" stroke="#ffb7c5" stroke-width="12" fill="none" stroke-dasharray="868" stroke-dashoffset="0" stroke-linecap="round" class="timer-circle" />
+                    </svg>
+                    <div class="absolute flex flex-col items-center">
+                        <p id="timer" class="text-6xl md:text-8xl font-black text-slate-800 tracking-tighter font-mono">25:00</p>
+                        <div id="timerLabelWrap" class="mt-4 px-4 py-1.5 bg-pink-50 rounded-full border border-pink-100 flex items-center gap-2">
+                             <span id="statusDot" class="w-1.5 h-1.5 bg-pink-300 rounded-full"></span>
+                             <p id="timerLabel" class="text-[10px] font-black text-pink-300 uppercase tracking-[0.3em]">Ready to Focus</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-4 mb-14 w-full justify-center">
+                 <button onclick="startPomodoro(25)" class="px-10 py-5 bg-pink-400 text-white font-black rounded-3xl shadow-xl hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-lg flex items-center gap-3 group">
+                    <span class="animate-bounce">🍅</span> <span>25min 专注</span>
+                 </button>
+                 <button onclick="startPomodoro(5)" class="px-10 py-5 bg-white border-2 border-pink-50 text-pink-400 font-black rounded-3xl hover:bg-pink-50 transition-all shadow-sm flex items-center gap-3 group">
+                    <span class="group-hover:rotate-12 transition-transform">☕</span> <span>5min 休息</span>
+                 </button>
+                 <button onclick="stop()" class="w-16 h-16 bg-slate-100 text-slate-400 rounded-2xl hover:bg-slate-200 transition-all shadow-inner flex items-center justify-center text-2xl" title="停止">
+                    ⏹️
+                 </button>
+            </div>
+
+            <!-- Learning History -->
+            <div class="w-full text-left pt-10 border-t border-slate-50">
+                <div class="flex items-center justify-between mb-8">
+                    <h3 class="text-xs font-black text-pink-300 uppercase tracking-[0.4em] flex items-center gap-2">
+                        <span class="w-3 h-3 bg-pink-400 rounded-full"></span> Focus Analytics
+                    </h3>
+                    <button onclick="clearHistory()" class="text-[9px] font-black text-slate-300 hover:text-rose-400 transition-colors uppercase tracking-widest pl-2">Clear Logs</button>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="log">
+                    <!-- History items -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Quote -->
+         <div class="max-w-2xl mx-auto py-8 animate-item" style="animation-delay: 0.3s">
+            <p id="quote" class="text-lg text-slate-400 font-serif font-black italic">"既然选择了远方，便只顾风雨兼程。"</p>
+            <p class="text-[10px] text-pink-200 font-black uppercase tracking-widest mt-4">— Postgrad Exam Spirit —</p>
+         </div>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let interval, remaining = 0, totalTime = 0;
+        const DASH_ARRAY = 868;
+        let logs = JSON.parse(localStorage.getItem('qPostgradLog') || '[]');
+
+        const quotes = [
+            "既然选择了远方，便只顾风雨兼程。",
+            "星光不问赶路人，时光不负有心人。",
+            "唯有坚持，才能配得上你的梦想。",
+            "暗淡轻黄体性柔，情疏迹远只香留。",
+            "你的压力，来源于你想要却不努力。",
+            "研路漫漫，唯有热爱可抵岁月漫长。"
+        ];
+
+        function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+
+        function startPomodoro(min) {
+            stop();
+            remaining = min * 60;
+            totalTime = remaining;
+            updateUI();
+            
+            const timerEl = document.getElementById('timer');
+            const labelEl = document.getElementById('timerLabel');
+            const dot = document.getElementById('statusDot');
+            
+            timerEl.classList.add('text-pink-500');
+            labelEl.textContent = min === 25 ? "Focusing Now..." : "Take a Rest...";
+            labelEl.classList.replace('text-pink-300', 'text-pink-500');
+            dot.classList.add('animate-pulse', 'bg-pink-500');
+
+            interval = setInterval(() => {
+                remaining--;
+                updateUI();
+                if(remaining <= 0) {
+                    stop();
+                    handleComplete(min);
+                }
+            }, 1000);
+            
+            // Random quote
+            document.getElementById('quote').textContent = `"${quotes[Math.floor(Math.random() * quotes.length)]}"`;
+        }
+
+        function handleComplete(min) {
+            playBeep();
+            Utils.toast('🎉 任务达成！太棒了 ✨', 'success');
+            
+            const subj = document.getElementById('subject').value;
+            const taskName = document.getElementById('task').value.trim() || '未命名聚焦任务';
+            
+            if(min === 25) {
+                logs.unshift({
+                    subject: subj, 
+                    task: taskName, 
+                    duration: min + 'min', 
+                    date: new Date().toLocaleDateString(),
+                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                });
+                localStorage.setItem('qPostgradLog', JSON.stringify(logs));
+                renderLog();
+            }
+        }
+
+        function stop() {
+            clearInterval(interval);
+            const timerEl = document.getElementById('timer');
+            const labelEl = document.getElementById('timerLabel');
+            const dot = document.getElementById('statusDot');
+            
+            timerEl.classList.remove('text-pink-500');
+            labelEl.textContent = "Ready to Focus";
+            labelEl.classList.replace('text-pink-500', 'text-pink-300');
+            dot.classList.remove('animate-pulse', 'bg-pink-500');
+        }
+
+        function updateUI() {
+            document.getElementById('timer').textContent = fmt(remaining);
+            const offset = DASH_ARRAY - (remaining / totalTime) * DASH_ARRAY;
+            document.getElementById('progress').style.strokeDashoffset = isNaN(offset) ? 0 : offset;
+        }
+
+        function renderLog() {
+            const logEl = document.getElementById('log');
+            if(logs.length === 0) {
+                logEl.innerHTML = '<div class="col-span-2 p-10 bg-slate-50 rounded-3xl text-center text-gray-300 italic text-xs border border-dashed border-slate-100">尚无专注记录，开始你的第一枚番茄吧 🌱</div>';
+                return;
+            }
+            logEl.innerHTML = logs.slice(0, 4).map(l => `
+                <div class="p-6 bg-white border border-pink-50 rounded-[2rem] flex justify-between items-center shadow-sm animate-fade-in group hover:bg-pink-50/20 transition-all border-l-4 border-l-pink-100 hover:border-l-pink-400">
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[9px] font-black text-white bg-pink-300 px-1.5 rounded uppercase">${l.duration}</span>
+                            <p class="font-black text-slate-700 text-sm tracking-tight truncate max-w-[140px]">${l.subject}</p>
+                        </div>
+                        <p class="text-[10px] text-gray-400 font-bold italic tracking-tight">${l.task}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[9px] text-pink-200 font-black tracking-tighter uppercase leading-none mb-1">${l.date}</p>
+                        <p class="text-[9px] text-gray-300 font-bold leading-none">${l.time}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function playBeep() {
+            try {
+                const ctx = new(window.AudioContext||window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.type = 'sine'; osc.frequency.value = 880;
+                gain.gain.setValueAtTime(0, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime+0.1);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
+                osc.start(); osc.stop(ctx.currentTime + 1.2);
+            } catch(e) {}
+        }
+        
+        function clearHistory() {
+            if(confirm('确定要清除所有备考记录吗？')) {
+                logs = [];
+                localStorage.removeItem('qPostgradLog');
+                renderLog();
+                Utils.toast('记录已清空 📎');
+            }
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    renderLog();
+                }, 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>字数统计 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+    <main class="container mx-auto py-8 px-4 max-w-5xl">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4">字数统计</h1>
+            <p class="text-gray-500 italic">精准分析文本构成，支持中英文、数字及标点的分类统计。✍️</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 bg-white shadow-xl mb-12">
+            <div class="relative group mb-8">
+                <label class="block text-[10px] font-bold text-pink-300 uppercase tracking-widest mb-3 ml-2">待统计文本</label>
+                <textarea id="textInput" class="w-full h-64 p-8 bg-pink-50/10 border-2 border-pink-50 rounded-[2.5rem] text-sm outline-none focus:border-pink-200 transition-all resize-none shadow-inner" placeholder="请在此粘贴或输入需要统计的文字..."></textarea>
+                <button onclick="clearText()" class="absolute right-6 top-12 text-pink-200 hover:text-pink-400 p-2 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-10">
+                <div class="p-6 bg-pink-50/30 rounded-[2rem] border border-pink-50 transition-all hover:bg-pink-50/50">
+                    <p class="text-[10px] text-pink-300 font-bold uppercase mb-2 tracking-widest">中文字数</p>
+                    <p id="cnCount" class="text-2xl font-black text-gray-700">0</p>
+                </div>
+                <div class="p-6 bg-pink-50/30 rounded-[2rem] border border-pink-50 transition-all hover:bg-pink-50/50">
+                    <p class="text-[10px] text-pink-300 font-bold uppercase mb-2 tracking-widest">英文单词</p>
+                    <p id="enCount" class="text-2xl font-black text-gray-700">0</p>
+                </div>
+                <div class="p-6 bg-pink-50/30 rounded-[2rem] border border-pink-50 transition-all hover:bg-pink-50/50">
+                    <p class="text-[10px] text-pink-300 font-bold uppercase mb-2 tracking-widest">字符总数</p>
+                    <p id="totalCount" class="text-2xl font-black text-gray-700">0</p>
+                </div>
+                <div class="p-6 bg-pink-50/30 rounded-[2rem] border border-pink-50 transition-all hover:bg-pink-50/50">
+                    <p class="text-[10px] text-pink-300 font-bold uppercase mb-2 tracking-widest">总行数</p>
+                    <p id="lineCount" class="text-2xl font-black text-gray-700">0</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="text-left bg-pink-50/10 p-6 rounded-[2rem] border border-pink-50/50">
+                    <h3 class="text-sm font-bold text-pink-400 mb-4 flex items-center">
+                        <span class="w-8 h-8 bg-pink-100 rounded-xl flex items-center justify-center mr-3 text-xs">💡</span>
+                        统计说明
+                    </h3>
+                    <ul class="space-y-2 text-xs text-gray-400 font-medium">
+                        <li class="flex items-center"><span class="w-1 h-1 bg-pink-200 rounded-full mr-2"></span>只统计汉字字符，不含标点</li>
+                        <li class="flex items-center"><span class="w-1 h-1 bg-pink-200 rounded-full mr-2"></span>以空格分隔的连续英文字母</li>
+                        <li class="flex items-center"><span class="w-1 h-1 bg-pink-200 rounded-full mr-2"></span>包含空格、换行及所有特殊符号</li>
+                    </ul>
+                </div>
+                <button id="copyBtn" class="theme-download-btn w-full py-6 text-base font-bold shadow-lg shadow-pink-100 h-full flex items-center justify-center space-x-2">
+                    <span>📋 复制统计结果</span>
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const input = document.getElementById('textInput');
+        const cnCount = document.getElementById('cnCount');
+        const enCount = document.getElementById('enCount');
+        const totalCount = document.getElementById('totalCount');
+        const lineCount = document.getElementById('lineCount');
+
+        input.addEventListener('input', updateStats);
+
+        function updateStats() {
+            const text = input.value;
+            totalCount.innerText = text.length;
+            lineCount.innerText = text ? text.split('\n').length : 0;
+            const cnMatches = text.match(/[\u4e00-\u9fa5]/g);
+            cnCount.innerText = cnMatches ? cnMatches.length : 0;
+            const enMatches = text.match(/[a-zA-Z]+/g);
+            enCount.innerText = enMatches ? enMatches.length : 0;
+        }
+
+        function clearText() {
+            input.value = '';
+            updateStats();
+            Utils.toast('已清空', 'info');
+        }
+
+        document.getElementById('copyBtn').onclick = () => {
+            const result = `字数统计结果：\n中文字数: ${cnCount.innerText}\n英文单词: ${enCount.innerText}\n字符总数: ${totalCount.innerText}\n行数: ${lineCount.innerText}`;
+            navigator.clipboard.writeText(result).then(() => {
+                Utils.toast('统计结果已复制', 'success');
+            });
+        };
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>周末随机活动生成 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50"><div class="container mx-auto flex justify-between items-center"><div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'"><div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div><span class="text-2xl font-bold gradient-text">小Q工具箱</span></div><a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a></div></nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">🎲 周末做什么？</h1>
+            <p class="text-gray-500">选择困难症终结者！随机生成周末活动建议</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="mb-6">
+                <label class="block text-xs font-bold text-gray-400 uppercase mb-2">活动类型偏好</label>
+                <div class="flex flex-wrap gap-2">
+                    <label class="flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-full cursor-pointer"><input type="checkbox" checked class="actType" value="outdoor"> 🌳 户外</label>
+                    <label class="flex items-center gap-2 px-4 py-2 bg-pink-50 rounded-full cursor-pointer"><input type="checkbox" checked class="actType" value="indoor"> 🏠 室内</label>
+                    <label class="flex items-center gap-2 px-4 py-2 bg-green-50 rounded-full cursor-pointer"><input type="checkbox" checked class="actType" value="food"> 🍽️ 美食</label>
+                    <label class="flex items-center gap-2 px-4 py-2 bg-purple-50 rounded-full cursor-pointer"><input type="checkbox" checked class="actType" value="culture"> 🎭 文化</label>
+                    <label class="flex items-center gap-2 px-4 py-2 bg-yellow-50 rounded-full cursor-pointer"><input type="checkbox" checked class="actType" value="relax"> 🧘 放松</label>
+                </div>
+            </div>
+            <button onclick="generate()" class="w-full py-4 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold rounded-xl text-lg transition-all">🎰 随机生成！</button>
+            <div id="result" class="hidden mt-8 space-y-4"></div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center"><span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">!</span>使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>勾选你感兴趣的活动类型。</li><li>点击生成获取3个随机建议。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">都不喜欢怎么办？</div><div class="text-gray-500 text-sm">再点一次！每次都是全新随机的。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const activities = {
+            outdoor: [
+                {emoji:'🥾', name:'徒步爬山', desc:'找一座附近的小山，享受征服的快乐'},
+                {emoji:'🚲', name:'骑行探索', desc:'骑上单车去发现城市的角落'},
+                {emoji:'🏕️', name:'野餐露营', desc:'带上食物和帐篷，在公园享受阳光'},
+                {emoji:'🎣', name:'钓鱼', desc:'找个安静的水边，享受宁静时光'},
+                {emoji:'📸', name:'街拍城市', desc:'带着相机或手机发现日常之美'},
+                {emoji:'🏃', name:'晨跑/夜跑', desc:'跑一条新的路线，探索不同的风景'},
+            ],
+            indoor: [
+                {emoji:'🎮', name:'游戏马拉松', desc:'约上朋友一起打游戏或桌游'},
+                {emoji:'🧩', name:'拼图挑战', desc:'买一副1000片拼图慢慢拼'},
+                {emoji:'🎨', name:'画画/手工', desc:'试试水彩、素描或手工DIY'},
+                {emoji:'📚', name:'泡书店一天', desc:'去书店消磨一个慵懒的下午'},
+                {emoji:'🎬', name:'电影马拉松', desc:'选一个系列电影从头看到尾'},
+                {emoji:'🧹', name:'大扫除+断舍离', desc:'整理房间也是一种减压方式'},
+            ],
+            food: [
+                {emoji:'🍳', name:'学做新菜', desc:'跟着菜谱视频挑战一道新菜'},
+                {emoji:'🎂', name:'烘焙甜点', desc:'做蛋糕、饼干或面包'},
+                {emoji:'🍜', name:'探索街边小吃', desc:'去一条没去过的小吃街逛逛'},
+                {emoji:'🍷', name:'品酒/品茶', desc:'买一瓶好酒或好茶细细品味'},
+                {emoji:'🥗', name:'挑战健康餐', desc:'做一天全素或低卡餐食'},
+            ],
+            culture: [
+                {emoji:'🏛️', name:'逛博物馆', desc:'去一家没去过的博物馆'},
+                {emoji:'🎵', name:'听一场音乐会', desc:'Livehouse或街头音乐都很棒'},
+                {emoji:'🎭', name:'看话剧/展览', desc:'体验不同的艺术形式'},
+                {emoji:'📝', name:'写日记/写信', desc:'给未来的自己写一封信'},
+                {emoji:'🌐', name:'学一门新技能', desc:'花一天入门一项新技能'},
+            ],
+            relax: [
+                {emoji:'🧘', name:'瑜伽冥想', desc:'找个安静的地方做1小时冥想'},
+                {emoji:'♨️', name:'泡温泉/澡堂', desc:'让热水带走一周的疲惫'},
+                {emoji:'💆', name:'做个SPA', desc:'犒劳一下辛苦一周的自己'},
+                {emoji:'😴', name:'睡到自然醒', desc:'有时候什么都不做就是最好的安排'},
+                {emoji:'🌅', name:'看日出/日落', desc:'找个好角度看一场自然大片'},
+            ],
+        };
+
+        function generate() {
+            const checked = [...document.querySelectorAll('.actType:checked')].map(el => el.value);
+            if (checked.length === 0) { alert('至少选一种类型'); return; }
+            let pool = [];
+            checked.forEach(type => pool.push(...activities[type]));
+            // 随机选3个不重复的
+            const picks = [];
+            const shuffled = pool.sort(() => Math.random() - 0.5);
+            for (let i = 0; i < Math.min(3, shuffled.length); i++) picks.push(shuffled[i]);
+
+            let html = '';
+            picks.forEach((p, i) => {
+                html += `<div class="bg-gradient-to-r from-pink-50 to-purple-50 rounded-2xl p-6 flex items-center gap-4 transform hover:scale-[1.01] transition-transform">
+                    <span class="text-4xl">${p.emoji}</span>
+                    <div class="flex-1"><p class="font-bold text-gray-700 text-lg">${p.name}</p><p class="text-gray-500 text-sm">${p.desc}</p></div>
+                    <span class="text-2xl font-black text-gray-200">#${i+1}</span>
+                </div>`;
+            });
+            document.getElementById('result').innerHTML = html;
+            document.getElementById('result').classList.remove('hidden');
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

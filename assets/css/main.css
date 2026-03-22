@@ -1,0 +1,452 @@
+/* 全局可爱风 UI */
+:root {
+    --macaron-pink: #ffb7c5;
+    --macaron-yellow: #fff3b0;
+    --macaron-blue: #a8edea;
+    --bg-light: #fffafa;
+    --text-dark: #4a4a4a;
+    --card-shadow: 0 8px 15px -5px rgba(255, 183, 197, 0.2);
+    --card-shadow-hover: 0 15px 25px -5px rgba(255, 183, 197, 0.4);
+}
+
+body, html {
+    font-family: 'Outfit', -apple-system, sans-serif;
+    color: var(--text-dark);
+    background-color: var(--bg-light);
+    /* 强制允许单指垂直滑动手势 */
+    touch-action: pan-y;
+    overflow-x: hidden;
+    overflow-y: auto;
+    min-height: 100vh;
+    /* 硬件加速与滑动顺滑优化 */
+    -webkit-overflow-scrolling: touch;
+}
+
+body {
+    background-image: radial-gradient(var(--macaron-pink) 2px, transparent 2px), radial-gradient(var(--macaron-yellow) 2px, transparent 2px);
+    background-size: 40px 40px;
+    background-position: 0 0, 20px 20px;
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, #ff8da1 0%, #ff5e7e 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* 卡片可爱悬浮特效 */
+.cute-card {
+    background: #ffffff;
+    border-radius: 2rem !important;
+    border: 2px solid transparent;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: var(--card-shadow);
+    /* 启用 GPU 加速，减少重绘 */
+    will-change: transform, opacity;
+    transform: translateZ(0);
+}
+
+.cute-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: var(--macaron-pink);
+    box-shadow: var(--card-shadow-hover);
+}
+
+/* 导航栏磨砂玻璃效果 */
+nav {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 2px solid #fff0f3;
+}
+
+/* 导航栏搜索框优化 - 弹性布局 (Flex) */
+.nav-search-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-left: 0.5rem;
+}
+
+.nav-search-input {
+    width: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #fff;
+    border: 1px solid #ffe4e8;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    outline: none;
+    /* 进入文档流，弹性位移 */
+}
+
+.nav-search-input.active {
+    width: 180px;
+    opacity: 1;
+    pointer-events: auto;
+    padding: 0.4rem 1rem;
+    margin-right: 0.5rem;
+    box-shadow: 0 4px 12px rgba(255, 183, 197, 0.1);
+}
+
+.nav-search-btn {
+    position: relative;
+    z-index: 10;
+    width: 2.2rem;
+    height: 2.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 1px solid #ffe4e8;
+    color: #f472b6;
+    flex-shrink: 0;
+}
+
+.nav-search-btn:hover {
+    background: #fff5f7;
+    transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+    .nav-search-input.active {
+        width: 130px; /* 移动端弹性宽度收紧 */
+    }
+}
+
+/* 导航栏搜索结果下拉框 */
+.nav-search-results {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 300px;
+    background: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 25px rgba(255, 183, 197, 0.2);
+    border: 1px solid #ffe4e8;
+    margin-top: 0.5rem;
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 100;
+    padding: 0.5rem;
+}
+
+.nav-search-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.nav-search-item:hover {
+    background: #fff5f7;
+}
+
+.nav-search-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    background: #fdf2f8;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.75rem;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.nav-search-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.nav-search-name {
+    font-weight: bold;
+    color: #4a4a4a;
+    font-size: 0.875rem;
+    margin-bottom: 0.125rem;
+}
+
+.nav-search-desc {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 768px) {
+    .nav-search-results {
+        width: 260px;
+        right: -40px; /* 移动端位置微调 */
+    }
+}
+
+/* 页面内容间距补偿已通过 sticky 布局自动处理，不再需要 fixed-nav-padding */
+
+/* 按钮可爱效果 - 悬浮上移、点击下沉 */
+.cute-button,
+button,
+a.cute-btn {
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.cute-button:hover,
+button:not(.no-cute):hover {
+    transform: translateY(-2px);
+}
+
+.cute-button:active,
+button:not(.no-cute):active {
+    transform: translateY(4px) scale(0.95);
+}
+
+/* 输入框呼吸与聚焦效果 */
+.cute-input,
+input[type="text"],
+input[type="search"] {
+    transition: all 0.3s;
+    border: 3px solid #ffe4e8;
+    border-radius: 1.5rem;
+}
+
+.cute-input:focus,
+input[type="text"]:focus,
+input[type="search"]:focus {
+    border-color: var(--macaron-pink);
+    box-shadow: 0 0 0 4px rgba(255, 183, 197, 0.2);
+    transform: scale(1.02);
+    outline: none;
+}
+
+/* 鼠标点击特效（爱心/星星飘落） */
+.falling-heart,
+.falling-star {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    animation: fallDown 1s ease-out forwards;
+    font-size: 1.2rem;
+}
+
+@keyframes fallDown {
+    0% {
+        transform: translateY(0) scale(1) rotate(0deg);
+        opacity: 1;
+    }
+
+    50% {
+        transform: translateY(20px) scale(1.2) rotate(15deg);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: translateY(60px) scale(0.5) rotate(45deg);
+        opacity: 0;
+    }
+}
+
+/* 入场动画 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-item,
+.animate-fade-in {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+/* 加载动画：糖果跳动 */
+.cute-loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-light);
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s;
+    background-image: radial-gradient(var(--macaron-pink) 2px, transparent 2px);
+    background-size: 30px 30px;
+}
+
+.cute-loader-candy {
+    font-size: 4rem;
+    animation: candyBounce 1s infinite alternate cubic-bezier(0.5, 0.05, 1, 0.5);
+}
+
+@keyframes candyBounce {
+    0% {
+        transform: translateY(0) scale(1) rotate(-10deg);
+    }
+
+    100% {
+        transform: translateY(-40px) scale(1.1) rotate(10deg);
+    }
+}
+
+/* 缩短页面长度：控制Padding */
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* 移动端底部导航条 */
+.mobile-tab-bar {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    border-top: 2px solid #fff0f3;
+    z-index: 1000;
+    box-shadow: 0 -4px 15px rgba(255, 175, 189, 0.15);
+}
+
+@media (max-width: 768px) {
+    .mobile-tab-bar {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding-top: 0.5rem;
+        padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+    }
+
+    body {
+        padding-bottom: 2.4rem;
+        /* 从 5rem 减小，为底部导航留出适量空间 */
+    }
+
+    /* 优化工具页面底部 footer 间距，覆盖 inline 的 py-12 */
+    footer.py-12 {
+        padding-top: 1.5rem !important;
+        padding-bottom: 1.5rem !important;
+    }
+
+    .top-nav-links,
+    .mobile-menu-btn {
+        display: none !important;
+    }
+
+    .cute-card {
+        border-radius: 1.5rem !important;
+        /* 移动端卡片圆角稍微缩小 */
+    }
+}
+
+/* 当软键盘弹出（表现为视区高度变短）时，自动隐藏悬浮的底部导航，防止遮挡搜索页面 */
+@media (max-width: 768px) and (max-height: 550px) {
+    .mobile-tab-bar {
+        display: none !important;
+    }
+}
+
+/* 全站统一下载按钮强力粉色主题覆盖 */
+.theme-download-btn {
+    background-color: #f472b6 !important;
+    /* bg-pink-400 */
+    color: #ffffff !important;
+    border-radius: 9999px !important;
+    /* rounded-full */
+    border: none !important;
+    box-shadow: 0 8px 15px -3px rgba(244, 114, 182, 0.4) !important;
+    font-weight: bold !important;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+.theme-download-btn:hover {
+    background-color: #ec4899 !important;
+    /* bg-pink-500 */
+    transform: translateY(-3px) scale(1.02) !important;
+    box-shadow: 0 15px 25px -5px rgba(244, 114, 182, 0.5) !important;
+}
+
+.theme-download-btn:active {
+    transform: translateY(2px) scale(0.98) !important;
+}
+
+/* 全站统一辅助按钮（重置/重选/清空等）浅粉色主题覆盖 */
+.theme-secondary-btn {
+    background-color: #fdf2f8 !important;
+    /* bg-pink-50 */
+    color: #f472b6 !important;
+    /* text-pink-400 */
+    border: 2px solid #fce7f3 !important;
+    /* border-pink-100 */
+    border-radius: 9999px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    padding: 0.5rem 1.5rem;
+}
+
+.theme-secondary-btn:hover {
+    background-color: #fce7f3 !important;
+    /* bg-pink-100 */
+    color: #db2777 !important;
+    /* text-pink-600 */
+    border-color: #fbcfe8 !important;
+    /* border-pink-200 */
+    transform: translateY(-2px) scale(1.02) !important;
+}
+
+.theme-secondary-btn:active {
+    transform: translateY(2px) scale(0.98) !important;
+}
+
+/* ========== PWA 原生感增强 ========== */
+
+/* 禁止全站图片和链接的长按弹出菜单 */
+/* 仅针对图片和链接禁止长按弹出菜单，减少节点扫描开销 */
+img,
+a {
+    -webkit-touch-callout: none;
+}
+
+/* 禁止非输入区域文本被意外选中（工具类页面建议开启） */
+body {
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* NOTE: 输入框和文本域必须保留文本选中能力 */
+input,
+textarea,
+[contenteditable="true"],
+pre,
+code {
+    -webkit-user-select: text;
+    user-select: text;
+    -webkit-touch-callout: default;
+}
+
+/* iOS 安全区域适配（刘海屏/底部横条） */
+body {
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* standalone 模式下的额外优化（从主屏幕启动时生效） */
+@media (display-mode: standalone) {
+    /* 隐藏不需要的导航元素 */
+    body {
+        overscroll-behavior-y: auto; /* 恢复为 auto，防止在某些内核下导致单指滚动失效 */
+    }
+}

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>汉字笔顺演示 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+    <style>
+        .char-preview { font-family: 'ZCOOL XiaoWei', serif; text-shadow: 0 4px 12px rgba(244, 114, 182, 0.1); }
+        .canvas-shadow { box-shadow: 0 20px 50px -15px rgba(244, 114, 182, 0.2); }
+        canvas { cursor: crosshair; touch-action: none; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6 shadow-sm no-print">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-14 no-print">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-800 mb-4 animate-item">汉字笔意：在线临摹台</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s italic italic">观笔画流转，悟方块神韵。为你的书法进阶打下坚实基础。🖌️</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-14 mb-12 bg-white shadow-2xl animate-item flex flex-col items-center" style="animation-delay: 0.2s">
+            <div class="flex flex-col md:flex-row gap-10 items-center justify-center w-full mb-12 no-print">
+                <div class="relative group">
+                    <p class="text-[10px] font-black text-pink-300 uppercase tracking-[0.2em] mb-3 absolute -top-6 left-4">The Character</p>
+                    <input type="text" id="char" value="永" maxlength="1" class="w-28 h-28 text-7xl text-center bg-slate-50 rounded-[2.5rem] border-4 border-slate-50 outline-none focus:border-pink-100 focus:bg-white font-black shadow-inner transition-all text-slate-700 char-preview">
+                </div>
+                <div class="flex flex-col gap-4 w-full md:w-auto">
+                    <button onclick="render()" class="px-12 py-5 bg-pink-400 text-white font-black rounded-3xl shadow-xl hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-xl flex items-center justify-center gap-3">
+                        🎨 渲染田字格 (GRID)
+                    </button>
+                    <button onclick="practice()" class="px-12 py-5 bg-white border-2 border-pink-50 text-pink-400 font-black rounded-3xl hover:bg-pink-50 transition-all text-sm uppercase tracking-widest">
+                        🖊️ 导出练习法帖 (PRINT)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Canvas Area -->
+            <div class="relative w-full max-w-[460px] aspect-square mx-auto mb-10 group">
+                <div class="absolute inset-0 bg-pink-100/30 rounded-[3.5rem] -m-4 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+                <div class="relative w-full h-full p-4 bg-white rounded-[3rem] border-4 border-pink-50 canvas-shadow overflow-hidden">
+                    <canvas id="grid" width="800" height="800" class="w-full h-full rounded-[2rem]"></canvas>
+                </div>
+            </div>
+            
+            <div class="p-6 bg-slate-50 border border-slate-100 rounded-[2rem] text-left max-w-2xl no-print">
+                <p class="text-[9px] text-gray-300 font-black uppercase tracking-[0.4em] mb-3">Interactive Calligraphy Guide</p>
+                <p class="text-xs text-slate-500 font-bold italic leading-relaxed">“夫书者，心之迹也。” 请在上方田字格中尝试临摹淡粉颜色的汉字笔触。支持鼠标或触屏直接书写练习。</p>
+            </div>
+        </section>
+        
+        <footer class="text-gray-300 text-[10px] uppercase font-black tracking-[0.5em] pb-12 animate-item no-print" style="animation-delay: 0.3s">
+            Dynamic Character Stroke & Calligraphy Engine
+        </footer>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const canvas = document.getElementById('grid');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let lastX = 0, lastY = 0;
+
+        // Init/Render
+        function render(){
+            const ch = document.getElementById('char').value.trim() || '永';
+            
+            // HD Canvas Scaling
+            ctx.clearRect(0, 0, 800, 800);
+            
+            // Draw 田字格 (Grid)
+            ctx.strokeStyle = '#fecdd3'; // Pink 200
+            ctx.setLineDash([]);
+            ctx.lineWidth = 8;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            
+            // Border
+            ctx.strokeRect(40, 40, 720, 720);
+            
+            // Dashed lines
+            ctx.setLineDash([20, 15]);
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(400, 40);
+            ctx.lineTo(400, 760);
+            ctx.moveTo(40, 400);
+            ctx.lineTo(760, 400);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Draw Character Trace (High contrast but faint)
+            ctx.fillStyle = 'rgba(244, 114, 182, 0.1)'; 
+            ctx.font = 'bold 640px "ZCOOL XiaoWei", serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(ch, 400, 430);
+            
+            Utils.toast('已加载汉字：' + ch, 'success');
+        }
+
+        // Drawing Logic
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrawing(e.touches[0]); });
+        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e.touches[0]); });
+        canvas.addEventListener('touchend', stopDrawing);
+
+        function startDrawing(e) {
+            isDrawing = true;
+            [lastX, lastY] = getPos(e);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const [x, y] = getPos(e);
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(x, y);
+            ctx.strokeStyle = '#475569'; // Slate 600
+            ctx.lineWidth = 12;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.stroke();
+            [lastX, lastY] = [x, y];
+        }
+
+        function stopDrawing() { isDrawing = false; }
+        
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            return [
+                (e.clientX - rect.left) * scaleX,
+                (e.clientY - rect.top) * scaleY
+            ];
+        }
+
+        function practice(){
+            const ch = document.getElementById('char').value.trim() || '永';
+            const win = window.open('', '_blank');
+            let grids = '';
+            for(let i=0; i<12; i++){
+                grids += `
+                    <div style="width:130px;height:130px;border:3px solid #f9a8d4;display:inline-flex;align-items:center;justify-content:center;position:relative;margin:10px;border-radius:12px;background:white">
+                        <div style="position:absolute;border-right:1.5px dashed #fbcfe8;border-bottom:1.5px dashed #fbcfe8;width:50%;height:50%;top:0;left:0"></div>
+                        <div style="position:absolute;border-left:1.5px dashed #fbcfe8;border-bottom:1.5px dashed #fbcfe8;width:50%;height:50%;top:0;right:0"></div>
+                        <span style="color:rgba(219, 39, 119, 0.08);font-size:100px;font-family:'ZCOOL XiaoWei', serif;font-weight:900">${i===0?ch:''}</span>
+                    </div>`;
+            }
+            win.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>汉字笔法修炼贴 - ${ch}</title>
+                    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+                    <style>@media print { body { background: white !important; } .no-print { display: none; } }</style>
+                </head>
+                <body style="padding:60px 40px;text-align:center;background:#fffdfd;font-family:sans-serif;">
+                    <h1 style="font-family:'ZCOOL XiaoWei', serif;color:#db2777;margin-bottom:10px;font-size:36px;letter-spacing:0.2em">自律本草：翰墨修炼</h1>
+                    <p style="color:#f9a8d4;font-size:14px;letter-spacing:0.5em;margin-bottom:40px;text-transform:uppercase">Calligraphy Practice Sheet / ${ch}</p>
+                    <div style="max-width:800px;margin:0 auto">${grids}</div>
+                    <div style="margin-top:60px;padding-top:20px;border-top:1px solid #fff1f2;color:#f9a8d4;font-size:12px;font-style:italic">
+                        — 临摹成器，日进有功 —<br>
+                        <span style="font-size:10px;letter-spacing:2px;margin-top:10px;display:block">GENERATED BY SMALL-Q STUDY BOX</span>
+                    </div>
+                    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+                </html>`);
+            win.document.close();
+            setTimeout(() => {
+                win.print();
+                // win.close(); 
+            }, 1000);
+            Utils.toast('正在开启高清练习贴生成 📑', 'info');
+        }
+
+        // 加载动画 & 初始化
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    render();
+                }, 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button') || e.target.closest('input') || e.target.closest('canvas')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+</body>
+</html>

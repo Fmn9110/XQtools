@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>渐变色生成器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fffafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 transition-transform hover:rotate-0">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-4 md:py-8 px-4 max-w-6xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold mb-4 animate-item gradient-text">渐变色调色盘</h1>
+            <p class="text-gray-500 animate-item" style="animation-delay: 0.1s">通过视觉化的方式打造充满活力的色彩过渡。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 animate-item" style="animation-delay: 0.2s">
+            <div class="grid lg:grid-cols-2 gap-12 items-start">
+                <!-- Preview & Code -->
+                <div class="space-y-6">
+                    <div id="gradient-preview" class="w-full aspect-video md:aspect-[21/9] rounded-[2.5rem] shadow-2xl relative overflow-hidden transition-all duration-700 border-4 border-white shadow-pink-100">
+                        <!-- Preview Bg -->
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="bg-gray-900 rounded-3xl p-6 relative group shadow-inner">
+                            <pre id="code-text" class="text-xs md:text-sm font-mono text-pink-300 break-all whitespace-pre-wrap leading-relaxed">background: linear-gradient(135deg, #FF99CC 0%, #FFCCFF 100%);</pre>
+                            <button id="copy-btn" class="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-xl text-[10px] font-black tracking-widest uppercase backdrop-blur-md transition-all">复制 CSS</button>
+                        </div>
+                        <button id="download-img-btn" class="w-full py-4 bg-pink-50 text-pink-500 rounded-2xl font-black text-sm hover:bg-pink-100 transition-all border border-pink-100 shadow-sm theme-download-btn">
+                            下载为高清壁纸 (PNG)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="space-y-8 bg-pink-50/20 p-8 rounded-[2.5rem] border border-pink-50">
+                    <div class="space-y-6">
+                        <h3 class="font-black text-gray-800 flex items-center gap-2 italic uppercase tracking-tighter text-lg">
+                            <span class="w-2 h-6 bg-pink-400 rounded-full"></span>
+                            色彩实验室
+                        </h3>
+                        
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="space-y-3 bg-white p-4 rounded-3xl border border-pink-50 shadow-sm">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">起始颜色</label>
+                                <div class="flex items-center gap-3">
+                                    <input type="color" id="color1" value="#FF99CC" class="w-12 h-12 rounded-xl border-0 cursor-pointer p-0 bg-transparent flex-shrink-0">
+                                    <input type="text" id="color1-text" value="#FF99CC" class="w-full bg-transparent font-mono text-sm text-gray-700 focus:outline-none">
+                                </div>
+                            </div>
+                            <div class="space-y-3 bg-white p-4 rounded-3xl border border-pink-50 shadow-sm">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">目标颜色</label>
+                                <div class="flex items-center gap-3">
+                                    <input type="color" id="color2" value="#FFCCFF" class="w-12 h-12 rounded-xl border-0 cursor-pointer p-0 bg-transparent flex-shrink-0">
+                                    <input type="text" id="color2-text" value="#FFCCFF" class="w-full bg-transparent font-mono text-sm text-gray-700 focus:outline-none">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 pt-4 border-t border-pink-100">
+                            <div class="flex justify-between items-center">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">渐变角度 (Angle)</label>
+                                <span id="angle-val" class="font-black text-pink-500 font-mono text-xs">135.00°</span>
+                            </div>
+                            <input type="range" id="angle" min="0" max="360" value="135" class="w-full h-2 bg-pink-100 rounded-lg appearance-none cursor-pointer accent-pink-500">
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 pt-4 border-t border-pink-100">
+                        <h3 class="font-black text-gray-800 flex items-center gap-2 italic uppercase tracking-tighter text-lg">
+                            <span class="w-2 h-6 bg-pink-400 rounded-full"></span>
+                            灵感预设
+                        </h3>
+                        <div id="preset-container" class="grid grid-cols-4 gap-4">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.3s">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">📘</span>
+                使用Tips
+            </h2>
+            <div class="bg-white rounded-3xl p-8 shadow-sm border border-pink-50 grid md:grid-cols-2 gap-8">
+                <div class="space-y-3">
+                    <h4 class="font-black text-gray-700 flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-pink-400 rounded-full"></span>
+                        CSS 导出
+                    </h4>
+                    <p class="text-xs text-gray-500 leading-relaxed italic">一键点击复制按钮，即可直接在您的网页开发、设计软件（如 FIGMA）中使用这段高颜值的代码。</p>
+                </div>
+                <div class="space-y-3">
+                    <h4 class="font-black text-gray-700 flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-pink-400 rounded-full"></span>
+                        画质说明
+                    </h4>
+                    <p class="text-xs text-gray-500 leading-relaxed italic">点击下载壁纸，我们将为您在后台绘制 4K 级别的超清渐变图像，适配大部分桌面与移动设备桌面背景。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-10 text-center text-gray-400 text-xs border-t border-pink-50 mt-12 bg-white/50">
+        © 2026 小Q工具箱 · 纯前端离线实验室 💖
+    </footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const preview = document.getElementById('gradient-preview');
+        const codeText = document.getElementById('code-text');
+        const color1 = document.getElementById('color1');
+        const color2 = document.getElementById('color2');
+        const color1T = document.getElementById('color1-text');
+        const color2T = document.getElementById('color2-text');
+        const angleInput = document.getElementById('angle');
+        const angleVal = document.getElementById('angle-val');
+        const copyBtn = document.getElementById('copy-btn');
+        const downloadImgBtn = document.getElementById('download-img-btn');
+        const presetContainer = document.getElementById('preset-container');
+
+        const presets = [
+            {n:'柔粉', c1:'#FF99CC', c2:'#FFCCFF'},
+            {n:'海蓝', c1:'#00C6FF', c2:'#0072FF'},
+            {n:'极光', c1:'#11998e', c2:'#38ef7d'},
+            {n:'落日', c1:'#fc4a1a', c2:'#f7b733'}
+        ];
+
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+            update();
+            renderPresets();
+        });
+
+        function renderPresets() {
+            presetContainer.innerHTML = presets.map(item => `
+                <div class="preset-btn group cursor-pointer" data-c1="${item.c1}" data-c2="${item.c2}">
+                    <div class="w-full aspect-square rounded-2xl shadow-sm group-hover:scale-110 transition-transform duration-300 border-4 border-white" style="background: linear-gradient(135deg, ${item.c1}, ${item.c2})"></div>
+                    <p class="text-[8px] text-center mt-2 font-bold text-gray-400 uppercase">${item.n}</p>
+                </div>
+            `).join('');
+
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.onclick = () => {
+                    color1.value = btn.dataset.c1;
+                    color2.value = btn.dataset.c2;
+                    update();
+                    Utils.toast('灵感已同步！', 'success');
+                };
+            });
+        }
+
+        function update() {
+            const c1 = color1.value;
+            const c2 = color2.value;
+            color1T.value = c1.toUpperCase();
+            color2T.value = c2.toUpperCase();
+            const ang = angleInput.value;
+            const grad = `linear-gradient(${ang}deg, ${c1} 0%, ${c2} 100%)`;
+            preview.style.background = grad;
+            codeText.textContent = `background: ${grad};`;
+            angleVal.textContent = parseFloat(ang).toFixed(2) + '°';
+        }
+
+        [color1, color2, angleInput].forEach(el => el.oninput = update);
+        [color1T, color2T].forEach(el => el.onchange = () => {
+            const hex = el.value.startsWith('#') ? el.value : '#' + el.value;
+            if (/^#[0-9A-F]{6}$/i.test(hex)) {
+                if (el === color1T) color1.value = hex; else color2.value = hex;
+                update();
+            }
+        });
+
+        copyBtn.onclick = () => {
+            navigator.clipboard.writeText(codeText.textContent);
+            Utils.toast('CSS 代码已存入剪贴板', 'success');
+        };
+
+        downloadImgBtn.onclick = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 3840; canvas.height = 2160;
+            const x1 = 0, y1 = 0;
+            const angleRad = (angleInput.value - 90) * Math.PI / 180;
+            const x2 = canvas.width * Math.cos(angleRad) + x1;
+            const y2 = canvas.height * Math.sin(angleRad) + y1;
+            const grd = ctx.createLinearGradient(x1, y1, x2, y2);
+            grd.addColorStop(0, color1.value);
+            grd.addColorStop(1, color2.value);
+            ctx.fillStyle = grd;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            Utils.downloadFile(canvas.toDataURL('image/png'), `q_grad_${Date.now()}.png`, 'image/png');
+            Utils.toast('高清壁纸已开始下载', 'success');
+        };
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

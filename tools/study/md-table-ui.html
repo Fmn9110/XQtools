@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Markdown表格编辑器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #fee2e2; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-5xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">Markdown 表格可视化编辑器</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">无需记忆语法，像使用 Excel 一样轻松创建完美的 Markdown 表格。</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 mb-12 bg-white shadow-2xl animate-item" style="animation-delay: 0.2s">
+            <div class="mb-8 flex flex-wrap gap-3">
+                <button onclick="addRow()" class="px-5 py-3 bg-pink-50 text-pink-500 font-black rounded-2xl border border-pink-100 hover:bg-pink-100 transition-all text-sm shadow-sm">➕ 增加行 (Row)</button>
+                <button onclick="addCol()" class="px-5 py-3 bg-pink-50 text-pink-500 font-black rounded-2xl border border-pink-100 hover:bg-pink-100 transition-all text-sm shadow-sm">➕ 增加列 (Col)</button>
+                <button onclick="resetTable()" class="px-5 py-3 bg-gray-50 text-gray-400 font-black rounded-2xl border border-gray-100 hover:bg-gray-100 transition-all text-sm shadow-sm">🔄 重置 (Reset)</button>
+            </div>
+
+            <div class="overflow-x-auto pb-4 custom-scrollbar mb-10">
+                <table id="grid" class="w-full border-separate border-spacing-2">
+                     <thead>
+                         <tr id="header-row">
+                             <td><input type="text" value="表头 1" class="w-24 md:w-32 p-3 bg-pink-50/50 rounded-xl border-2 border-pink-100 font-black text-slate-700 outline-none focus:border-pink-300 text-sm shadow-inner text-center"></td>
+                             <td><input type="text" value="表头 2" class="w-24 md:w-32 p-3 bg-pink-50/50 rounded-xl border-2 border-pink-100 font-black text-slate-700 outline-none focus:border-pink-300 text-sm shadow-inner text-center"></td>
+                         </tr>
+                     </thead>
+                     <tbody id="body-grid">
+                         <tr>
+                             <td><input type="text" value="内容 1" class="w-24 md:w-32 p-3 bg-white rounded-xl border border-pink-50 font-medium text-slate-600 outline-none focus:ring-2 focus:ring-pink-100 text-sm shadow-sm text-center"></td>
+                             <td><input type="text" value="内容 2" class="w-24 md:w-32 p-3 bg-white rounded-xl border border-pink-50 font-medium text-slate-600 outline-none focus:ring-2 focus:ring-pink-100 text-sm shadow-sm text-center"></td>
+                         </tr>
+                     </tbody>
+                </table>
+            </div>
+            
+            <button onclick="gen()" class="w-full py-5 bg-pink-400 text-white font-black rounded-2xl shadow-lg hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-lg mb-8">
+                🚀 生成 Markdown 代码 (Generate)
+            </button>
+
+            <div class="relative group">
+                <p class="text-[10px] font-black text-pink-300 uppercase tracking-widest absolute -top-5 left-4">Output Result 输出代码</p>
+                <textarea id="output" class="w-full h-48 p-6 bg-slate-50 border-2 border-slate-50 rounded-3xl outline-none focus:border-pink-100 font-mono text-sm text-slate-500 leading-relaxed shadow-inner resize-none" readonly placeholder="Markdown 代码将在这里生成..."></textarea>
+                <div class="absolute right-4 bottom-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onclick="copyCode()" class="px-5 py-2 bg-white text-pink-400 font-black rounded-xl border-2 border-pink-50 shadow-md hover:text-pink-500 hover:border-pink-100 transition-all text-xs">复制 (COPY)</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="cute-card p-6 bg-white/50 border border-pink-50/50 text-left animate-item" style="animation-delay: 0.3s">
+            <h2 class="text-xs font-black text-pink-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-pink-400"></span> 提示 (Tips)
+            </h2>
+            <p class="text-[12px] text-gray-400 leading-relaxed font-medium">
+                直接在上方表格输入框中填写内容即可。留空的单元格在生成时会自动填充为 "-"。
+            </p>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let colCount = 2;
+
+        function addRow() {
+            const tbody = document.getElementById('body-grid');
+            const tr = document.createElement('tr');
+            for(let i=0; i<colCount; i++) {
+                tr.innerHTML += `<td><input type="text" value="" class="w-24 md:w-32 p-3 bg-white rounded-xl border border-pink-50 font-medium text-slate-600 outline-none focus:ring-2 focus:ring-pink-100 text-sm shadow-sm text-center"></td>`;
+            }
+            tbody.appendChild(tr);
+            Utils.toast('已添加新行 ✨');
+        }
+
+        function addCol() {
+            colCount++;
+            const headerRow = document.getElementById('header-row');
+            headerRow.innerHTML += `<td><input type="text" value="表头 ${colCount}" class="w-24 md:w-32 p-3 bg-pink-50/50 rounded-xl border-2 border-pink-100 font-black text-slate-700 outline-none focus:border-pink-300 text-sm shadow-inner text-center"></td>`;
+            
+            const rows = document.querySelectorAll('#body-grid tr');
+            rows.forEach(tr => {
+                tr.innerHTML += `<td><input type="text" value="" class="w-24 md:w-32 p-3 bg-white rounded-xl border border-pink-50 font-medium text-slate-600 outline-none focus:ring-2 focus:ring-pink-100 text-sm shadow-sm text-center"></td>`;
+            });
+            Utils.toast('已添加新列 ✨');
+        }
+
+        function resetTable() {
+            if(confirm('确定要清空所有内容并重置表格吗？')) {
+                location.reload();
+            }
+        }
+
+        function gen() {
+            const headers = document.querySelectorAll('#header-row td input');
+            const rows = document.querySelectorAll('#body-grid tr');
+            
+            let md = "|";
+            headers.forEach(i => md += ` ${i.value.trim() || '-'} |`);
+            md += "\n|";
+            headers.forEach(() => md += " --- |");
+            md += "\n";
+            
+            rows.forEach(tr => {
+                md += "|";
+                tr.querySelectorAll('td input').forEach(i => md += ` ${i.value.trim() || '-'} |`);
+                md += "\n";
+            });
+            
+            document.getElementById('output').value = md;
+            Utils.toast('Markdown 代码已生成 ✨', 'success');
+        }
+
+        function copyCode() {
+            const textarea = document.getElementById('output');
+            if(!textarea.value) { Utils.toast('请先生成代码哦', 'warning'); return; }
+            textarea.select();
+            document.execCommand('copy');
+            Utils.toast('已复制到剪贴板 📋');
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

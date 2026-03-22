@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>音频频率测试 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🔊 音频频率 <span class="gradient-text">测试</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">用声音探索听觉边界，测试你的耳朵能听到多高频率。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            <div class="text-center mb-10">
+                <p class="text-6xl md:text-7xl font-black gradient-text tracking-tighter" id="freqDisplay">440 Hz</p>
+                <p class="text-xs font-black text-pink-300 uppercase tracking-widest mt-4" id="freqNote">A4 - 标准音高</p>
+            </div>
+            
+            <div class="mb-10 max-w-2xl mx-auto">
+                <input type="range" id="freqSlider" min="20" max="20000" value="440" class="w-full h-2 bg-pink-50 rounded-lg appearance-none cursor-pointer accent-pink-400" oninput="updateFreq()">
+                <div class="flex justify-between text-[10px] font-bold text-gray-300 mt-4 px-1 uppercase tracking-widest">
+                    <span>20 Hz</span>
+                    <span>1k Hz</span>
+                    <span>10k Hz</span>
+                    <span>20k Hz</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-4 max-w-md mx-auto mb-10">
+                <button onclick="playFreq()" id="playBtn" class="theme-download-btn flex-1 py-4 text-lg">▶ 开启播放</button>
+                <button onclick="stopFreq()" class="theme-secondary-btn flex-1 py-4 text-lg">⏹ 立即停止</button>
+            </div>
+
+            <div class="grid grid-cols-4 md:grid-cols-8 gap-2">
+                <button onclick="setFreq(261)" class="p-3 bg-pink-50/50 rounded-xl text-[10px] font-bold text-pink-500 hover:bg-pink-100 transition-all border border-pink-100/30">C4<br>261Hz</button>
+                <button onclick="setFreq(293)" class="p-3 bg-pink-50/50 rounded-xl text-[10px] font-bold text-pink-500 hover:bg-pink-100 transition-all border border-pink-100/30">D4<br>293Hz</button>
+                <button onclick="setFreq(329)" class="p-3 bg-pink-50/50 rounded-xl text-[10px] font-bold text-pink-500 hover:bg-pink-100 transition-all border border-pink-100/30">E4<br>329Hz</button>
+                <button onclick="setFreq(349)" class="p-3 bg-pink-50/50 rounded-xl text-[10px] font-bold text-pink-500 hover:bg-pink-100 transition-all border border-pink-100/30">F4<br>349Hz</button>
+                <button onclick="setFreq(392)" class="p-3 bg-pink-50/50 rounded-xl text-[10px] font-bold text-pink-500 hover:bg-pink-100 transition-all border border-pink-100/30">G4<br>392Hz</button>
+                <button onclick="setFreq(440)" class="p-3 bg-pink-400 rounded-xl text-[10px] font-bold text-white shadow-lg shadow-pink-200">A4<br>440Hz</button>
+                <button onclick="setFreq(493)" class="p-3 bg-pink-50/50 rounded-xl text-[10px] font-bold text-pink-500 hover:bg-pink-100 transition-all border border-pink-100/30">B4<br>493Hz</button>
+                <button onclick="setFreq(523)" class="p-3 bg-pink-50/50 rounded-xl text-[10px] font-bold text-pink-500 hover:bg-pink-100 transition-all border border-pink-100/30">C5<br>523Hz</button>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.3s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">📖</span>
+                    测试指南
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50">
+                    <ul class="space-y-4 text-gray-600 text-sm">
+                        <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full bg-pink-50 text-pink-400 flex items-center justify-center text-[10px] font-bold">1</span> 拖动滑块或快捷按钮调整频率。</li>
+                        <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full bg-pink-50 text-pink-400 flex items-center justify-center text-[10px] font-bold">2</span> 佩戴耳机测试以获得更精准的反馈。</li>
+                        <li class="flex items-center gap-3"><span class="w-5 h-5 rounded-full bg-pink-50 text-pink-400 flex items-center justify-center text-[10px] font-bold">3</span> 播放高频音时请注意调节音量，避免损伤。</li>
+                    </ul>
+                </div>
+            </section>
+            <section class="animate-item" style="animation-delay: 0.4s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">?</span>
+                    常见问题
+                </h2>
+                <div class="space-y-4">
+                    <div class="bg-white p-6 rounded-2xl border border-pink-50 shadow-sm">
+                        <div class="font-bold text-gray-700 mb-2">人耳能听到什么范围？</div>
+                        <div class="text-gray-500 text-sm leading-relaxed">大多数人约为20Hz-20000Hz。随着年龄增长，高频听力会逐渐下降，这是正常的生理现象。</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let audioCtx = null;
+        let oscillator = null;
+        let gainNode = null;
+        let isPlaying = false;
+
+        function updateFreq() {
+            const freq = parseInt(document.getElementById('freqSlider').value);
+            document.getElementById('freqDisplay').textContent = freq + ' Hz';
+            let note = '';
+            if (freq < 100) note = '低频 - 低沉的轰鸣声';
+            else if (freq < 500) note = '中低频 - 大部分人声范围';
+            else if (freq < 2000) note = '中频 - 乐器主要音域';
+            else if (freq < 8000) note = '中高频 - 明亮清脆';
+            else if (freq < 15000) note = '高频 - 部分人可能听不到';
+            else note = '超高频 - 很多成年人听不到';
+            document.getElementById('freqNote').textContent = note;
+            if (oscillator) oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        }
+
+        function playFreq() {
+            if (isPlaying) { stopFreq(); }
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            oscillator = audioCtx.createOscillator();
+            gainNode = audioCtx.createGain();
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(parseInt(document.getElementById('freqSlider').value), audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.start();
+            isPlaying = true;
+            document.getElementById('playBtn').textContent = '🔊 正在播放...';
+            Utils.toast('音频流已开启', 'success');
+        }
+
+        function stopFreq() {
+            if (oscillator) { oscillator.stop(); oscillator = null; }
+            if (audioCtx) { audioCtx.close(); audioCtx = null; }
+            isPlaying = false;
+            document.getElementById('playBtn').textContent = '▶ 开启播放';
+            Utils.toast('音频已停止', 'info');
+        }
+
+        function setFreq(f) {
+            document.getElementById('freqSlider').value = f;
+            updateFreq();
+            playFreq();
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

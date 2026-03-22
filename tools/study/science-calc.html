@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>科学计算 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .calc-btn { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .calc-btn:active { transform: scale(0.92); opacity: 0.8; }
+        .history-item { animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-lg text-center">
+        <header class="mb-10 md:mb-14">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-800 mb-4 animate-item">全能科学计算引擎</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s italic italic">优雅处理复杂逻辑，为你的学术研究精准护航。🧪</p>
+        </header>
+
+        <section class="cute-card p-4 md:p-8 bg-white shadow-2xl animate-item flex flex-col items-center" style="animation-delay: 0.2s">
+            <!-- Advanced Display -->
+            <div class="w-full mb-6 bg-slate-50/50 rounded-[3rem] p-8 text-right shadow-inner relative group overflow-hidden">
+                <div id="historyTape" class="h-10 text-[10px] font-black text-slate-300 uppercase tracking-widest overflow-y-auto no-scrollbar mb-2 space-y-1">
+                    <!-- History lines -->
+                </div>
+                <div id="display" class="text-5xl md:text-6xl font-black text-slate-800 tracking-tighter truncate font-mono">0</div>
+                <div class="absolute left-6 top-1/2 -translate-y-1/2 text-2xl opacity-5 pointer-events-none">Σ</div>
+            </div>
+            
+            <!-- Keypad -->
+            <div class="grid grid-cols-4 gap-3 w-full">
+                 <!-- Row 1: Sci Functions -->
+                 <button onclick="input('Math.sin(')" class="calc-btn p-5 bg-pink-50 text-pink-400 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-pink-100">sin</button>
+                 <button onclick="input('Math.cos(')" class="calc-btn p-5 bg-pink-50 text-pink-400 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-pink-100">cos</button>
+                 <button onclick="input('Math.tan(')" class="calc-btn p-5 bg-pink-50 text-pink-400 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-pink-100">tan</button>
+                 <button onclick="input('Math.sqrt(')" class="calc-btn p-5 bg-pink-50 text-pink-400 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-pink-100">√</button>
+
+                 <!-- Row 2: Control -->
+                 <button onclick="clearAll()" class="calc-btn p-5 bg-rose-50 text-rose-400 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-rose-100">AC</button>
+                 <button onclick="input('(')" class="calc-btn p-5 bg-slate-50 text-slate-400 rounded-2xl font-black text-lg hover:bg-slate-100">(</button>
+                 <button onclick="input(')')" class="calc-btn p-5 bg-slate-50 text-slate-400 rounded-2xl font-black text-lg hover:bg-slate-100">)</button>
+                 <button onclick="input('/')" class="calc-btn p-5 bg-pink-400 text-white rounded-2xl font-black text-2xl hover:bg-pink-500 shadow-md shadow-pink-100">÷</button>
+
+                 <!-- Nums -->
+                 <button onclick="input('7')" class="calc-btn p-5 bg-slate-50 text-slate-700 rounded-2xl font-black text-xl hover:bg-white hover:shadow-sm">7</button>
+                 <button onclick="input('8')" class="calc-btn p-5 bg-slate-50 text-slate-700 rounded-2xl font-black text-xl hover:bg-white hover:shadow-sm">8</button>
+                 <button onclick="input('9')" class="calc-btn p-5 bg-slate-50 text-slate-700 rounded-2xl font-black text-xl hover:bg-white hover:shadow-sm">9</button>
+                 <button onclick="input('*')" class="calc-btn p-5 bg-pink-400 text-white rounded-2xl font-black text-2xl hover:bg-pink-500 shadow-md">×</button>
+
+                 <button onclick="input('4')" class="calc-btn p-5 bg-slate-50 text-slate-700 rounded-2xl font-black text-xl hover:bg-white hover:shadow-sm">4</button>
+                 <button onclick="input('5')" class="calc-btn p-5 bg-slate-50 text-slate-700 rounded-2xl font-black text-xl hover:bg-white hover:shadow-sm">5</button>
+                 <button onclick="input('6')" class="calc-btn p-5 bg-slate-50 text-slate-700 rounded-2xl font-black text-xl hover:bg-white hover:shadow-sm">6</button>
+                 <button onclick="input('-')" class="calc-btn p-5 bg-pink-400 text-white rounded-2xl font-black text-2xl hover:bg-pink-500 shadow-md">-</button>
+
+                 <button onclick="input('1')" class="calc-btn p-5 bg-slate-50 text-slate-700 rounded-2xl font-black text-xl hover:bg-white hover:shadow-sm">1</button>
+                 <button onclick="input('2')" class="calc-btn p-5 bg-slate-50 text-slate-700 rounded-2xl font-black text-xl hover:bg-white hover:shadow-sm">2</button>
+                 <button onclick="input('3')" class="calc-btn p-5 bg-slate-50 text-slate-700 rounded-2xl font-black text-xl hover:bg-white hover:shadow-sm">3</button>
+                 <button onclick="input('+')" class="calc-btn p-5 bg-pink-400 text-white rounded-2xl font-black text-2xl hover:bg-pink-500 shadow-md">+</button>
+
+                 <button onclick="input('0')" class="calc-btn p-5 bg-slate-50 text-slate-700 rounded-2xl font-black text-xl hover:bg-white hover:shadow-sm">0</button>
+                 <button onclick="input('.')" class="calc-btn p-5 bg-slate-50 text-slate-700 rounded-2xl font-black text-xl hover:bg-white hover:shadow-sm">.</button>
+                 <button onclick="calc()" class="calc-btn col-span-2 p-5 bg-gradient-to-br from-pink-400 to-rose-400 text-white rounded-3xl font-black text-3xl hover:shadow-lg transition-transform active:scale-95">=</button>
+            </div>
+        </section>
+        
+        <p class="text-[10px] text-gray-300 font-bold uppercase tracking-[0.4em] pt-12">Precision Mathematical Analysis Hub</p>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const display = document.getElementById('display');
+        const tape = document.getElementById('historyTape');
+        let expr = "";
+
+        window.input = (v) => {
+            if(expr === "0" && !isNaN(v)) expr = "";
+            expr += v;
+            updateDisplay();
+            
+            display.style.transform = 'scale(1.02)';
+            setTimeout(() => display.style.transform = 'scale(1)', 100);
+        };
+
+        function updateDisplay() {
+            // Beautify display string
+            let d = expr || "0";
+            d = d.replace(/Math\./g, '').replace(/\(/g, '(').replace(/\*/g, '×').replace(/\//g, '÷');
+            display.innerText = d;
+        }
+
+        window.clearAll = () => {
+            expr = "";
+            updateDisplay();
+            Utils.toast('已重置 🧹', 'info');
+        };
+
+        window.calc = () => {
+             if(!expr) return;
+             try {
+                 // Balanced brackets check
+                 const openCount = (expr.match(/\(/g) || []).length;
+                 const closeCount = (expr.match(/\)/g) || []).length;
+                 let fullExpr = expr;
+                 for(let i=0; i < openCount - closeCount; i++) fullExpr += ')';
+
+                 const res = eval(fullExpr);
+                 
+                 // Append to tape
+                 const item = document.createElement('div');
+                 item.className = "history-item";
+                 item.innerText = display.innerText + ' = ' + res;
+                 tape.prepend(item);
+                 
+                 expr = res.toString();
+                 updateDisplay();
+                 Utils.toast('计算完成 ✨', 'success');
+             } catch(e) {
+                 display.innerText = "Error";
+                 expr = "";
+                 Utils.toast('计算出错，请检查输入平衡 ⚠️', 'error');
+             }
+        };
+
+        // Keyboard support
+        document.addEventListener('keydown', (e) => {
+            if((e.key >= '0' && e.key <= '9') || '+-/*.()'.includes(e.key)) {
+                e.preventDefault();
+                input(e.key);
+            }
+            if(e.key === 'Enter') { e.preventDefault(); calc(); }
+            if(e.key === 'Escape') { e.preventDefault(); clearAll(); }
+            if(e.key === 'Backspace') {
+                e.preventDefault();
+                expr = expr.slice(0, -1);
+                updateDisplay();
+            }
+        });
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

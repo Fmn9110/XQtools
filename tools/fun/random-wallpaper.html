@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>渐变壁纸生成 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        .preview-box {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 2rem;
+            box-shadow: 0 40px 100px -20px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            border: 4px solid #fff;
+        }
+        @media (max-width: 640px) {
+            .preview-box {
+                aspect-ratio: 9 / 16;
+            }
+        }
+        .btn-glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-5xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🎨 绚丽 <span class="gradient-text">渐变壁纸</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">独一无二的色彩流转。随机生成惊艳的高清渐变网格壁纸。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white flex flex-col items-center animate-item shadow-2xl" style="animation-delay: 0.2s">
+            
+            <div class="preview-box mb-10 group" id="previewBox">
+                <canvas id="renderCanvas" style="display:none;"></canvas>
+                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    <span class="px-6 py-2 bg-black/20 backdrop-blur-md rounded-full text-white text-xs font-black uppercase tracking-widest">Preview</span>
+                </div>
+            </div>
+
+            <div class="w-full max-w-2xl mb-12">
+                <button onclick="generateGradient()" class="w-full py-5 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-3xl shadow-xl shadow-pink-100 transition-all active:scale-95 text-xl flex items-center justify-center gap-3">
+                    🪄 打开色彩魔盒
+                </button>
+            </div>
+
+            <p class="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-6">Download Versions / 高清下载</p>
+            <div class="w-full max-w-4xl grid grid-cols-2 md:grid-cols-4 gap-4">
+                <button onclick="downloadWallpaper(1920, 1080)" class="flex flex-col items-center justify-center p-6 bg-white border-2 border-pink-50 rounded-3xl hover:border-pink-300 transition-all group">
+                    <span class="text-2xl mb-2 group-hover:scale-110 transition-transform">💻</span>
+                    <span class="text-sm font-black text-gray-700">Desktop</span>
+                    <span class="text-[10px] text-gray-400 font-bold uppercase mt-1">1920x1080</span>
+                </button>
+                <button onclick="downloadWallpaper(1080, 2400)" class="flex flex-col items-center justify-center p-6 bg-white border-2 border-pink-50 rounded-3xl hover:border-pink-300 transition-all group">
+                    <span class="text-2xl mb-2 group-hover:scale-110 transition-transform">📱</span>
+                    <span class="text-sm font-black text-gray-700">Mobile</span>
+                    <span class="text-[10px] text-gray-400 font-bold uppercase mt-1">1080x2400</span>
+                </button>
+                <button onclick="downloadWallpaper(2560, 1440)" class="flex flex-col items-center justify-center p-6 bg-white border-2 border-pink-50 rounded-3xl hover:border-pink-300 transition-all group">
+                    <span class="text-2xl mb-2 group-hover:scale-110 transition-transform">🖥️</span>
+                    <span class="text-sm font-black text-gray-700">2K HD</span>
+                    <span class="text-[10px] text-gray-400 font-bold uppercase mt-1">2560x1440</span>
+                </button>
+                <button onclick="downloadWallpaper(3840, 2160)" class="flex flex-col items-center justify-center p-6 bg-white border-2 border-pink-50 rounded-3xl hover:border-pink-300 transition-all group">
+                    <span class="text-2xl mb-2 group-hover:scale-110 transition-transform">📺</span>
+                    <span class="text-sm font-black text-gray-700">4K Ultra</span>
+                    <span class="text-[10px] text-gray-400 font-bold uppercase mt-1">3840x2160</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>色彩是心情的延伸。这些随机生成的渐变壁纸不仅可以用作背景，更能为你枯燥的设备带来一丝艺术感。每一次随机都是由 HSL 色彩空间自动演算出的和谐律动。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const previewBox = document.getElementById('previewBox');
+        const canvas = document.getElementById('renderCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let currentColors = [];
+
+        function randomColor() {
+            return `hsl(${Math.floor(Math.random() * 360)}, ${Math.floor(Math.random() * 40 + 60)}%, ${Math.floor(Math.random() * 30 + 50)}%)`;
+        }
+
+        function generateGradient() {
+            const h = Math.floor(Math.random() * 360);
+            const c1 = `hsl(${h}, 80%, 70%)`;
+            const c2 = `hsl(${(h + 40) % 360}, 70%, 65%)`;
+            const c3 = `hsl(${(h + 120) % 360}, 60%, 75%)`;
+            const c4 = `hsl(${(h + 200) % 360}, 50%, 80%)`;
+            const base = `hsl(${(h + 240) % 360}, 40%, 90%)`;
+
+            currentColors = [c1, c2, c3, c4, base];
+
+            previewBox.style.background = `
+                radial-gradient(circle at 10% 10%, ${c1} 0%, transparent 60%),
+                radial-gradient(circle at 90% 10%, ${c2} 0%, transparent 60%),
+                radial-gradient(circle at 10% 90%, ${c3} 0%, transparent 60%),
+                radial-gradient(circle at 90% 90%, ${c4} 0%, transparent 60%),
+                ${base}
+            `;
+            Utils.toast('已生成新配色 ✨', 'info');
+        }
+
+        function downloadWallpaper(width, height) {
+            Utils.toast('正在渲染高清镜像...', 'success');
+            canvas.width = width;
+            canvas.height = height;
+
+            if(currentColors.length === 0) generateGradient();
+
+            ctx.fillStyle = currentColors[4];
+            ctx.fillRect(0, 0, width, height);
+
+            const drawGrad = (x, y, color) => {
+                const grad = ctx.createRadialGradient(x, y, 0, x, y, Math.max(width, height) * 0.8);
+                grad.addColorStop(0, color);
+                grad.addColorStop(1, 'rgba(255,255,255,0)');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, width, height);
+            };
+
+            drawGrad(width * 0.1, height * 0.1, currentColors[0]);
+            drawGrad(width * 0.9, height * 0.1, currentColors[1]);
+            drawGrad(width * 0.1, height * 0.9, currentColors[2]);
+            drawGrad(width * 0.9, height * 0.9, currentColors[3]);
+
+            const dataURL = canvas.toDataURL('image/png', 1.0);
+            const link = document.createElement('a');
+            link.download = `wallpaper_${width}x${height}.png`;
+            link.href = dataURL;
+            link.click();
+            Utils.toast('渲染成功 💾', 'success');
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+            generateGradient();
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

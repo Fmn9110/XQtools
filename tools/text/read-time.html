@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>阅读时间计算 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen pb-20 md:pb-0">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4">阅读时间计算</h1>
+            <p class="text-gray-500 italic">基于字符统计预估读完该篇文章所需的时长，适合自媒体发布前参考。🕒</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 bg-white shadow-xl mb-12">
+            <div class="w-full mb-10 relative group">
+                <label class="block text-sm font-bold text-pink-300 uppercase tracking-widest mb-3 ml-2">待计算文本</label>
+                <textarea id="textInput" class="w-full h-80 p-8 bg-pink-50/10 border-2 border-pink-50 rounded-[2rem] text-sm outline-none focus:border-pink-200 transition-all resize-none shadow-inner" placeholder="在此粘贴长文本内容..."></textarea>
+                <button onclick="clearInput()" class="absolute right-6 top-10 text-pink-200 hover:text-pink-400 p-2 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+            </div>
+            
+            <div id="resultDisplay" class="flex flex-col sm:flex-row gap-8 sm:gap-16 justify-center items-center bg-pink-50/20 p-8 rounded-[2.5rem] border border-pink-50/50">
+                <div class="text-center">
+                    <p class="text-[10px] text-pink-300 font-bold uppercase mb-2 tracking-widest">预估阅读时间</p>
+                    <p class="text-5xl font-black text-pink-500 flex items-baseline justify-center gap-1">
+                        <span id="timeVal">0</span>
+                        <span class="text-sm font-bold text-pink-300 uppercase">Min</span>
+                    </p>
+                </div>
+                <div class="hidden sm:block w-[2px] h-16 bg-pink-100/50 rounded-full"></div>
+                <div class="text-center">
+                    <p class="text-[10px] text-pink-300 font-bold uppercase mb-2 tracking-widest">总字符规模</p>
+                    <p class="text-5xl font-black text-gray-800 flex items-baseline justify-center gap-1">
+                        <span id="wordVal">0</span>
+                        <span class="text-sm font-bold text-gray-400 uppercase">Chars</span>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="max-w-2xl mx-auto">
+             <div class="p-8 bg-white/60 backdrop-blur-sm border border-pink-100 rounded-[2rem]">
+                 <h4 class="font-bold text-gray-700 mb-3 flex items-center gap-2">
+                     <span class="text-pink-400">📏</span> 计算标准说明
+                 </h4>
+                 <p class="text-xs text-gray-500 leading-relaxed">
+                     根据成年人平均阅读速度标准：中文阅读约 300-500 字/分钟，英文阅读约 200-300 词/分钟。本工具采用 <span class="text-pink-400 font-bold">400 字/分钟</span> 的保守均值模型进行估算，结果仅供参考。
+                 </p>
+             </div>
+        </section>
+    </main>
+
+
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const input = document.getElementById('textInput');
+        const timeVal = document.getElementById('timeVal');
+        const wordVal = document.getElementById('wordVal');
+
+        input.oninput = () => {
+            const count = input.value.trim().length;
+            wordVal.innerText = count.toLocaleString();
+            
+            // 400 words per minute
+            const mins = Math.ceil(count / 400);
+            timeVal.innerText = count > 0 ? mins : 0;
+        };
+
+        function clearInput() {
+            input.value = '';
+            wordVal.innerText = '0';
+            timeVal.innerText = '0';
+            Utils.toast('已清空', 'info');
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

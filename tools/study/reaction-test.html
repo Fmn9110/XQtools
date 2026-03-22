@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>反应速度测试 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-12 px-4 max-w-4xl text-center">
+        <section class="cute-card p-10 md:p-20 bg-white shadow-2xl animate-item flex flex-col items-center relative overflow-hidden">
+            <!-- Decorative Elements -->
+            <div class="absolute -right-20 -top-20 w-64 h-64 bg-pink-50 rounded-full opacity-50 -z-10 animate-pulse-slow"></div>
+            
+            <div class="w-28 h-28 bg-gradient-to-br from-pink-100 to-rose-100 rounded-[2.5rem] flex items-center justify-center text-6xl mb-10 shadow-inner animate-bounce-slow">🎯</div>
+            
+            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-800 mb-6 tracking-tight">反应速度测试中心</h1>
+            
+            <div class="bg-pink-50/20 p-8 md:p-12 rounded-[3.5rem] border-2 border-dashed border-pink-100 mb-12 text-left max-w-lg relative group transition-all hover:bg-white hover:border-solid hover:shadow-md">
+                <div class="absolute -left-3 -top-3 w-8 h-8 bg-pink-400 text-white rounded-full flex items-center justify-center font-black shadow-lg">!</div>
+                <p class="text-base text-slate-500 leading-relaxed font-medium">
+                    为了提供更加精准、互动性更强的竞技化体验，原 <span class="text-pink-500 font-black">反应速度测试</span> 功能现已全线升级并整合至：
+                </p>
+                <div class="mt-8 space-y-4">
+                    <div class="flex items-start gap-4 p-4 bg-white/60 rounded-2xl border border-pink-50 shadow-sm transition-all hover:scale-105 active:scale-95 cursor-pointer" onclick="location.href='./mem-card-game.html'">
+                        <span class="text-2xl">🧠</span>
+                        <div>
+                            <p class="text-sm font-black text-slate-700">Memory Card Game 记忆挑战</p>
+                            <p class="text-[10px] text-gray-400 font-black uppercase tracking-widest">Cognitive Processing & Reaction</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="location.href='./mem-card-game.html'" class="w-full max-w-sm py-6 bg-pink-400 text-white font-black rounded-3xl shadow-xl hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-lg flex items-center justify-center gap-3 group">
+                🚀 <span>前往强化训练中心</span> <span class="text-xl group-hover:translate-x-2 transition-transform">➡️</span>
+            </button>
+        </section>
+        
+        <footer class="text-gray-300 text-[10px] uppercase font-black tracking-[0.4em] pt-12 animate-item" style="animation-delay: 0.3s">
+            Neuro-Response & Cognitive Analysis Lab
+        </footer>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button') || e.target.closest('.rounded-2xl')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>拍立得边框 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Zhi+Mang+Xing&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7] min-h-screen font-['Outfit']">
+    <!-- 导航栏 -->
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-pink-100 px-4 md:px-6 py-3">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2 md:gap-3 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-8 h-8 md:w-10 md:h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-xl md:text-2xl shadow-lg shadow-pink-200">Q</div>
+                <span class="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-rose-400">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="px-4 py-2 rounded-full bg-pink-50 text-pink-500 hover:bg-pink-100 transition-all text-sm font-semibold">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12 animate-fade-in">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-[#4a4a4a] mb-4">拍立得边框</h1>
+            <p class="text-gray-500">定格瞬间，为照片穿上复古的胶片外衣 📸</p>
+        </header>
+
+        <section class="grid lg:grid-cols-5 gap-8 mb-12">
+            <!-- 配置区 -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="cute-card p-6 md:p-8 bg-white/70 backdrop-blur-sm border border-white/50 shadow-xl shadow-pink-100/50 rounded-[2rem]">
+                    <h3 class="text-lg font-bold text-[#4a4a4a] mb-6 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-pink-400 rounded-full"></span>
+                        图片素材
+                    </h3>
+                    <div id="upload-area" class="w-full h-40 border-4 border-dashed border-pink-100 rounded-2xl flex flex-col items-center justify-center group hover:border-pink-300 transition-all cursor-pointer bg-pink-50/30 text-center">
+                        <input type="file" id="fileInput" accept="image/*" class="hidden">
+                        <span class="text-2xl mb-2">📸</span>
+                        <p class="text-[10px] font-bold text-pink-400 px-2">点击上传照片</p>
+                    </div>
+                </div>
+
+                <div class="cute-card p-6 md:p-8 bg-white/70 backdrop-blur-sm border border-white/50 shadow-xl shadow-pink-100/50 rounded-[2rem]">
+                    <h3 class="text-lg font-bold text-[#4a4a4a] mb-6 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-pink-400 rounded-full"></span>
+                        个性定制
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 mb-2">手写留言</label>
+                            <input type="text" id="captionInput" placeholder="在此输入心情文字..." class="w-full px-4 py-3 border-2 border-pink-50 rounded-xl focus:border-pink-300 outline-none transition-all font-bold text-pink-500 text-sm">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 mb-2">墨水颜色</label>
+                                <input type="color" id="textColor" value="#4a4a4a" class="w-full h-10 rounded-lg cursor-pointer border-2 border-pink-50 bg-white p-1">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 mb-2">纸张色</label>
+                                <input type="color" id="frameColor" value="#ffffff" class="w-full h-10 rounded-lg cursor-pointer border-2 border-pink-50 bg-white p-1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 预览区 -->
+            <div class="lg:col-span-3">
+                <div class="cute-card p-4 md:p-10 bg-white/70 backdrop-blur-sm border border-white/50 shadow-xl shadow-pink-100/50 rounded-[2rem] flex flex-col items-center justify-center">
+                    <div id="frameResult" class="bg-gray-100/30 rounded-2xl p-6 w-full flex items-center justify-center">
+                        <canvas id="canvas" class="max-w-full shadow-2xl rounded-sm"></canvas>
+                    </div>
+                    
+                    <div class="mt-8 grid grid-cols-2 gap-4 w-full">
+                        <button id="downloadBtn" class="cute-button py-4 bg-gradient-to-r from-pink-400 to-rose-400 text-white rounded-2xl font-bold shadow-lg shadow-pink-200 hover:scale-105 transition-all text-sm flex items-center justify-center gap-2">
+                            <span>🚀</span> 下载照片
+                        </button>
+                        <button id="resetBtn" class="py-4 bg-white text-gray-400 rounded-2xl font-bold border-2 border-gray-100 hover:bg-gray-50 transition-all text-sm">重置</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 说明区 -->
+        <div class="grid md:grid-cols-2 gap-8 mb-12 animate-fade-in">
+            <section class="space-y-6">
+                <h2 class="text-2xl font-bold text-[#4a4a4a] flex items-center gap-3">
+                    <span class="w-10 h-10 bg-white rounded-2xl flex items-center justify-center shadow-sm">🎯</span>
+                    专属指南及提示
+                </h2>
+                <div class="bg-white/60 backdrop-blur-sm rounded-[2rem] p-8 border border-white shadow-xl shadow-pink-100/20">
+                    <p class="text-[#6b7280] text-sm leading-relaxed mb-4">工具会自动调整边框比例以契合传统的拍立得 600 系列规格（3:4 比例内容窗口）。</p>
+                    <p class="text-[#6b7280] text-sm leading-relaxed font-bold text-pink-400">留言文字推荐使用短语，效果更温馨哦！</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- 加载遮罩 -->
+    <div id="loader-overlay" class="fixed inset-0 bg-pink-50/80 backdrop-blur-sm z-[100] flex items-center justify-center hidden">
+        <div class="cute-loader-candy"></div>
+    </div>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('upload-area');
+        const captionInput = document.getElementById('captionInput');
+        const textColor = document.getElementById('textColor');
+        const frameColor = document.getElementById('frameColor');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const loader = document.getElementById('loader-overlay');
+
+        let originalImg = null;
+
+        const showLoader = () => loader.classList.remove('hidden');
+        const hideLoader = () => loader.classList.add('hidden');
+
+        uploadArea.onclick = () => fileInput.click();
+
+        fileInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) handleFile(file);
+        };
+
+        async function handleFile(file) {
+            showLoader();
+            try {
+                const dataUrl = await Utils.readFileAsDataURL(file);
+                originalImg = new Image();
+                originalImg.src = dataUrl;
+                originalImg.onload = () => {
+                    draw();
+                    hideLoader();
+                };
+            } catch (err) {
+                Utils.toast('读取照片失败', 'error');
+                hideLoader();
+            }
+        }
+
+        function draw() {
+            const frameW = 600;
+            const frameH = 750;
+            canvas.width = frameW;
+            canvas.height = frameH;
+
+            // 绘制底框
+            ctx.fillStyle = frameColor.value;
+            ctx.shadowColor = 'rgba(0,0,0,0.1)';
+            ctx.shadowBlur = 20;
+            ctx.fillRect(0, 0, frameW, frameH);
+            ctx.shadowBlur = 0;
+
+            if (originalImg) {
+                // 内容窗口 (3:4 ratio roughly)
+                const margin = 30;
+                const windowWidth = frameW - margin * 2;
+                const windowHeight = 540;
+                
+                // 填充一张略黑的纸底
+                ctx.fillStyle = '#1a1a1a';
+                ctx.fillRect(margin, margin, windowWidth, windowHeight);
+
+                // 比例缩放绘制图片 (Cover 模式)
+                const ratio = Math.max(windowWidth / originalImg.width, windowHeight / originalImg.height);
+                const drawW = originalImg.width * ratio;
+                const drawH = originalImg.height * ratio;
+                const offsetX = (windowWidth - drawW) / 2;
+                const offsetY = (windowHeight - drawH) / 2;
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(margin, margin, windowWidth, windowHeight);
+                ctx.clip();
+                ctx.drawImage(originalImg, margin + offsetX, margin + offsetY, drawW, drawH);
+                // 加上一点光影滤镜效果
+                ctx.fillStyle = 'rgba(255,240,200,0.05)';
+                ctx.fillRect(margin, margin, windowWidth, windowHeight);
+                ctx.restore();
+                
+                // 绘制内阴影
+                ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(margin, margin, windowWidth, windowHeight);
+            }
+
+            // 绘制文字
+            if (captionInput.value) {
+                ctx.fillStyle = textColor.value;
+                ctx.font = '32px "Zhi Mang Xing", cursive'; // 模拟手写感
+                ctx.textAlign = 'center';
+                ctx.fillText(captionInput.value, frameW / 2, 680);
+            }
+        }
+
+        [captionInput, textColor, frameColor].forEach(el => el.oninput = draw);
+
+        downloadBtn.onclick = () => {
+            if (!originalImg) return Utils.toast('请先上传一张照片', 'warning');
+            Utils.downloadFile(canvas.toDataURL('image/png'), `polaroid_${Date.now()}.png`, 'image/png');
+            Utils.toast('已保存拍立得照片', 'success');
+        };
+
+        resetBtn.onclick = () => {
+            originalImg = null;
+            captionInput.value = '';
+            draw();
+        };
+
+        // 初始化
+        window.onload = draw;
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

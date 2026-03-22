@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>银行卡校验 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body>
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white/80 backdrop-blur-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 transition-transform hover:rotate-0">
+                    Q
+                </div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <div class="hidden md:flex space-x-6 text-gray-500 text-sm font-semibold">
+                <a href="../../index.html" class="hover:text-pink-500 transition-colors">首页</a>
+                <a href="../../categories.html" class="hover:text-pink-500 transition-colors">全部分类</a>
+                <a href="../../tools.html" class="hover:text-pink-500 transition-colors">所有工具</a>
+            </div>
+            <div class="md:hidden">
+                <a href="../../tools.html" class="text-gray-400 hover:text-pink-500 transition-colors">
+                    <span class="text-2xl">🛠️</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-2xl text-center">
+        <header class="mb-12 animate-item">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4">银行卡校验</h1>
+            <p class="text-gray-500 italic text-sm md:text-base">利用 Luhn 算法（模10算法）快速检测银行卡号是否符合规则。💳</p>
+        </header>
+
+            <input type="text" id="bankInput" class="w-full p-6 bg-white border-2 border-pink-100 rounded-3xl text-2xl font-black text-center outline-none mb-8 transition-all tracking-widest focus:border-pink-300 focus:shadow-lg" placeholder="输入银行卡号">
+            
+            <div id="resBox" class="hidden p-6 rounded-2xl transition-all font-bold">
+                 -
+            </div>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const input = document.getElementById('bankInput');
+        const box = document.getElementById('resBox');
+
+        function luhnCheck(num) {
+            let sum = 0;
+            let shouldDouble = false;
+            for (let i = num.length - 1; i >= 0; i--) {
+                let digit = parseInt(num.charAt(i));
+                if (shouldDouble) {
+                    if ((digit *= 2) > 9) digit -= 9;
+                }
+                sum += digit;
+                shouldDouble = !shouldDouble;
+            }
+            return (sum % 10) === 0;
+        }
+
+        input.oninput = () => {
+            const val = input.value.replace(/\s+/g, '');
+            if(val.length < 12) {
+                box.classList.add('hidden');
+                return;
+            }
+
+            box.classList.remove('hidden');
+            if(/^\d+$/.test(val) && luhnCheck(val)) {
+                box.innerText = "✅ 校验通过：合法的卡号结构";
+                box.className = "p-6 rounded-2xl bg-green-50 text-green-600 border border-green-100 animate-pulse-soft";
+            } else {
+                box.innerText = "❌ 校验失败：卡号结构不规范";
+                box.className = "p-6 rounded-2xl bg-red-50 text-red-500 border border-red-100";
+            }
+        };
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

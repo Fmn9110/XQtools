@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>白噪音 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #f472b6;
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 4px 10px rgba(244, 114, 182, 0.3);
+            border: 3px solid white;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            cursor: pointer;
+            background: #ffe4e6;
+            border-radius: 4px;
+        }
+        .noise-btn.active {
+            border-color: #f472b6;
+            background-color: #fdf2f8;
+            transform: scale(1.05);
+        }
+        @keyframes wave {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(0.6); }
+        }
+        .wave-bar { animation: wave 1s ease-in-out infinite; }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🌊 疗愈 <span class="gradient-text">白噪音</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">在喧嚣中寻觅安宁。伴随自然的律动高效专注。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-16 mb-12 bg-white animate-item text-center" style="animation-delay: 0.2s">
+            <div class="grid grid-cols-3 gap-4 mb-12">
+                <button onclick="setType('white')" class="noise-btn p-4 md:p-8 rounded-[2rem] bg-gray-50 border-2 border-transparent transition-all hover:bg-pink-50/50" id="btn-white">
+                    <p class="text-4xl mb-2">🌫️</p>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">White / 白</p>
+                </button>
+                <button onclick="setType('pink')" class="noise-btn p-4 md:p-8 rounded-[2rem] bg-gray-50 border-2 border-transparent transition-all hover:bg-pink-50/50" id="btn-pink">
+                    <p class="text-4xl mb-2">🌸</p>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Pink / 粉</p>
+                </button>
+                <button onclick="setType('brown')" class="noise-btn p-4 md:p-8 rounded-[2rem] bg-gray-50 border-2 border-transparent transition-all hover:bg-pink-50/50" id="btn-brown">
+                    <p class="text-4xl mb-2">🌊</p>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Brown / 棕</p>
+                </button>
+            </div>
+
+            <div class="max-w-sm mx-auto mb-16 px-4">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-[10px] font-black text-pink-300 uppercase tracking-widest">Volume Level</span>
+                    <span class="text-sm font-bold text-pink-500" id="volVal">50%</span>
+                </div>
+                <input type="range" id="volume" min="0" max="100" value="50" oninput="updateVol()">
+            </div>
+
+            <div class="flex flex-col items-center">
+                <div class="relative inline-block mb-6">
+                    <div id="playingEffect" class="absolute -inset-6 bg-pink-100 rounded-full hidden opacity-30 animate-ping"></div>
+                    <button onclick="togglePlay()" id="playBtn" class="w-24 h-24 rounded-full bg-pink-500 hover:bg-pink-600 text-white text-4xl shadow-2xl shadow-pink-100 hover:scale-105 active:scale-95 transition-all flex items-center justify-center relative z-10">
+                        ▶
+                    </button>
+                </div>
+                <p class="text-sm font-bold text-gray-400 tracking-widest uppercase" id="statusText">Ready to Play</p>
+                
+                <div id="visualizer" class="flex gap-1 h-8 items-end mt-6 opacity-0 transition-opacity">
+                    <div class="w-1 bg-pink-200 rounded-full wave-bar" style="height: 60%; animation-delay: 0.1s"></div>
+                    <div class="w-1 bg-pink-300 rounded-full wave-bar" style="height: 100%; animation-delay: 0.2s"></div>
+                    <div class="w-1 bg-pink-400 rounded-full wave-bar" style="height: 80%; animation-delay: 0.3s"></div>
+                    <div class="w-1 bg-pink-300 rounded-full wave-bar" style="height: 110%; animation-delay: 0.4s"></div>
+                    <div class="w-1 bg-pink-200 rounded-full wave-bar" style="height: 70%; animation-delay: 0.5s"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>白噪音并不是真正的噪声，而是一种在全频段功率一致的均衡声音。它能有效遮盖背景杂音，让大脑进入一种“平稳期待”的状态。粉噪音则模仿了心跳和深海的声音，非常适合深度睡眠。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let audioCtx, noiseNode, gainNode, playing = false, noiseType = 'white';
+
+        function setType(type) {
+            noiseType = type;
+            document.querySelectorAll('.noise-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-'+type).classList.add('active');
+            Utils.toast(`切换音效：${type === 'white' ? '白噪音' : type === 'pink' ? '粉噪音' : '棕噪音'}`, 'info');
+            if (playing) { stop(); start(); }
+        }
+
+        function createNoise() {
+            const bufferSize = 2 * audioCtx.sampleRate;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+
+            if (noiseType === 'white') {
+                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+            } else if (noiseType === 'pink') {
+                let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+                for (let i = 0; i < bufferSize; i++) {
+                    const w = Math.random() * 2 - 1;
+                    b0=0.99886*b0+w*0.0555179; b1=0.99332*b1+w*0.0750759;
+                    b2=0.96900*b2+w*0.1538520; b3=0.86650*b3+w*0.3104856;
+                    b4=0.55000*b4+w*0.5329522; b5=-0.7616*b5-w*0.0168980;
+                    data[i]=(b0+b1+b2+b3+b4+b5+b6+w*0.5362)*0.11; b6=w*0.115926;
+                }
+            } else { // brown
+                let last = 0;
+                for (let i = 0; i < bufferSize; i++) {
+                    const w = Math.random() * 2 - 1;
+                    data[i] = (last + 0.02 * w) / 1.02;
+                    last = data[i]; data[i] *= 3.5;
+                }
+            }
+            const source = audioCtx.createBufferSource();
+            source.buffer = buffer;
+            source.loop = true;
+            return source;
+        }
+
+        function start() {
+            if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+            gainNode = audioCtx.createGain();
+            gainNode.gain.value = parseInt(document.getElementById('volume').value) / 100;
+            gainNode.connect(audioCtx.destination);
+            noiseNode = createNoise();
+            noiseNode.connect(gainNode);
+            noiseNode.start();
+        }
+
+        function stop() {
+            if (noiseNode) { noiseNode.stop(); noiseNode.disconnect(); noiseNode = null; }
+        }
+
+        function togglePlay() {
+            const btn = document.getElementById('playBtn');
+            const status = document.getElementById('statusText');
+            const effect = document.getElementById('playingEffect');
+            const visual = document.getElementById('visualizer');
+
+            if (playing) { 
+                stop(); 
+                playing=false; 
+                btn.textContent='▶'; 
+                status.textContent='Paused'; 
+                effect.classList.add('hidden');
+                visual.style.opacity = '0';
+                Utils.toast('已暂停播放', 'info');
+            } else { 
+                start(); 
+                playing=true; 
+                btn.textContent='⏸'; 
+                status.textContent='Healinging Now...'; 
+                effect.classList.remove('hidden');
+                visual.style.opacity = '1';
+                Utils.toast('疗愈开启 ✨', 'success');
+            }
+        }
+
+        function updateVol() {
+            const vol = parseInt(document.getElementById('volume').value);
+            document.getElementById('volVal').textContent = vol + '%';
+            if (gainNode) gainNode.gain.value = vol / 100;
+        }
+
+        // Initialize state
+        setType('white');
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

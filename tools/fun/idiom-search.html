@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>成语接龙 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Serif+SC:wght@700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">📚 成语 <span class="gradient-text">接龙查询</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">引经据典，妙笔生花。用接龙开启智慧的趣味竞赛。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item" style="animation-delay: 0.2s">
+            <div class="flex flex-col md:flex-row gap-4 mb-10">
+                <div class="flex-1 relative group">
+                    <input type="text" id="input" placeholder="输入一个成语..." 
+                        class="w-full p-5 bg-pink-50/30 rounded-2xl border-2 border-transparent focus:border-pink-200 outline-none text-lg font-black text-gray-700 transition-all shadow-inner"
+                        onkeydown="if(event.key==='Enter') search()">
+                    <div class="absolute right-5 top-1/2 -translate-y-1/2 text-pink-200 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">Press Enter</div>
+                </div>
+                <button onclick="search()" class="w-full md:w-auto px-10 py-5 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-2xl shadow-lg shadow-pink-100 transition-all active:scale-95 flex items-center justify-center gap-2">
+                    🔍 开始接龙
+                </button>
+            </div>
+
+            <div id="result" class="flex flex-wrap gap-3 min-h-[100px] items-start">
+                <!-- Results injected here -->
+            </div>
+            
+            <div id="emptyTip" class="py-12 flex flex-col items-center opacity-20 select-none">
+                <span class="text-6xl mb-4">📖</span>
+                <p class="text-[10px] font-black uppercase tracking-widest text-center">Word flow awaits... / 期待你的灵感</p>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section class="animate-item" style="animation-delay: 0.5s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">📜</span>
+                    成语小知识
+                </h2>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50 leading-relaxed text-gray-600 text-sm">
+                    <p>成语是中国文化的活化石。它们不仅言简意赅，背后更往往藏着一个经典的历史故事。掌握更多成语，能让你的表达更有深度与趣味。本数据库包含了数百个常用高频成语。</p>
+                </div>
+            </section>
+            <section class="animate-item" style="animation-delay: 0.6s">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">✨</span>
+                    接龙规则
+                </h2>
+                <div class="bg-white p-6 rounded-2xl border border-pink-50 shadow-sm leading-relaxed text-gray-500 text-sm">
+                    <p>标准接龙需要后一个成语的首字，与前一个成语的尾字相同（或同音）。点击搜索出的成语，可以快速开启下一轮查询。祝你成为词库达人！💖</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const idiomLibrary = ['一心一意','意气风发','发愤图强','强词夺理','理直气壮','壮志凌云','云开雾散','散兵游勇','勇往直前','前功尽弃','弃旧图新','新陈代谢','谢天谢地','地大物博','博古通今','今非昔比','比翼双飞','飞黄腾达','达官贵人','人山人海','海阔天空','空前绝后','后来居上','上行下效','效犬马力','力挽狂澜','澜倒波随','随波逐流','流连忘返','返璞归真','真知灼见','见义勇为','为所欲为','为虎作伥','天长地久','久负盛名','名不虚传','传宗接代','代代相传','传为佳话','话中有话','画蛇添足','足不出户','户枢不蠹','独树一帜','帜旗猎猎','心花怒放','放虎归山','山清水秀','秀色可餐','安居乐业','业精于勤','勤能补拙','拙嘴笨舌','舌战群儒','儒雅风流','流行时尚','尚贤使能','南征北战','战无不胜','胜券在握','握手言和','和衷共济','济济一堂','堂堂正正','正大光明'];
+
+        function search() {
+            const inputVal = document.getElementById('input').value.trim();
+            if(!inputVal || inputVal.length < 2) {
+                Utils.toast('请输入完整的成语哦', 'info');
+                return;
+            }
+
+            const lastChar = inputVal[inputVal.length - 1];
+            const matches = idiomLibrary.filter(i => i[0] === lastChar);
+            
+            const resultBox = document.getElementById('result');
+            const emptyTip = document.getElementById('emptyTip');
+            
+            if(matches.length === 0) {
+                resultBox.innerHTML = `
+                <div class="w-full text-center py-8">
+                    <p class="text-pink-300 font-bold mb-2">(;´д`) 哎呀，词库里没找到以 "${lastChar}" 开头的后续...</p>
+                    <p class="text-[10px] text-gray-300 uppercase tracking-widest">End of the line / 暂时断档</p>
+                </div>`;
+            } else {
+                resultBox.innerHTML = matches.map((m, idx) => `
+                <button onclick="document.getElementById('input').value='${m}'; search()" 
+                    class="px-6 py-3 bg-white border-2 border-pink-100 rounded-xl text-pink-500 font-black hover:bg-pink-500 hover:text-white hover:border-pink-500 transition-all active:scale-95 shadow-sm animate-item"
+                    style="animation-delay: ${idx*0.05}s">
+                    ${m}
+                </button>`).join('');
+            }
+            
+            emptyTip.classList.add('hidden');
+            Utils.toast(`找到 ${matches.length} 个可能的接龙!`, 'success');
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

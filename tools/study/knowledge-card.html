@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>知识卡片 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">知识记忆卡片</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">创建专属记忆卡，利用碎片时间高效学习与巩固。</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 mb-12 bg-white shadow-2xl animate-item" style="animation-delay: 0.2s">
+            <div class="space-y-4 mb-8">
+                <p class="text-[10px] font-black text-pink-400 uppercase tracking-widest mb-3">Create New Card 创建新卡片</p>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <textarea id="front" rows="3" placeholder="卡片正面 (问题或关键词...)" class="w-full p-4 bg-gray-50 rounded-2xl border border-pink-50 outline-none focus:border-pink-200 transition-all text-sm resize-none shadow-inner font-bold text-slate-600"></textarea>
+                    <textarea id="back" rows="3" placeholder="卡片背面 (正确答案或解析...)" class="w-full p-4 bg-gray-50 rounded-2xl border border-pink-50 outline-none focus:border-pink-200 transition-all text-sm resize-none shadow-inner font-bold text-slate-600"></textarea>
+                </div>
+                <button onclick="addCard()" class="w-full py-4 bg-pink-400 text-white font-black rounded-2xl shadow-lg hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95">
+                    ✨ 添加该卡片
+                </button>
+            </div>
+
+            <div class="flex gap-3 mb-10">
+                <button onclick="startReview()" class="flex-1 py-4 bg-gradient-to-r from-pink-400 to-rose-400 text-white font-black rounded-2xl shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1">
+                    📖 开启复习模式
+                </button>
+                <button onclick="exportCards()" class="px-6 py-4 bg-pink-50 text-pink-400 font-bold rounded-2xl hover:bg-pink-100 transition-all">
+                    导出存档
+                </button>
+            </div>
+
+            <div id="reviewArea" class="hidden text-center p-8 bg-pink-50/20 rounded-[2.5rem] border-2 border-dashed border-pink-100 animate-fade-in mb-10">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-[10px] font-black text-pink-300 uppercase tracking-[0.2em]">Reviewing 正在复习</span>
+                    <p class="text-xs font-bold text-gray-400">Card <span id="ci" class="text-pink-400">1</span> / <span id="ct">0</span></p>
+                </div>
+
+                <div id="card" onclick="flipCard()" class="cursor-pointer bg-white rounded-[2rem] p-10 min-h-[220px] flex items-center justify-center transition-all shadow-xl hover:shadow-2xl active:scale-95 border border-pink-50 ring-4 ring-pink-50/30">
+                    <p class="text-xl md:text-2xl font-black text-slate-700 leading-relaxed" id="cardText"></p>
+                </div>
+                
+                <p class="text-[10px] text-pink-200 font-black uppercase mt-4 mb-8 tracking-widest animate-pulse">👆 点击翻转卡片 (Click to Flip)</p>
+                
+                <div class="flex gap-4">
+                    <button onclick="prevCard()" class="flex-1 py-4 bg-white border-2 border-pink-50 rounded-2xl font-bold text-pink-300 hover:text-pink-400 hover:border-pink-200 transition-all">👈 上一张</button>
+                    <button onclick="nextCard()" class="flex-1 py-4 bg-pink-400 text-white rounded-2xl font-black shadow-lg hover:bg-pink-500 transition-all">下一张 👉</button>
+                </div>
+            </div>
+
+            <div id="cardListHeader" class="flex justify-between items-center mb-3">
+                <p class="text-[10px] font-black text-pink-400 uppercase tracking-widest">Latest Cards 最近添加</p>
+                <p class="text-[10px] text-gray-300 font-bold uppercase" id="count">TOTAL: 0 CARDS</p>
+            </div>
+            <div id="cardList" class="space-y-3">
+                 <!-- Card list generated here -->
+            </div>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let cards = JSON.parse(localStorage.getItem('qKnCards') || '[]');
+        let reviewIdx = 0, showFront = true;
+
+        function save(){ localStorage.setItem('qKnCards', JSON.stringify(cards)); }
+        
+        function addCard(){
+            const f = document.getElementById('front').value.trim();
+            const b = document.getElementById('back').value.trim();
+            if(!f){ Utils.toast('别忘了填写正面内容哦 🍭', 'warning'); return; }
+            cards.push({front: f, back: b, id: Date.now()});
+            save(); 
+            renderList();
+            document.getElementById('front').value = '';
+            document.getElementById('back').value = '';
+            Utils.toast('卡片添加成功！✨');
+        }
+
+        function removeCard(id){
+            if(!confirm('确定要删除这张卡片吗？')) return;
+            cards = cards.filter(c => c.id !== id);
+            save(); 
+            renderList();
+            Utils.toast('已删除卡片 🗑️');
+            if(cards.length === 0){
+                document.getElementById('reviewArea').classList.add('hidden');
+            }
+        }
+
+        function renderList(){
+            const list = document.getElementById('cardList');
+            if (cards.length === 0) {
+                list.innerHTML = '<p class="text-sm text-gray-300 py-10">还没有卡片，快去创建一个吧 👆</p>';
+                document.getElementById('count').textContent = `TOTAL: 0 CARDS`;
+                return;
+            }
+            list.innerHTML = cards.slice(-5).reverse().map(c => `
+                <div class="p-4 bg-pink-50/20 rounded-2xl flex justify-between items-center group animate-fade-in border border-pink-50/50">
+                    <div class="overflow-hidden flex-1 mr-4">
+                        <p class="font-black text-slate-700 text-sm truncate">${c.front}</p>
+                        <p class="text-[10px] text-gray-400 font-bold truncate">${c.back}</p>
+                    </div>
+                    <button onclick="removeCard(${c.id})" class="text-pink-200 hover:text-pink-400 transition-colors p-2 text-lg">🗑️</button>
+                </div>
+            `).join('');
+            document.getElementById('count').textContent = `TOTAL: ${cards.length} CARDS`;
+        }
+
+        function startReview(){
+            if(!cards.length){ Utils.toast('账户里还没有卡片哦，快去添加吧 📚', 'warning'); return; }
+            reviewIdx = 0; showFront = true;
+            document.getElementById('reviewArea').classList.remove('hidden');
+            document.getElementById('ct').textContent = cards.length;
+            showCard();
+            document.getElementById('reviewArea').scrollIntoView({behavior: 'smooth'});
+        }
+
+        function showCard(){
+            document.getElementById('ci').textContent = reviewIdx + 1;
+            const text = showFront ? cards[reviewIdx].front : cards[reviewIdx].back;
+            const cardEl = document.getElementById('card');
+            const textEl = document.getElementById('cardText');
+            
+            textEl.textContent = text;
+            if (showFront) {
+                cardEl.classList.remove('rotate-y-180');
+                cardEl.style.background = '#ffffff';
+                textEl.className = 'text-xl md:text-2xl font-black text-slate-700 leading-relaxed';
+            } else {
+                cardEl.style.background = 'linear-gradient(135deg, #fff5f5, #fffcfc)';
+                textEl.className = 'text-xl md:text-2xl font-bold text-pink-500 italic leading-relaxed';
+            }
+        }
+
+        function flipCard(){
+            showFront = !showFront;
+            const cardEl = document.getElementById('card');
+            cardEl.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                showCard();
+                cardEl.style.transform = 'scale(1)';
+            }, 100);
+        }
+        
+        function nextCard(){
+            if(reviewIdx < cards.length - 1){
+                reviewIdx++; 
+                showFront = true; 
+                showCard();
+            } else {
+                Utils.toast('已经是最后一张啦！✨');
+            }
+        }
+
+        function prevCard(){
+            if(reviewIdx > 0){
+                reviewIdx--; 
+                showFront = true; 
+                showCard();
+            }
+        }
+
+        function exportCards(){
+            if(!cards.length){ Utils.toast('没有卡片可以导出哦', 'warning'); return; }
+            const blob = new Blob([JSON.stringify(cards, null, 2)], {type: 'application/json'});
+            const a = document.createElement('a'); 
+            a.href = URL.createObjectURL(blob); 
+            a.download = 'q-study-cards-' + new Date().toLocaleDateString() + '.json'; 
+            a.click();
+            Utils.toast('存档已导出 💾');
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    renderList();
+                }, 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

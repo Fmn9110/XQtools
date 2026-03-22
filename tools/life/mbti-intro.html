@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MBTI性格速查 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f7]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-pink-50"><div class="container mx-auto flex justify-between items-center"><div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'"><div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">Q</div><span class="text-2xl font-bold gradient-text">小Q工具箱</span></div><a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a></div></nav>
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">🧠 MBTI 16型人格速查</h1>
+            <p class="text-gray-500">选择你的MBTI类型，查看性格描述和特点</p>
+        </header>
+        <section class="cute-card p-8 mb-12 bg-white">
+            <div class="grid grid-cols-4 gap-2 mb-6" id="mbtiGrid"></div>
+            <div id="result" class="hidden mt-6">
+                <div class="bg-gradient-to-br from-purple-100 to-pink-100 rounded-3xl p-8">
+                    <p class="text-center text-4xl font-black text-purple-600 mb-2" id="rType"></p>
+                    <p class="text-center text-xl font-bold text-gray-600 mb-4" id="rTitle"></p>
+                    <p class="text-gray-600 text-sm leading-relaxed" id="rDesc"></p>
+                    <div class="grid grid-cols-2 gap-3 mt-4 text-sm">
+                        <div class="bg-white/80 rounded-xl p-3"><span class="text-gray-400">优势</span><p class="font-bold text-green-600" id="rStrength"></p></div>
+                        <div class="bg-white/80 rounded-xl p-3"><span class="text-gray-400">挑战</span><p class="font-bold text-orange-600" id="rWeakness"></p></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center"><span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-lg flex items-center justify-center mr-3 text-lg font-bold">!</span>使用说明</h2><div class="bg-white rounded-2xl p-6 shadow-sm border border-pink-50"><ul class="space-y-4 text-gray-600 list-disc list-inside"><li>点击你的MBTI类型查看描述。</li><li>如果不知道类型，可以先做MBTI测试。</li></ul></div></section>
+            <section><h2 class="text-2xl font-bold text-gray-800 mb-6">常见问题</h2><div class="space-y-4"><div class="bg-white p-4 rounded-xl border border-pink-50"><div class="font-bold text-gray-700 mb-1">MBTI准确吗？</div><div class="text-gray-500 text-sm">MBTI是一种偏好指标，不是能力测试，可以作为自我认知的参考工具。</div></div></div></section>
+        </div>
+    </main>
+    <footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const types = {
+            'INTJ':{title:'建筑师',desc:'独立、有远见的策略家，善于规划和执行长期目标。',str:'战略思维、独立',weak:'过于完美主义',color:'bg-purple-500'},
+            'INTP':{title:'逻辑学家',desc:'富有创意的思考者，对理论和抽象概念充满热情。',str:'分析能力、创新',weak:'社交回避',color:'bg-purple-400'},
+            'ENTJ':{title:'指挥官',desc:'大胆果断的领导者，善于发现和利用机会。',str:'领导力、决断力',weak:'过于强势',color:'bg-purple-600'},
+            'ENTP':{title:'辩论家',desc:'聪明好奇的思想家，无法抵抗智力挑战。',str:'创新思维、辩论',weak:'注意力分散',color:'bg-purple-300'},
+            'INFJ':{title:'提倡者',desc:'安静而神秘的理想主义者，有着强烈的信念和使命感。',str:'洞察力、理想主义',weak:'过度奉献',color:'bg-green-500'},
+            'INFP':{title:'调停者',desc:'诗意、善良的利他主义者，渴望为世界带来积极变化。',str:'共情能力、创造力',weak:'过于敏感',color:'bg-green-400'},
+            'ENFJ':{title:'主人公',desc:'富有魅力的领导者，善于激励和鼓舞他人。',str:'感染力、组织力',weak:'过度在意他人',color:'bg-green-600'},
+            'ENFP':{title:'竞选者',desc:'热情、有创造力的自由精灵，总能找到理由微笑。',str:'热情、想象力',weak:'难以集中',color:'bg-green-300'},
+            'ISTJ':{title:'物流师',desc:'实际而注重事实的人，可靠性是无可争议的。',str:'可靠、有条理',weak:'过于rigid',color:'bg-blue-500'},
+            'ISFJ':{title:'守卫者',desc:'非常专注、温暖的保护者，时刻准备保卫所爱的人。',str:'忠诚、细心',weak:'不善拒绝',color:'bg-blue-400'},
+            'ESTJ':{title:'总经理',desc:'出色的管理者，善于管理事物和人。',str:'执行力、组织力',weak:'缺乏灵活性',color:'bg-blue-600'},
+            'ESFJ':{title:'执政官',desc:'格外关心他人的人，善于在社交场合中团结大家。',str:'协调能力、关怀',weak:'过度在意评价',color:'bg-blue-300'},
+            'ISTP':{title:'鉴赏家',desc:'大胆而实际的实验者，精通各种工具。',str:'动手能力、冷静',weak:'承诺恐惧',color:'bg-yellow-500'},
+            'ISFP':{title:'探险家',desc:'灵活有魅力的艺术家，时刻准备探索和体验新事物。',str:'审美能力、适应力',weak:'回避冲突',color:'bg-yellow-400'},
+            'ESTP':{title:'企业家',desc:'聪明、精力充沛的人，善于活在当下、即兴发挥。',str:'行动力、适应力',weak:'缺乏耐心',color:'bg-yellow-600'},
+            'ESFP':{title:'表演者',desc:'自发的、精力充沛的人，生活绝不无聊。',str:'表现力、乐观',weak:'逃避深度思考',color:'bg-yellow-300'},
+        };
+        const order = ['INTJ','INTP','ENTJ','ENTP','INFJ','INFP','ENFJ','ENFP','ISTJ','ISFJ','ESTJ','ESFJ','ISTP','ISFP','ESTP','ESFP'];
+
+        let html = '';
+        order.forEach(t => {
+            html += `<button onclick="show('${t}')" class="p-3 ${types[t].color} text-white rounded-xl font-bold text-sm hover:opacity-90 transition-opacity">${t}<br><span class="text-[10px] opacity-80">${types[t].title}</span></button>`;
+        });
+        document.getElementById('mbtiGrid').innerHTML = html;
+
+        function show(type) {
+            const t = types[type];
+            document.getElementById('rType').textContent = type;
+            document.getElementById('rTitle').textContent = t.title;
+            document.getElementById('rDesc').textContent = t.desc;
+            document.getElementById('rStrength').textContent = t.str;
+            document.getElementById('rWeakness').textContent = t.weak;
+            document.getElementById('result').classList.remove('hidden');
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>单词卡片 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@500;800&display=swap" rel="stylesheet">
+    <style>
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        .flipped #cardInner { transform: rotateY(180deg); }
+        .card-shadow { box-shadow: 0 40px 80px -15px rgba(244, 114, 182, 0.2); }
+        .tab-btn.active { background: white; color: #f472b6; border-color: #fce7f3; box-shadow: 0 4px 12px rgba(244, 114, 182, 0.1); }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6 shadow-sm no-print">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-14">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-800 mb-4 animate-item">智感记忆：单词闪存卡</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s italic italic">沉浸式背诵，多维感官协同。利用艾宾浩斯之外的直觉记忆。📇</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-14 mb-12 bg-white shadow-2xl animate-item" style="animation-delay: 0.2s">
+            <!-- Mode Selector -->
+            <div class="flex justify-center mb-12 no-print">
+                <div class="bg-slate-50 p-1.5 rounded-[2rem] flex gap-1">
+                    <button id="tabAdd" onclick="switchTab('add')" class="tab-btn active px-8 py-3 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest transition-all">Capture (词库录入)</button>
+                    <button id="tabReview" onclick="switchTab('review')" class="tab-btn px-8 py-3 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest transition-all">Review (开始背诵)</button>
+                </div>
+            </div>
+
+            <!-- Scene 1: Add -->
+            <div id="addScene">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+                    <div class="relative group">
+                        <input type="text" id="word" placeholder="Word (英文原词)" class="w-full p-6 bg-slate-50 rounded-3xl outline-none focus:bg-white border-2 border-transparent focus:border-pink-50 transition-all font-black text-slate-700 placeholder:text-slate-300">
+                    </div>
+                    <div class="relative group">
+                        <input type="text" id="phonetic" placeholder="Phonetic / 音标" class="w-full p-6 bg-slate-50 rounded-3xl outline-none focus:bg-white border-2 border-transparent focus:border-indigo-50 transition-all font-mono text-slate-400 text-sm italic">
+                    </div>
+                    <div class="relative group">
+                        <input type="text" id="meaning" placeholder="Meaning (核心释义)" class="w-full p-6 bg-slate-50 rounded-3xl outline-none focus:bg-white border-2 border-transparent focus:border-pink-50 transition-all font-bold text-slate-700">
+                    </div>
+                </div>
+                <button onclick="addWord()" class="w-full py-6 bg-pink-400 text-white font-black rounded-[2.5rem] shadow-2xl shadow-pink-100 hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-xl flex items-center justify-center gap-4">
+                    ✨ 注入词库 (ADD TO COLLECTION)
+                </button>
+                
+                <div class="mt-16 text-left">
+                    <p class="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em] mb-8 pl-4">Recently Archived (最近录入)</p>
+                    <div id="wordGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Items dynamic -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scene 2: Review -->
+            <div id="reviewScene" class="hidden flex flex-col items-center">
+                 <div class="w-full flex justify-between items-center mb-10 px-4">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 bg-pink-400 rounded-full animate-pulse"></span>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Progress: <span id="ci" class="text-slate-800">1</span> / <span id="ct">0</span></p>
+                    </div>
+                    <button onclick="speakCurrent()" class="text-indigo-400 font-extrabold text-[10px] uppercase tracking-widest flex items-center gap-2 hover:text-indigo-600 transition-colors">
+                        🔊 Audio Assistant
+                    </button>
+                 </div>
+
+                 <div class="perspective-1000 w-full max-w-lg h-80 md:h-[400px] mb-12 group cursor-pointer" onclick="flip()">
+                    <div id="cardInner" class="relative w-full h-full transform-style-3d transition-transform duration-700">
+                        <!-- Front Face -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-white to-pink-50/20 rounded-[4rem] border-2 border-slate-100 shadow-xl flex flex-col items-center justify-center backface-hidden p-12 card-shadow">
+                            <span class="text-[9px] font-black text-pink-300 uppercase tracking-[0.4em] absolute top-12">Linguistic Front</span>
+                            <h2 id="cardFront" class="text-4xl md:text-6xl font-black text-slate-800 tracking-tight mb-4">--</h2>
+                            <p id="cardPhonetic" class="text-sm font-mono text-slate-300 italic">--</p>
+                            <div class="absolute bottom-12 text-[8px] font-black text-slate-200 uppercase tracking-[0.5em] animate-bounce">Tap to unveil</div>
+                        </div>
+                        <!-- Back Face -->
+                        <div class="absolute inset-0 bg-slate-900 rounded-[4rem] shadow-2xl flex flex-col items-center justify-center backface-hidden rotate-y-180 p-12 border-4 border-slate-800">
+                            <span class="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] absolute top-12">Semantic Core</span>
+                            <p id="cardBack" class="text-2xl md:text-3xl font-black text-white text-center leading-relaxed">--</p>
+                        </div>
+                    </div>
+                 </div>
+
+                 <div class="flex gap-6 w-full max-w-md no-print">
+                    <button onclick="mark('hard')" class="flex-1 py-6 bg-rose-50 text-rose-500 font-black rounded-3xl border border-rose-100 hover:bg-white transition-all transform hover:-translate-y-1 active:scale-95 text-sm">😰 待巩固</button>
+                    <button onclick="mark('ok')" class="flex-1 py-6 bg-emerald-50 text-emerald-500 font-black rounded-3xl border border-emerald-100 hover:bg-white transition-all transform hover:-translate-y-1 active:scale-95 text-sm">😊 已掌握</button>
+                 </div>
+            </div>
+        </section>
+        
+        <p class="text-[10px] text-gray-300 font-bold uppercase tracking-[0.3em] pb-12 animate-item">
+            Cognitive Acceleration & Lexical Retention Infrastructure
+        </p>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        let cards = JSON.parse(localStorage.getItem('qVocabCards') || '[]');
+        let ri = 0;
+        let isFlipped = false;
+
+        function save() { 
+            localStorage.setItem('qVocabCards', JSON.stringify(cards));
+        }
+
+        function switchTab(mode) {
+            const add = document.getElementById('addScene');
+            const rev = document.getElementById('reviewScene');
+            const tAdd = document.getElementById('tabAdd');
+            const tRev = document.getElementById('tabReview');
+
+            if(mode === 'add') {
+                add.classList.remove('hidden');
+                rev.classList.add('hidden');
+                tAdd.classList.add('active');
+                tRev.classList.remove('active');
+                renderList();
+            } else {
+                if(cards.length === 0) {
+                    Utils.toast('词库空空如也，先添加一些单词吧 🖋️', 'warning');
+                    return;
+                }
+                add.classList.add('hidden');
+                rev.classList.remove('hidden');
+                tAdd.classList.remove('active');
+                tRev.classList.add('active');
+                startReview();
+            }
+        }
+
+        function speak(text) {
+            if (!text) return;
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'en-US';
+            u.rate = 0.85;
+            speechSynthesis.speak(u);
+        }
+
+        function speakCurrent() {
+            if(!cards[ri]) return;
+            speak(cards[ri].word);
+        }
+
+        function addWord() {
+            const word = document.getElementById('word').value.trim();
+            const phonetic = document.getElementById('phonetic').value.trim();
+            const meaning = document.getElementById('meaning').value.trim();
+            if (!word || !meaning) { Utils.toast('请填写单词和释义 📝', 'warning'); return; }
+            cards.push({ word, phonetic, meaning, id: Date.now() });
+            save();
+            renderList();
+            ['word', 'phonetic', 'meaning'].forEach(id => document.getElementById(id).value = '');
+            Utils.toast('词库已更新 ✨', 'success');
+        }
+
+        function removeWord(id) {
+            cards = cards.filter(c => c.id !== id);
+            save();
+            renderList();
+            Utils.toast('单词已移除 🗑️', 'info');
+        }
+
+        function renderList() {
+            const grid = document.getElementById('wordGrid');
+            if(cards.length === 0) {
+                grid.innerHTML = '<div class="col-span-full py-12 text-center opacity-10 font-black uppercase text-[10px] tracking-widest">Database Empty</div>';
+                return;
+            }
+            grid.innerHTML = cards.slice(-6).reverse().map(c => `
+                <div class="p-6 bg-slate-50/50 rounded-[2rem] border border-slate-100/50 flex justify-between items-center group hover:bg-white hover:shadow-xl transition-all">
+                    <div>
+                        <p class="font-black text-slate-800 text-lg tracking-tight">${c.word} <span class="text-[10px] font-mono text-slate-300 ml-2 italic">${c.phonetic}</span></p>
+                        <p class="text-xs font-bold text-slate-400 mt-1 uppercase tracking-tighter">${c.meaning}</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="speak('${c.word}')" class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-400 flex items-center justify-center text-sm shadow-sm opacity-0 group-hover:opacity-100 transition-all">🔊</button>
+                        <button onclick="removeWord(${c.id})" class="w-10 h-10 rounded-xl bg-rose-50 text-rose-300 flex items-center justify-center text-sm shadow-sm opacity-0 group-hover:opacity-100 transition-all">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function startReview() {
+            ri = 0;
+            isFlipped = false;
+            document.getElementById('ct').textContent = cards.length;
+            showCard();
+        }
+
+        function showCard() {
+            const container = document.querySelector('.perspective-1000');
+            container.classList.remove('flipped');
+            isFlipped = false;
+            
+            document.getElementById('ci').textContent = ri + 1;
+            document.getElementById('cardFront').textContent = cards[ri].word;
+            document.getElementById('cardPhonetic').textContent = cards[ri].phonetic;
+            document.getElementById('cardBack').textContent = cards[ri].meaning;
+            
+            // Auto voice for fresh encounter (optional)
+            // setTimeout(() => speak(cards[ri].word), 300);
+        }
+
+        function flip() {
+            const container = document.querySelector('.perspective-1000');
+            container.classList.toggle('flipped');
+            isFlipped = !isFlipped;
+        }
+
+        function mark(status) {
+            if(status === 'ok') Utils.toast('Keep Going! 🚀', 'success');
+            ri++;
+            if (ri >= cards.length) {
+                Utils.toast('🎉 复习完毕！全部掌握！', 'success');
+                setTimeout(() => switchTab('add'), 2000);
+                return;
+            }
+            showCard();
+        }
+
+        // Init
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    renderList();
+                }, 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button') || e.target.closest('input')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

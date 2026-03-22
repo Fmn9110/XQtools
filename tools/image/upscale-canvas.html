@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>图片放大 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f6]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-rose-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg font-bold">Q</div>
+                <span class="text-2xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-400 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-4 md:py-8 px-4 max-w-4xl text-center">
+        <header class="mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4 tracking-tight">图片无损放大</h1>
+            <p class="text-gray-500 text-lg">使用高质量 Canvas 算法将图片按倍数清晰放大 🔍</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white border border-rose-50 shadow-sm rounded-3xl">
+            <div id="upload-area" class="w-full max-w-md p-8 md:p-16 border-4 border-dashed border-pink-50 rounded-3xl mb-8 group hover:border-pink-200 transition-all cursor-pointer bg-pink-50/30 mx-auto" onclick="document.getElementById('fileInput').click()">
+                <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="loadImg(event)">
+                <div class="text-7xl mb-6 opacity-40 group-hover:scale-110 transition-transform">🖼️</div>
+                <p class="text-lg font-bold text-pink-300">选择要放大的图片</p>
+            </div>
+
+            <div id="editor-area" class="hidden animate-fade-in space-y-8">
+                <div class="flex flex-col md:flex-row gap-6 items-center justify-center bg-pink-50/50 p-6 rounded-2xl border border-pink-100/50">
+                    <div class="flex items-center gap-3">
+                        <label class="text-sm font-bold text-gray-600 uppercase tracking-wider">放大倍数</label>
+                        <select id="scale" class="p-3 bg-white rounded-xl border border-pink-100 outline-none focus:ring-2 focus:ring-pink-200 transition-all text-gray-700 font-bold min-w-[100px]">
+                            <option value="2">2x (双倍)</option>
+                            <option value="3">3x (三倍)</option>
+                            <option value="4">4x (四倍)</option>
+                        </select>
+                    </div>
+                    <p class="text-sm text-pink-400 font-bold" id="info"></p>
+                </div>
+
+                <div class="p-4 bg-white shadow-inner rounded-3xl border border-rose-50 overflow-hidden">
+                    <canvas id="canvas" class="max-w-full mx-auto rounded-xl shadow-sm border border-gray-50"></canvas>
+                </div>
+
+                <button onclick="dl()" id="dlBtn" class="w-full py-4 bg-pink-400 text-white font-bold rounded-xl shadow-lg shadow-pink-100 hover:bg-pink-500 transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <span>📥 下载放大后的图片</span>
+                </button>
+            </div>
+        </section>
+<section class="cute-card p-6 mb-8 bg-white"><h2 class="text-xl font-bold text-gray-800 mb-3">📘 使用说明</h2><ol class="text-gray-600 text-sm space-y-2 list-decimal list-inside"><li>上传一张图片</li><li>选择放大倍数（2x/3x/4x）</li><li>下载放大后的图片</li></ol></section>
+</main>
+<footer class="py-12 text-center text-gray-300 text-xs">© 2026 小Q工具箱</footer>
+<script>
+let img=null;
+function loadImg(e){
+    const file=e.target.files[0];if(!file)return;
+    img=new Image();
+    img.onload=()=>{render();};
+    img.src=URL.createObjectURL(file);
+}
+function render(){
+    if(!img)return;
+    const scale=parseInt(document.getElementById('scale').value);
+    const w=img.width*scale,h=img.height*scale;
+    document.getElementById('upload-area').classList.add('hidden');
+    document.getElementById('editor-area').classList.remove('hidden');
+    const canvas=document.getElementById('canvas');canvas.width=w;canvas.height=h;
+    const ctx=canvas.getContext('2d');
+    ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+    ctx.drawImage(img,0,0,w,h);
+    document.getElementById('info').textContent=`${img.width}×${img.height} → ${w}×${h} (${scale}x放大)`;
+}
+document.getElementById('scale').addEventListener('change',()=>{if(img)render();});
+function dl(){const a=document.createElement('a');a.download='upscaled.png';a.href=document.getElementById('canvas').toDataURL();a.click();}
+</script>
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body></html>

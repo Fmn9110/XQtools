@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>迷宫生成器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23f472b6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1rem;
+            padding-right: 2.5rem !important;
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🏗️ 迷宫 <span class="gradient-text">生成器</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">在错综复杂的路径中寻找出口。锻炼你的空间感知力。✨</p>
+        </header>
+
+        <section class="cute-card p-4 md:p-10 mb-12 bg-white text-center animate-item" style="animation-delay: 0.2s">
+            <div class="flex flex-wrap gap-4 justify-center mb-10 items-end pb-8 border-b border-pink-50">
+                <div class="flex flex-col items-start">
+                    <label class="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-2 ml-1">Size / 尺寸</label>
+                    <select id="size" onchange="generate()" class="p-3 bg-pink-50/50 rounded-xl border-2 border-transparent focus:border-pink-200 outline-none cursor-pointer font-bold text-gray-600 text-sm shadow-inner min-w-[120px]">
+                        <option value="11">简约 (11)</option>
+                        <option value="21" selected>标准 (21)</option>
+                        <option value="31">复杂 (31)</option>
+                        <option value="41">挑战 (41)</option>
+                    </select>
+                </div>
+                <button onclick="generate()" class="py-3 px-8 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-xl shadow-lg shadow-pink-100 transition-all active:scale-95 flex items-center gap-2">
+                    🔄 生成新地图
+                </button>
+            </div>
+            
+            <div id="canvasContainer" class="relative inline-block w-full max-w-[450px] group">
+                <div class="absolute inset-0 bg-pink-400/5 rounded-2xl -m-2 blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <canvas id="mazeCanvas" class="relative z-10 mx-auto rounded-2xl shadow-2xl border-4 border-white w-full h-auto bg-white"></canvas>
+            </div>
+
+            <!-- 移动端虚拟按键 -->
+            <div class="mt-12 grid grid-cols-3 gap-3 w-56 mx-auto md:hidden">
+                <div class="col-start-2">
+                    <button 
+                        onmousedown="startMove('ArrowUp')" ontouchstart="startMove('ArrowUp')" 
+                        onmouseup="stopMove()" ontouchend="stopMove()" onmouseleave="stopMove()"
+                        class="w-16 h-16 bg-pink-50 border-2 border-white rounded-2xl flex items-center justify-center text-3xl shadow-sm active:bg-pink-500 active:text-white transition-colors">↑</button>
+                </div>
+                <div class="col-start-1 row-start-2">
+                    <button 
+                        onmousedown="startMove('ArrowLeft')" ontouchstart="startMove('ArrowLeft')" 
+                        onmouseup="stopMove()" ontouchend="stopMove()" onmouseleave="stopMove()"
+                        class="w-16 h-16 bg-pink-50 border-2 border-white rounded-2xl flex items-center justify-center text-3xl shadow-sm active:bg-pink-500 active:text-white transition-colors">←</button>
+                </div>
+                <div class="col-start-2 row-start-2">
+                    <button 
+                        onmousedown="startMove('ArrowDown')" ontouchstart="startMove('ArrowDown')" 
+                        onmouseup="stopMove()" ontouchend="stopMove()" onmouseleave="stopMove()"
+                        class="w-16 h-16 bg-pink-50 border-2 border-white rounded-2xl flex items-center justify-center text-3xl shadow-sm active:bg-pink-500 active:text-white transition-colors">↓</button>
+                </div>
+                <div class="col-start-3 row-start-2">
+                    <button 
+                        onmousedown="startMove('ArrowRight')" ontouchstart="startMove('ArrowRight')" 
+                        onmouseup="stopMove()" ontouchend="stopMove()" onmouseleave="stopMove()"
+                        class="w-16 h-16 bg-pink-50 border-2 border-white rounded-2xl flex items-center justify-center text-3xl shadow-sm active:bg-pink-500 active:text-white transition-colors">→</button>
+                </div>
+            </div>
+
+            <div class="mt-10 px-6 py-4 bg-gray-50 rounded-2xl inline-block">
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-1">Control Guide / 操作指南</p>
+                <p class="text-xs text-gray-500 hidden md:block">使用键盘 <span class="text-pink-400 font-black">方向键</span> 操控粉色球球</p>
+                <p class="text-xs text-gray-500 md:hidden">使用屏幕按钮或 <span class="text-pink-400 font-black">滑动手势</span> 操控球球</p>
+            </div>
+            
+            <p class="text-xl font-black text-green-500 hidden mt-8 animate-bounce" id="winMsg">🎉 成功逃离迷宫！</p>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const canvas = document.getElementById('mazeCanvas');
+        const ctx = canvas.getContext('2d');
+        let maze, player, cellSize, mazeSize;
+
+        function generate() {
+            document.getElementById('winMsg').classList.add('hidden');
+            mazeSize = parseInt(document.getElementById('size').value);
+            
+            const container = document.getElementById('canvasContainer');
+            const containerWidth = Math.min(container.clientWidth || 450, 450);
+            cellSize = Math.floor(containerWidth / mazeSize);
+            
+            canvas.width = mazeSize * cellSize;
+            canvas.height = mazeSize * cellSize;
+            
+            maze = Array.from({length:mazeSize}, () => Array(mazeSize).fill(1));
+            
+            function carve(x, y) {
+                maze[y][x] = 0;
+                const dirs = [[0,-2],[0,2],[-2,0],[2,0]].sort(()=>Math.random()-0.5);
+                for (const [dx,dy] of dirs) {
+                    const nx=x+dx, ny=y+dy;
+                    if (nx>=0&&nx<mazeSize&&ny>=0&&ny<mazeSize&&maze[ny][nx]===1) {
+                        maze[y+dy/2][x+dx/2]=0;
+                        carve(nx,ny);
+                    }
+                }
+            }
+            carve(1,1);
+            maze[0][1]=0; 
+            maze[mazeSize-1][mazeSize-2]=0; 
+            player = {x:1, y:0};
+            draw();
+            Utils.toast('新挑战已就绪 ✨', 'success');
+        }
+
+        function draw() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            for (let y=0;y<mazeSize;y++) {
+                for (let x=0;x<mazeSize;x++) {
+                    // Wall color: sleek dark
+                    // Path color: white
+                    ctx.fillStyle = maze[y][x] ? '#4b5563' : '#ffffff';
+                    ctx.fillRect(x*cellSize, y*cellSize, cellSize, cellSize);
+                }
+            }
+            // Exit: Green
+            ctx.fillStyle = '#10b981';
+            ctx.fillRect((mazeSize-2)*cellSize, (mazeSize-1)*cellSize, cellSize, cellSize);
+            
+            // Player: Pink Ball
+            ctx.fillStyle = '#f472b6';
+            ctx.shadowColor = 'rgba(244, 114, 182, 0.4)';
+            ctx.shadowBlur = 10;
+            ctx.beginPath();
+            ctx.arc(player.x*cellSize+cellSize/2, player.y*cellSize+cellSize/2, cellSize/2.5, 0, Math.PI*2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+
+        let moveInterval = null;
+
+        function startMove(key) {
+            if (moveInterval) return;
+            handleMove(key);
+            moveInterval = setInterval(() => handleMove(key), 120);
+        }
+
+        function stopMove() {
+            if (moveInterval) {
+                clearInterval(moveInterval);
+                moveInterval = null;
+            }
+        }
+
+        function handleMove(key) {
+            const moves = {ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]};
+            const m = moves[key];
+            if (!m) return;
+            
+            const nx = player.x+m[0], ny = player.y+m[1];
+            if (nx>=0&&nx<mazeSize&&ny>=0&&ny<mazeSize&&maze[ny][nx]===0) {
+                player.x=nx; player.y=ny;
+                draw();
+                if (ny===mazeSize-1 && nx===mazeSize-2) {
+                    document.getElementById('winMsg').classList.remove('hidden');
+                    stopMove();
+                    Utils.toast('你赢了！🎉', 'success');
+                }
+            } else {
+                stopMove();
+            }
+        }
+
+        document.addEventListener('keydown', e => {
+            if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) {
+                e.preventDefault();
+                handleMove(e.key);
+            }
+        });
+
+        // Sliding support
+        let touchStartPos = null;
+        canvas.addEventListener('touchstart', e => {
+            touchStartPos = {x: e.touches[0].clientX, y: e.touches[0].clientY};
+        }, {passive: false});
+
+        canvas.addEventListener('touchend', e => {
+            if (!touchStartPos) return;
+            const dx = e.changedTouches[0].clientX - touchStartPos.x;
+            const dy = e.changedTouches[0].clientY - touchStartPos.y;
+            const absDx = Math.abs(dx);
+            const absDy = Math.abs(dy);
+
+            if (Math.max(absDx, absDy) > 30) {
+                if (absDx > absDy) {
+                    handleMove(dx > 0 ? 'ArrowRight' : 'ArrowLeft');
+                } else {
+                    handleMove(dy > 0 ? 'ArrowDown' : 'ArrowUp');
+                }
+            }
+            touchStartPos = null;
+        });
+
+        window.addEventListener('resize', () => {
+             const container = document.getElementById('canvasContainer');
+             const newCellSize = Math.floor(Math.min(container.clientWidth, 450) / mazeSize);
+             if (newCellSize !== cellSize) {
+                 generate();
+             }
+        });
+        
+        generate();
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

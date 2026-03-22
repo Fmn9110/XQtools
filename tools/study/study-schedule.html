@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>我的课程表 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .course-cell { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .course-cell:hover { transform: scale(1.02) translateY(-2px); box-shadow: 0 8px 20px -10px rgba(0,0,0,0.1); }
+        .timetable-container { scrollbar-width: none; -ms-overflow-style: none; }
+        .timetable-container::-webkit-scrollbar { display: none; }
+        @media print { .no-print { display: none !important; } .cute-card { box-shadow: none !important; padding: 0 !important; } table { border-collapse: collapse !important; } .course-cell { border: 1px solid #eee !important; box-shadow: none !important; } }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6 shadow-sm no-print">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-6xl text-center">
+        <header class="mb-10 md:mb-14 no-print">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-800 mb-4 animate-item">智绘课室：周程蓝图</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s italic italic">井然有序，方能游刃有余。规划你的学术节拍，开启高效一周。📋</p>
+        </header>
+
+        <section class="cute-card p-4 md:p-14 mb-12 bg-white shadow-2xl animate-item overflow-hidden" style="animation-delay: 0.2s">
+            <div class="timetable-container overflow-x-auto mb-10 pb-4">
+                <table class="w-full border-separate border-spacing-2 md:border-spacing-4 min-w-[800px]" id="timetable">
+                    <!-- Dynamic Table Content -->
+                </table>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-5 px-4 pb-4 no-print">
+                 <button onclick="saveTable()" class="flex-[3] py-6 bg-pink-400 text-white font-black rounded-3xl shadow-xl hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-xl flex items-center justify-center gap-3">
+                    💾 永恒保存 (SAVE CLOUD)
+                 </button>
+                 <button onclick="window.print()" class="flex-1 py-6 bg-slate-800 text-white font-bold rounded-3xl hover:bg-black transition-all text-xs uppercase tracking-widest flex items-center justify-center gap-2">
+                    🖨️ Export PDF
+                 </button>
+                 <button onclick="clearTable()" class="flex-1 py-6 bg-slate-50 text-slate-300 font-bold rounded-3xl hover:bg-rose-50 hover:text-rose-400 transition-all text-xs uppercase tracking-widest">
+                    Reset 🧹
+                 </button>
+            </div>
+        </section>
+        
+        <footer class="text-gray-300 text-[10px] uppercase font-black tracking-[0.5em] pb-12 animate-item no-print" style="animation-delay: 0.3s">
+            High-Performance Academic Curriculum & Timetable Infrastructure
+        </footer>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const days = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        const periods = ['01', '02', '03', '04', 'REST', '05', '06', '07', '08'];
+        const cardColors = [
+            'bg-pink-50 text-pink-500 border-pink-100/50',
+            'bg-sky-50 text-sky-500 border-sky-100/50',
+            'bg-indigo-50 text-indigo-500 border-indigo-100/50',
+            'bg-emerald-50 text-emerald-500 border-emerald-100/50',
+            'bg-amber-50 text-amber-600 border-amber-100/50',
+            'bg-rose-50 text-rose-500 border-rose-100/50',
+            'bg-slate-50 text-slate-500 border-slate-200/50'
+        ];
+
+        let data = JSON.parse(localStorage.getItem('qTimetable') || '{}');
+
+        function render() {
+            let html = '<tr class="animate-item">';
+            days.forEach((d, i) => {
+                if(!d && i === 0) {
+                    html += '<th class="w-16"></th>';
+                    return;
+                }
+                const isWeekend = d === 'Sat' || d === 'Sun';
+                html += `<th class="p-4 bg-slate-50/50 rounded-2xl text-[10px] font-black ${isWeekend ? 'text-pink-300' : 'text-slate-400'} uppercase tracking-[0.3em] border border-slate-100/50">${d}</th>`;
+            });
+            html += '</tr>';
+
+            periods.forEach((p, r) => {
+                const isRest = p === 'REST';
+                html += `<tr class="${isRest ? 'opacity-40' : ''}">`;
+                html += `<td class="p-4 bg-slate-50/50 rounded-2xl text-[11px] font-black text-slate-300 border border-slate-100/50 text-center font-mono">${p}</td>`;
+                
+                for (let c = 1; c <= 7; c++) {
+                    const key = `${r}-${c}`;
+                    const val = data[key] || '';
+                    if (isRest) {
+                        if (c === 1) html += `<td colspan="7" class="p-4 bg-slate-50/30 text-center text-[9px] font-black text-slate-300 tracking-[0.8em] rounded-3xl border border-slate-100/50 italic uppercase">Lunch & Recharging</td>`;
+                        continue;
+                    }
+                    const colorIndex = val ? (val.charCodeAt(0) % cardColors.length) : -1;
+                    const colorClass = colorIndex >= 0 ? cardColors[colorIndex] : 'bg-white text-slate-200 border-2 border-dashed border-slate-50 hover:border-pink-50 hover:bg-pink-50/30';
+                    const isWeekend = c >= 6;
+                    
+                    html += `
+                        <td class="p-1 min-w-[110px] h-24 transition-all">
+                            <div onclick="edit('${key}')" class="course-cell w-full h-full rounded-[1.5rem] flex flex-col items-center justify-center p-4 cursor-pointer border ${colorClass} ${val ? 'shadow-sm font-bold' : 'font-light'} text-xs text-center leading-snug">
+                                ${val || '<span class="text-[10px] opacity-20">ADD</span>'}
+                            </div>
+                        </td>`;
+                }
+                html += '</tr>';
+            });
+            document.getElementById('timetable').innerHTML = html;
+        }
+
+        function edit(key) {
+            const val = prompt('📝 输入课程或计划名称 (Event Name):', data[key] || '');
+            if (val !== null) {
+                data[key] = val.trim();
+                render();
+            }
+        }
+
+        function saveTable() {
+            localStorage.setItem('qTimetable', JSON.stringify(data));
+            Utils.toast('课程表已成功保存至本地空间 ✨', 'success');
+        }
+
+        function clearTable() {
+            if (!confirm('确定要清空整份课程表吗？此操作不可撤销。🧹')) return;
+            data = {};
+            localStorage.removeItem('qTimetable');
+            render();
+            Utils.toast('画布已清空', 'info');
+        }
+
+        // Init
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    render();
+                }, 500);
+            }
+        });
+
+        // Click effects
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button') || e.target.closest('.course-cell')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>图片元数据查看 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fffafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 transition-transform hover:rotate-0">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-4 md:py-8 px-4 max-w-6xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold mb-4 animate-item gradient-text">元数据深度透视</h1>
+            <p class="text-gray-500 animate-item" style="animation-delay: 0.1s">探索文件背后的故事。深入查看拍摄坐标、光圈快门及嵌入式 XMP 信息。🔍</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-8 mb-12 animate-item" style="animation-delay: 0.2s">
+            <div id="drop-zone" class="w-full border-4 border-dashed border-pink-100 rounded-3xl p-8 md:p-16 hover:border-pink-300 transition-all cursor-pointer bg-white group text-center">
+                <input type="file" id="file-input" class="hidden" accept="image/*">
+                <div class="text-7xl mb-6 group-hover:scale-110 transition-transform">🔭</div>
+                <p class="text-xl font-bold text-gray-700">投递一张图片</p>
+                <p class="text-pink-400 mt-2 text-sm italic">纯本地二进制解析，零数据外流</p>
+            </div>
+
+            <div id="result-container" class="hidden animate-fade-in grid lg:grid-cols-12 gap-10">
+                <!-- Data Display -->
+                <div class="lg:col-span-8 order-2 lg:order-1 space-y-8">
+                     <div class="bg-pink-50/20 rounded-[2rem] border border-pink-50 overflow-hidden shadow-inner">
+                        <table class="w-full text-left text-xs md:text-sm">
+                            <thead class="bg-white/80 backdrop-blur-sm border-b border-pink-50 text-[10px] uppercase font-black tracking-widest text-gray-400">
+                                <tr>
+                                    <th class="px-6 py-4">属性维度</th>
+                                    <th class="px-6 py-4">元数据详情</th>
+                                </tr>
+                            </thead>
+                            <tbody id="meta-table-body" class="divide-y divide-pink-50/50 font-medium text-gray-600">
+                                <!-- Data Inject -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="no-exif-msg" class="hidden p-6 bg-orange-50/50 border border-orange-100 text-orange-400 rounded-3xl text-center text-xs italic font-bold">
+                        ⚠️ 该图像未检测到嵌入式 EXIF 加密字典。
+                    </div>
+                </div>
+
+                <!-- Preview & Quick Info -->
+                <div class="lg:col-span-4 order-1 lg:order-2 space-y-6">
+                    <div class="bg-white rounded-[2.5rem] p-5 shadow-sm border border-pink-50 aspect-square flex items-center justify-center overflow-hidden">
+                        <img id="image-preview" class="max-w-full max-h-full object-contain rounded-2xl shadow-lg">
+                    </div>
+                    
+                    <div class="bg-pink-50/30 rounded-3xl p-6 space-y-4 shadow-sm border border-white">
+                        <div class="space-y-3">
+                            <label class="text-[8px] font-black text-gray-400 uppercase tracking-widest pl-1">图像基本档案</label>
+                            <div class="space-y-2">
+                                <p class="flex justify-between items-center text-xs">
+                                    <span class="text-pink-400 font-bold">文件名</span>
+                                    <span id="meta-filename" class="text-gray-700 truncate max-w-[150px]"></span>
+                                </p>
+                                <p class="flex justify-between items-center text-xs">
+                                    <span class="text-pink-400 font-bold">像素矩阵</span>
+                                    <span id="meta-dims" class="text-gray-700 font-mono"></span>
+                                </p>
+                                <p class="flex justify-between items-center text-xs">
+                                    <span class="text-pink-400 font-bold">物理体积</span>
+                                    <span id="meta-size" class="text-gray-700 font-mono"></span>
+                                </p>
+                            </div>
+                        </div>
+                        <button onclick="location.reload()" class="w-full py-4 text-pink-500 font-black hover:text-pink-600 transition-colors theme-secondary-btn rounded-2xl text-xs uppercase tracking-tighter italic">更换透视素材</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.3s">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">🛡️</span>
+                关于隐私协议
+            </h2>
+            <div class="bg-white rounded-3xl p-8 shadow-sm border border-pink-50 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-full blur-3xl -mr-10 -mt-10 opacity-50"></div>
+                <p class="text-xs text-gray-500 leading-relaxed italic font-medium relative z-10">解析过程完全托管在您的本地 V8 引擎中。通过 JavaScript 对图像头部进行字节级扫描，这意味着图像本身从未被切片、由于网络波动丢失或被上传至公有云。您可以放心地检查包含私人拍摄坐标的照片。</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-10 text-center text-gray-400 text-xs border-t border-pink-50 mt-12 bg-white/50">
+        © 2026 小Q工具箱 · 元数据实验室 💖
+    </footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const resultContainer = document.getElementById('result-container');
+        const imagePreview = document.getElementById('image-preview');
+        const metaTableBody = document.getElementById('meta-table-body');
+
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        dropZone.onclick = () => fileInput.click();
+        dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('border-pink-300'); };
+        dropZone.ondragleave = () => dropZone.classList.remove('border-pink-300');
+        dropZone.ondrop = (e) => { e.preventDefault(); handleFile(e.dataTransfer.files[0]); };
+        fileInput.onchange = (e) => handleFile(e.target.files[0]);
+
+        async function handleFile(file) {
+            if(!file) return;
+            document.getElementById('meta-filename').textContent = file.name;
+            document.getElementById('meta-size').textContent = (file.size / 1024).toFixed(1) + ' KB';
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const dataUrl = e.target.result;
+                imagePreview.src = dataUrl;
+                const img = new Image();
+                img.onload = () => document.getElementById('meta-dims').textContent = `${img.width} × ${img.height}`;
+                img.src = dataUrl;
+
+                EXIF.getData(file, function() {
+                    const allData = EXIF.getAllTags(this);
+                    renderMeta(allData);
+                });
+
+                dropZone.classList.add('hidden');
+                resultContainer.classList.remove('hidden');
+                Utils.toast('解析完成', 'success');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        const EXIF_DICT = {
+            'Make': '制造商', 'Model': '快门型号', 'ExposureTime': '曝光时间', 'FNumber': '光圈系数',
+            'ISOSpeedRatings': 'ISO度', 'DateTimeOriginal': '快门时刻', 'FocalLength': '物理焦距',
+            'GPSLatitude': '地理纬度', 'GPSLongitude': '地理经度', 'Software': '出片软件', 'LensModel': '镜头档案'
+        };
+
+        function renderMeta(data) {
+            metaTableBody.innerHTML = '';
+            const keys = Object.keys(data).filter(k => k !== 'thumbnail' && k !== 'MakerNote');
+            if (!keys.length) { document.getElementById('no-exif-msg').classList.remove('hidden'); return; }
+            document.getElementById('no-exif-msg').classList.add('hidden');
+
+            keys.forEach(key => {
+                let val = data[key];
+                if (typeof val === 'object' && val !== null && val.numerator !== undefined) val = `${val.numerator}/${val.denominator}`;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 text-pink-400 font-black italic tracking-tighter uppercase text-[10px]">${EXIF_DICT[key] || key}</td>
+                    <td class="px-6 py-4 font-mono break-all">${val}</td>
+                `;
+                metaTableBody.appendChild(row);
+            });
+        }
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

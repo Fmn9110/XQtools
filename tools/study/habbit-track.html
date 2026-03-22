@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>趣味习惯打卡 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7] min-h-screen">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-4 px-6 bg-white/70 backdrop-blur-lg border-b border-pink-100 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center space-x-3 cursor-pointer group" onclick="location.href='../../index.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-200 group-hover:rotate-6 transition-transform">
+                <span class="font-black">Q</span>
+            </div>
+            <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-pink-400">小Q工具箱</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="../../tools.html" class="text-pink-400 hover:text-pink-600 font-medium transition-colors">所有工具</a>
+            <a href="../../categories.html" class="text-gray-500 hover:text-pink-500 font-medium transition-colors">分类列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">21天学习习惯打卡表</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">坚持21天，见证更好的自己。</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-10 bg-white shadow-2xl mb-12 animate-item" style="animation-delay: 0.2s">
+            <div id="grid" class="grid grid-cols-7 gap-2 md:gap-4 mb-10">
+                 <!-- 21 Days will be generated -->
+            </div>
+            
+            <div class="flex flex-col items-center">
+                <div class="w-full bg-pink-50 h-3 rounded-full mb-4 overflow-hidden shadow-inner">
+                    <div id="progressBar" class="h-full bg-pink-400 transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <p id="stat" class="text-[10px] font-black text-pink-400 uppercase tracking-[0.2em]">已完成 0 / 21 天</p>
+                <button onclick="reset()" class="mt-6 text-[10px] font-bold text-gray-300 hover:text-pink-400 underline underline-offset-4 decoration-dotted transition-colors">重新开始打卡</button>
+            </div>
+        </section>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const grid = document.getElementById('grid');
+        let records = JSON.parse(localStorage.getItem('qHabbit21') || '{}');
+
+        function save() { localStorage.setItem('qHabbit21', JSON.stringify(records)); }
+
+        function updateUI() {
+            let count = 0;
+            const buttons = grid.querySelectorAll('button');
+            buttons.forEach((btn, i) => {
+                const day = i + 1;
+                if (records[day]) {
+                    btn.classList.remove('bg-gray-50', 'text-pink-100');
+                    btn.classList.add('bg-pink-400', 'text-white', 'shadow-lg');
+                    count++;
+                } else {
+                    btn.classList.add('bg-gray-50', 'text-pink-100');
+                    btn.classList.remove('bg-pink-400', 'text-white', 'shadow-lg');
+                }
+            });
+
+            const progress = (count / 21 * 100).toFixed(0);
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            document.getElementById('stat').innerText = `已完成 ${count} / 21 天`;
+            
+            if(count === 21) {
+                Utils.toast('🎉 太棒了！21天习惯已达成！', 'success');
+            }
+        }
+
+        function createGrid() {
+            grid.innerHTML = '';
+            for(let i=1; i<=21; i++) {
+                const btn = document.createElement('button');
+                btn.className = "w-full aspect-square border border-pink-50 rounded-xl md:rounded-2xl flex items-center justify-center text-sm md:text-lg font-black transition-all hover:bg-pink-50 hover:scale-105 active:scale-95";
+                btn.innerText = i;
+                btn.onclick = () => {
+                    records[i] = !records[i];
+                    save();
+                    updateUI();
+                    if (records[i]) Utils.toast(`第 ${i} 天打卡成功！✨`);
+                };
+                grid.appendChild(btn);
+            }
+            updateUI();
+        }
+
+        function reset() {
+            if(confirm('确定要重置所有打卡记录吗？')) {
+                records = {};
+                save();
+                updateUI();
+                Utils.toast('已重置');
+            }
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    createGrid();
+                }, 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

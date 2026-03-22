@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>专注白噪音 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .noise-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .noise-card.active { background: #f472b6 !important; color: white !important; transform: scale(1.05); box-shadow: 0 15px 35px -12px rgba(244, 114, 182, 0.3); }
+        .audio-wave { display: flex; align-items: flex-end; gap: 2px; height: 12px; }
+        .audio-wave div { width: 2px; background: currentColor; border-radius: 1px; animation: wave 1s infinite alternate; }
+        @keyframes wave { 0% { height: 2px; } 100% { height: 12px; } }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; -moz-appearance: none; appearance: none; width: 18px; height: 18px; background: #f472b6; border: 3px solid white; border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px rgba(244, 114, 182, 0.3); }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6 shadow-sm no-print">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-14">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-800 mb-4 animate-item">纯净声学：专注力绿洲</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s italic italic">屏蔽世俗喧嚣，构建属于你的沉浸式学术音场。🎧</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-14 mb-12 bg-white shadow-2xl animate-item flex flex-col items-center" style="animation-delay: 0.2s">
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-6 w-full mb-12" id="sounds">
+                <!-- Noise controls injected via JS -->
+            </div>
+
+            <div class="w-full bg-slate-50/80 rounded-[3.5rem] p-8 md:p-10 border border-slate-100 flex flex-col md:flex-row items-center gap-10">
+                 <div class="flex items-center gap-6 flex-1 w-full">
+                    <span class="text-2xl text-slate-300">🔊</span>
+                    <input type="range" id="volume" min="0" max="100" value="50" oninput="setVol()" class="flex-1 accent-pink-400 h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                    <span class="text-xs font-black text-pink-300 w-12 text-right tabular-nums" id="volLabel">50%</span>
+                 </div>
+                 
+                 <div class="hidden md:block h-12 w-px bg-slate-200"></div>
+                 
+                 <div class="flex items-center gap-4 px-6 py-3 bg-white rounded-2xl shadow-sm border border-pink-50 min-w-[200px]" id="statusBox">
+                    <div class="w-3 h-3 rounded-full bg-slate-200" id="statusDot"></div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest text-left leading-none" id="statusTxt">
+                        Awaiting Soundscape Selection
+                    </p>
+                 </div>
+            </div>
+        </section>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 animate-item" style="animation-delay: 0.3s">
+            <div class="p-10 bg-white rounded-[3rem] border border-pink-50 text-left flex items-start gap-6">
+                <div class="w-16 h-16 bg-pink-50 rounded-[1.5rem] flex items-center justify-center text-3xl flex-shrink-0">🧊</div>
+                <div>
+                    <h3 class="text-pink-400 font-black mb-2 uppercase tracking-tighter">什么是粉红噪音？</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed font-medium">相比白噪音更柔和，符合人耳的对数感知规律，能有效降低大脑活跃度，更适合长时间的深度阅读与逻辑推导。📖</p>
+                </div>
+            </div>
+            <div class="p-10 bg-white rounded-[3rem] border border-pink-50 text-left flex items-start gap-6">
+                <div class="w-16 h-16 bg-sky-50 rounded-[1.5rem] flex items-center justify-center text-3xl flex-shrink-0">🔥</div>
+                <div>
+                    <h3 class="text-sky-400 font-black mb-2 uppercase tracking-tighter">自然篝火效应</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed font-medium">跳动的火焰频率与远古安全感紧密相连。柔和的裂解声能有效中和办公室或宿舍的突发尖锐噪音。🔥</p>
+                </div>
+            </div>
+        </div>
+
+        <p class="text-[10px] text-gray-300 font-bold uppercase tracking-[0.5em] pb-12 animate-item" style="animation-delay: 0.4s">
+            Advanced Procedural Audio & Environmental Immersion Engine
+        </p>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const noises = [
+            { name: '晨曦白噪', icon: '📻', type: 'white', desc: '全频段均衡屏蔽' },
+            { name: '樱花粉噪', icon: '🌸', type: 'pink', desc: '低频温润舒缓' },
+            { name: '深海棕噪', icon: '🌊', type: 'brown', desc: '厚重深沉冥想' },
+            { name: '林间清风', icon: '🌬️', type: 'wind', desc: '模拟自然呼吸' },
+            { name: '午后小雨', icon: '🌧️', type: 'rain', desc: '白噪音自然变体' },
+            { name: '冬日篝火', icon: '🔥', type: 'fire', desc: '温暖裂解频率' },
+        ];
+
+        let audioCtx, sourceNode, gainNode, active = '';
+
+        function createNoise(type) {
+            if (audioCtx) audioCtx.close();
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            gainNode = audioCtx.createGain();
+            gainNode.gain.value = document.getElementById('volume').value / 100;
+            gainNode.connect(audioCtx.destination);
+
+            const bufferSize = audioCtx.sampleRate * 2;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+
+            if (type === 'white') {
+                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+            } else if (type === 'pink') {
+                let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+                for (let i = 0; i < bufferSize; i++) {
+                    const w = Math.random() * 2 - 1;
+                    b0 = 0.99886 * b0 + w * 0.0555179;
+                    b1 = 0.99332 * b1 + w * 0.0750759;
+                    b2 = 0.96900 * b2 + w * 0.1538520;
+                    b3 = 0.86650 * b3 + w * 0.3104856;
+                    b4 = 0.55000 * b4 + w * 0.5329522;
+                    b5 = -0.7616 * b5 - w * 0.0168980;
+                    data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * 0.5362) * 0.11;
+                    b6 = w * 0.115926;
+                }
+            } else if (type === 'brown') {
+                let last = 0;
+                for (let i = 0; i < bufferSize; i++) {
+                    const w = Math.random() * 2 - 1;
+                    data[i] = (last + 0.02 * w) / 1.02;
+                    last = data[i];
+                    data[i] *= 4.5;
+                }
+            } else if (type === 'wind') {
+                for (let i = 0; i < bufferSize; i++) {
+                    const t = i / audioCtx.sampleRate;
+                    data[i] = (Math.random() * 2 - 1) * 0.3 * (0.6 + 0.4 * Math.sin(t * 0.4));
+                }
+            } else if (type === 'rain') {
+                for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * (Math.random() > 0.98 ? 0.9 : 0.1);
+            } else if (type === 'fire') {
+                let last = 0;
+                for (let i = 0; i < bufferSize; i++) {
+                    const w = Math.random() * 2 - 1;
+                    data[i] = (last + 0.05 * w) / 1.08;
+                    last = data[i];
+                    data[i] *= 2.5 * (0.2 + 0.8 * Math.abs(Math.sin(i / audioCtx.sampleRate * 4)));
+                }
+            }
+
+            sourceNode = audioCtx.createBufferSource();
+            sourceNode.buffer = buffer;
+            sourceNode.loop = true;
+            sourceNode.connect(gainNode);
+            sourceNode.start();
+        }
+
+        function play(type, name) {
+            const statusDot = document.getElementById('statusDot');
+            const statusTxt = document.getElementById('statusTxt');
+            
+            if (active === type) {
+                audioCtx?.close();
+                active = '';
+                statusDot.className = 'w-3 h-3 rounded-full bg-slate-200';
+                statusTxt.textContent = 'Active Sound Silent';
+                render();
+                return;
+            }
+            active = type;
+            createNoise(type);
+            statusDot.className = 'w-3 h-3 rounded-full bg-pink-400 animate-pulse shadow-[0_0_8px_rgba(244,114,182,0.6)]';
+            statusTxt.innerHTML = `Immersion Active: <br><span class="text-pink-400">${name}</span>`;
+            render();
+            Utils.toast('开启环境音效：' + name, 'success');
+        }
+
+        function setVol() {
+            const v = document.getElementById('volume').value;
+            document.getElementById('volLabel').textContent = v + '%';
+            if (gainNode) gainNode.gain.value = v / 100;
+        }
+
+        function render() {
+            document.getElementById('sounds').innerHTML = noises.map(n => `
+                <button onclick="play('${n.type}','${n.name}')" 
+                    class="noise-card group relative p-8 md:p-10 ${active === n.type ? 'active' : 'bg-slate-50 text-slate-500 hover:bg-white hover:shadow-xl hover:-translate-y-1'} 
+                    rounded-[2.5rem] transition-all flex flex-col items-center">
+                    <span class="text-4xl md:text-5xl mb-4 group-hover:scale-110 transition-transform">${n.icon}</span>
+                    <span class="text-sm font-black tracking-tight mb-1">${n.name}</span>
+                    <span class="text-[9px] font-bold opacity-40 uppercase tracking-widest leading-none">${n.desc}</span>
+                    ${active === n.type ? `
+                        <div class="audio-wave mt-3">
+                            <div style="animation-delay: 0.1s"></div>
+                            <div style="animation-delay: 0.3s"></div>
+                            <div style="animation-delay: 0.5s"></div>
+                        </div>` : ''}
+                </button>
+            `).join('');
+        }
+
+        // Init
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    render();
+                }, 500);
+            }
+        });
+
+        // Click effects
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button') || e.target.closest('input')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

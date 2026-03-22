@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>赛博姓名 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Noto+Serif+SC:wght@900&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">🏎️ 属性 <span class="gradient-text">赛博ID</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">定义你的数字丛林通行证。跨越流派的酷炫化身。✨</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-12 mb-12 bg-white animate-item shadow-2xl" style="animation-delay: 0.2s">
+            <div class="max-w-md mx-auto mb-12 space-y-6">
+                <div class="relative">
+                    <label class="block text-[10px] font-black text-gray-300 uppercase tracking-widest mb-2 pl-4">Genre / 风格流派</label>
+                    <select id="style" class="w-full p-5 bg-pink-50/20 rounded-2xl border-none outline-none font-bold text-gray-600 transition-all shadow-inner appearance-none cursor-pointer">
+                        <option>赛博朋克 / Cyberpunk</option>
+                        <option>中二病 / Chūnibyō</option>
+                        <option>古风 / Classical</option>
+                        <option>英文 / English</option>
+                    </select>
+                    <div class="absolute right-6 top-[3.2rem] pointer-events-none text-pink-300">▼</div>
+                </div>
+                
+                <button onclick="gen()" class="w-full py-5 bg-gray-900 border-b-4 border-gray-700 hover:bg-black text-white font-black rounded-2xl shadow-xl transition-all active:scale-95 text-xl flex items-center justify-center gap-2 group">
+                    ⚡ <span class="group-hover:translate-x-1 transition-transform">写入序列</span>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="names">
+                <!-- Names will be injected here -->
+            </div>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-400 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-inner shadow-gray-50/50">
+                <span class="text-lg">🕯️</span>
+                <p>在网络世界中，名字是你对外的第一声号角。它是铠甲，也是软肋。每一个随机生成的ID，都可能连接着一段未知的传奇。点击生成的卡片即可复制到剪贴板。💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        function pick(a){return a[Math.floor(Math.random()*a.length)];}
+        const styles = {
+            '赛博朋克 / Cyberpunk': { pre: ['暗影', '霓虹', '量子', '数据', '机械', '赛博', '电子', '虚空'], suf: ['猎手', '行者', '刺客', '战神', '幽灵', '骑士', '使徒', '先知'] },
+            '中二病 / Chūnibyō': { pre: ['永恒之', '黑暗中的', '被封印的', '堕天', '灭世的', '孤独的', '深渊', '混沌'], suf: ['灵魂', '魔王', '审判者', '暗杀者', '追忆者', '守望者', '裁决者', '支配者'] },
+            '古风 / Classical': { pre: ['清风', '明月', '落花', '孤鸿', '寒烟', '素雪', '暮云', '惊鸿'], suf: ['散人', '居士', '道人', '隐者', '客', '仙', '公子', '先生'] },
+            '英文 / English': { pre: ['Shadow', 'Cyber', 'Dark', 'Neo', 'Storm', 'Blaze', 'Frost', 'Void'], suf: ['Walker', 'Blade', 'Hunter', 'Phoenix', 'Wolf', 'Reaper', 'Knight', 'Storm'] },
+        };
+
+        function gen() {
+            const s = styles[document.getElementById('style').value];
+            const ctn = document.getElementById('names');
+            
+            ctn.style.opacity = '0';
+            
+            setTimeout(() => {
+                let html = '';
+                for (let i = 0; i < 6; i++) {
+                    const name = pick(s.pre) + pick(s.suf);
+                    html += `
+                        <div onclick="copyText('${name}')" class="group p-5 bg-white border-2 border-pink-50 rounded-2xl hover:border-pink-300 hover:shadow-lg transition-all cursor-pointer flex justify-between items-center animate-item" style="animation-delay: ${i*0.1}s">
+                            <span class="text-lg font-black text-gray-700 font-mono tracking-tight">${name}</span>
+                            <span class="text-pink-300 opacity-0 group-hover:opacity-100 transition-opacity text-xs font-black uppercase tracking-widest">Copy</span>
+                        </div>
+                    `;
+                }
+                ctn.innerHTML = html;
+                ctn.style.opacity = '1';
+                ctn.style.transition = 'all 0.4s ease-out';
+                Utils.toast('已写入最新序列 ✨', 'info');
+            }, 300);
+        }
+
+        function copyText(val) {
+            navigator.clipboard.writeText(val).then(() => {
+                Utils.toast(`已复制: ${val} ✨`, 'success');
+            });
+        }
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+            gen();
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

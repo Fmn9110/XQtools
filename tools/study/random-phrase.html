@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>随机名句 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#FFF5F7]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-pink-100 py-3 px-6">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl text-center">
+        <header class="mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">随机组词造句机</h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">打破思维定式，让灵感在随机的文字碰撞中绽放。</p>
+        </header>
+
+        <section class="cute-card p-6 md:p-14 mb-12 bg-white shadow-2xl animate-item flex flex-col items-center" style="animation-delay: 0.2s">
+            <div id="quote-box" class="w-full max-w-2xl bg-pink-50/10 p-12 md:p-20 rounded-[4rem] border-2 border-dashed border-pink-50 mb-12 flex flex-col items-center justify-center relative shadow-inner group transition-all duration-500 hover:bg-white hover:border-solid hover:shadow-xl">
+                <!-- Large Quote Marks -->
+                <div class="absolute top-6 left-8 text-8xl text-pink-100 opacity-30 font-serif leading-none italic select-none">“</div>
+                <div class="absolute bottom-6 right-8 text-8xl text-pink-100 opacity-30 font-serif leading-none italic rotate-180 select-none">“</div>
+                
+                <p id="quote" class="text-2xl md:text-4xl font-serif font-black italic text-slate-800 leading-[1.8] mb-12 text-center transition-all duration-500 flex items-center justify-center min-h-[12rem]">载入中..</p>
+                
+                <div class="flex items-center gap-4 mb-8">
+                     <div class="w-8 h-px bg-pink-100"></div>
+                     <p id="author" class="text-sm font-black text-pink-400 uppercase tracking-[0.4em] font-outfit">---</p>
+                     <div class="w-8 h-px bg-pink-100"></div>
+                </div>
+
+                <!-- Floating Decor -->
+                <div class="absolute -right-4 top-1/4 text-4xl opacity-5 group-hover:rotate-12 transition-transform">✨</div>
+                <div class="absolute -left-4 bottom-1/4 text-4xl opacity-5 group-hover:-rotate-12 transition-transform">🌸</div>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-4 w-full justify-center">
+                <button onclick="next()" class="px-12 py-5 bg-pink-400 text-white font-black rounded-3xl shadow-xl hover:bg-pink-500 transition-all transform hover:-translate-y-1 active:scale-95 text-xl flex items-center justify-center gap-3 group">
+                    🔄 <span class="group-hover:tracking-widest transition-all">换一个 (NEXT)</span>
+                </button>
+                <button onclick="copyCurrent()" class="px-8 py-5 bg-white border-2 border-pink-50 text-pink-300 font-black rounded-3xl hover:bg-pink-50 hover:text-pink-400 transition-all shadow-sm text-sm uppercase tracking-widest">
+                    Copy Text
+                </button>
+            </div>
+        </section>
+        
+        <p class="text-[10px] text-gray-300 font-bold uppercase tracking-[0.4em] pb-12">Wisdom for Daily Inspiration & Creative Labs</p>
+    </main>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const quotes = [
+            {text: '路漫漫其修远兮，吾将上下而求索。', author: '屈原'},
+            {text: '学而不思则罔，思而不学则殆。', author: '孔子'},
+            {text: '天行健，君子以自强不息。', author: '《周易》'},
+            {text: '千里之行，始于足下。', author: '老子'},
+            {text: '知之为知之，不知为不知，是知也。', author: '孔子'},
+            {text: '书山有路勤为径，学海无涯苦作舟。', author: '韩愈'},
+            {text: '宝剑锋从磨砺出，梅花香自苦寒来。', author: '古训'},
+            {text: '业精于勤，荒于嬉；行成于思，毁于随。', author: '韩愈'},
+            {text: '少壮不努力，老大徒伤悲。', author: '汉乐府'},
+            {text: '黑发不知勤学早，白首方悔读书迟。', author: '颜真卿'},
+            {text: '读书破万卷，下笔如有神。', author: '杜甫'},
+            {text: '不积跬步，无以至千里；不积小流，无以成江海。', author: '荀子'},
+            {text: 'The only way to do great work is to love what you do.', author: 'Steve Jobs'},
+            {text: 'Education is the most powerful weapon which you can use to change the world.', author: 'Nelson Mandela'},
+            {text: 'Stay hungry, stay foolish.', author: 'Steve Jobs'},
+            {text: '不经一番寒彻骨，怎得梅花扑鼻香。', author: '黄檗禅师'},
+            {text: '有志者，事竟成。', author: '《后汉书》'},
+            {text: '锲而舍之，朽木不折；锲而不舍，金石可镂。', author: '荀子'}
+        ];
+
+        let currentIdx = -1;
+
+        function next(){
+            const qBox = document.getElementById('quote-box');
+            const quoteEl = document.getElementById('quote');
+            const authorEl = document.getElementById('author');
+            
+            qBox.classList.add('opacity-0', 'scale-95');
+            
+            setTimeout(() => {
+                let newIdx;
+                do { newIdx = Math.floor(Math.random() * quotes.length); } while (newIdx === currentIdx);
+                currentIdx = newIdx;
+                
+                const q = quotes[currentIdx];
+                quoteEl.textContent = q.text;
+                authorEl.textContent = 'BY ' + q.author;
+                
+                qBox.classList.remove('opacity-0', 'scale-95');
+                Utils.toast('已为您更新名言 ✨');
+            }, 300);
+        }
+
+        async function copyCurrent() {
+            const q = quotes[currentIdx];
+            const text = `“${q.text}” —— ${q.author}`;
+            try {
+                await navigator.clipboard.writeText(text);
+                Utils.toast('已复制到剪贴板 📋', 'success');
+            } catch(e) {
+                Utils.toast('复制失败，请手动选择', 'warning');
+            }
+        }
+
+        // 加载动画
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                    next();
+                }, 500);
+            }
+        });
+
+        // 统一点击特效
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button')) return;
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

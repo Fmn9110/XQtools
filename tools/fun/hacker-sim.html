@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>黑客模拟器 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        #terminal::-webkit-scrollbar { width: 4px; }
+        #terminal::-webkit-scrollbar-thumb { background: #ec4899; border-radius: 10px; }
+        .cursor-blink { animation: blink 1s step-end infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fafafa]">
+    <div id="cuteLoader" class="cute-loader-overlay">
+        <div class="cute-loader-candy">🍬</div>
+    </div>
+
+    <nav class="sticky top-0 z-50 py-3 px-6 shadow-sm bg-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer group" onclick="location.href='../../index.html'">
+                <div class="w-9 h-9 bg-pink-400 rounded-lg flex items-center justify-center text-white text-xl shadow-md rotate-3 group-hover:rotate-0 transition-transform">Q</div>
+                <span class="text-xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-500 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4 max-w-4xl">
+        <header class="text-center mb-10 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 animate-item">💻 黑客 <span class="gradient-text">模拟器</span></h1>
+            <p class="text-gray-500 text-sm md:text-base animate-item" style="animation-delay: 0.1s">随便敲敲键盘，你就是赛博空间的“粉色极客”。✨</p>
+        </header>
+
+        <section class="mb-12 animate-item" style="animation-delay: 0.2s">
+            <div class="bg-gray-900 rounded-[2.5rem] p-1 border-4 border-pink-100/10 shadow-2xl relative group">
+                <!-- Mac Top Bar -->
+                <div class="flex items-center gap-2 px-6 py-4 border-b border-gray-800">
+                    <span class="w-3 h-3 rounded-full bg-pink-500 shadow-[0_0_10px_rgba(236,72,153,0.5)]"></span>
+                    <span class="w-3 h-3 rounded-full bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]"></span>
+                    <span class="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
+                    <div class="flex-1 text-center">
+                        <span class="text-[10px] font-black text-gray-600 uppercase tracking-[0.3em]">CuteTerminal v2.0 - Secured by Q</span>
+                    </div>
+                </div>
+                
+                <!-- Terminal Content -->
+                <div id="terminal" class="font-mono text-pink-400 text-sm md:text-base p-8 min-h-[400px] h-[50vh] max-h-[600px] overflow-y-auto cursor-text selection:bg-pink-500 selection:text-white" 
+                    onclick="document.getElementById('hiddenInput').focus()">
+                </div>
+                <input id="hiddenInput" class="opacity-0 absolute pointer-events-none" autofocus>
+                
+                <!-- Mobile Keyboard Trigger -->
+                <button onclick="document.getElementById('hiddenInput').focus()" class="md:hidden absolute bottom-4 right-6 w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center text-white shadow-lg active:scale-95 z-20">⌨️</button>
+            </div>
+            
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] mt-8 text-center animate-pulse">Start typing anything to hack... / 随便敲击键盘开始你的表演</p>
+        </section>
+
+        <section class="animate-item" style="animation-delay: 0.4s">
+            <div class="bg-white p-6 rounded-2xl border border-pink-50 text-gray-500 text-xs leading-relaxed max-w-2xl mx-auto flex items-start gap-4 shadow-sm">
+                <span class="text-2xl mt-1">💡</span>
+                <p>这是一个纯前端的交互特效，旨在模拟科幻电影中的复杂命令行操作。所有的代码输出均为随机生成的预设指令，并不具备真实的攻击功能。请在愉快的氛围下展示你的“黑客”风采！💖</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs shadow-none">© 2026 小Q工具箱 · 纯前端离线实验室</footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const fakeLines = [
+            'Initializing pink-exploit module v3.7.2...',
+            'Connecting to heart-relay node 10.0.x.x...',
+            'Bypassing dark-mode firewall layer 1... [OK]',
+            'Decrypting MACARON-256 hash... ██████░░ 75%',
+            'Injecting glitter payload into target database...',
+            'Brute-forcing admin: ******** [CRACKED]',
+            'Downloading classified sweets... 847 MB/s',
+            'Erasing digital footprints with soap...',
+            'Redirecting through 14 candy proxy servers...',
+            'Accessing mainframe... q-admin@universe:~# ACCESS GRANTED',
+            'Deploying cute-trojan v2.1 [SUCCESS]',
+            'Scanning TCP port 443... OPENING GATES',
+            'Extracting logic from target server...',
+            'Compiling zero-day-joy exploit...',
+            'Opening backdoor for kittens on port 31337...',
+            'Intercepting encrypted traffic... LOVE-X [DECODED]',
+            'Running nmap -sS -T4 secret.planet...',
+            'Found 3847 cute vulnerabilities in target system',
+            'Patching kernel to enable neon-mode...',
+            'Uploading heartkit to /sys/firmware...',
+        ];
+        
+        let lineIdx = 0;
+        const terminal = document.getElementById('terminal');
+        const input = document.getElementById('hiddenInput');
+
+        function addLine(text, isInput = false) {
+            const line = document.createElement('div');
+            line.className = "mb-1 opacity-0 translate-y-2 transition-all duration-300";
+            line.innerHTML = `<span class="text-indigo-400 font-bold">${isInput ? 'q-user@macaron:~$ ' : '> '}</span>${text}`;
+            terminal.appendChild(line);
+            
+            // Trigger animation
+            setTimeout(() => {
+                line.style.opacity = '1';
+                line.style.transform = 'translateY(0)';
+            }, 10);
+            
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        // Logic
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Shift') return;
+            addLine(fakeLines[lineIdx % fakeLines.length], true);
+            lineIdx++;
+            
+            // Sound effect trick (visual feedback instead)
+            if(lineIdx % 5 === 0) {
+                terminal.style.borderColor = "#ec4899";
+                setTimeout(() => terminal.style.borderColor = "transparent", 100);
+            }
+        });
+
+        // Initialize
+        setTimeout(() => {
+            addLine('Welcome to HackerOS v13.37 (Pink Edition)');
+            addLine('System secure. Terminal ready.');
+            addLine('Ready for keyboard input...<span class="inline-block w-2 h-4 bg-pink-500 ml-1 cursor-blink"></span>');
+            input.focus();
+        }, 500);
+
+        document.addEventListener('click', () => input.focus());
+
+        // --- 加载与点击特效 ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('cuteLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = document.createElement('div');
+            item.className = Math.random() > 0.5 ? 'falling-heart' : 'falling-star';
+            item.textContent = Math.random() > 0.5 ? '💖' : '✨';
+            item.style.position = 'fixed';
+            item.style.left = `${e.clientX - 10}px`;
+            item.style.top = `${e.clientY - 10}px`;
+            item.style.pointerEvents = 'none';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 1000);
+        });
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>

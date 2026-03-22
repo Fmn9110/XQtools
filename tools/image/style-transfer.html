@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>图片风格转换 - 小Q工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .filter-card {
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .filter-card:hover {
+            transform: translateY(-5px);
+        }
+        .filter-card.active {
+            border-color: #ff758c;
+            background: #fff5f7;
+        }
+        .preview-img {
+            filter: var(--filter-val);
+        }
+    </style>
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#000000">
+</head>
+<body class="bg-[#fff5f6]">
+    <nav class="sticky top-0 z-50 py-4 px-6 mb-8 bg-white/80 backdrop-blur-md border-b border-rose-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='../../index.html'">
+                <div class="w-10 h-10 bg-pink-400 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg font-bold">Q</div>
+                <span class="text-2xl font-bold gradient-text">小Q工具箱</span>
+            </div>
+            <a href="../../tools.html" class="text-gray-500 hover:text-pink-400 font-semibold text-sm transition-colors">返回列表</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-4 md:py-8 px-4 max-w-6xl text-center">
+        <header class="mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4 tracking-tight">图片风格转换</h1>
+            <p class="text-gray-500 text-lg">一键切换艺术风格，让普通照片瞬间拥有电影质感或复古氛围 🎭</p>
+        </header>
+
+        <section class="cute-card p-8 mb-12 bg-white flex flex-col lg:flex-row gap-12 items-start">
+            <div class="flex-1 w-full space-y-8">
+                <div id="drop-zone" class="border-4 border-dashed border-pink-100 rounded-3xl p-8 md:p-16 text-center hover:border-pink-300 transition-all cursor-pointer">
+                    <input type="file" id="file-input" class="hidden" accept="image/*">
+                    <div class="text-7xl mb-6">🎭</div>
+                    <p class="text-xl font-bold text-gray-700">请上传一张生活照</p>
+                </div>
+
+                <div id="preview-stage" class="hidden animate-fade-in space-y-6 text-center">
+                    <div class="inline-block p-4 bg-gray-50 rounded-3xl border border-gray-100 shadow-inner">
+                        <img id="main-preview" class="max-w-full max-h-[500px] rounded-2xl shadow-lg transition-all duration-500">
+                    </div>
+                    <div class="flex justify-center gap-4">
+                        <button id="download-btn" class="cute-button bg-pink-500 text-white px-10 py-4 rounded-2xl font-bold shadow-lg shadow-pink-100">保存魔法效果</button>
+                        <button onclick="location.reload()" class="px-6 py-4 text-gray-400 font-bold hover:text-pink-500 theme-secondary-btn">重选图片</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full lg:w-96 space-y-6">
+                <h3 class="font-bold text-gray-800 flex items-center">
+                    <span class="w-2 h-6 bg-pink-400 rounded-full mr-3"></span>选择艺术风格
+                </h3>
+                <div class="grid grid-cols-2 gap-4" id="filter-options">
+                    <!-- 风格选项 -->
+                    <div class="filter-card active p-3 border-2 border-transparent rounded-2xl bg-gray-50" data-filter="none">
+                        <div class="w-full aspect-video bg-gray-200 rounded-lg mb-2 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=200&h=100&fit=crop" class="w-full h-full object-cover">
+                        </div>
+                        <p class="text-center text-xs font-bold text-gray-500">原图</p>
+                    </div>
+                    <div class="filter-card p-3 border-2 border-transparent rounded-2xl bg-gray-50" data-filter="grayscale(100%)">
+                        <div class="w-full aspect-video bg-gray-200 rounded-lg mb-2 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=200&h=100&fit=crop" class="w-full h-full object-cover grayscale">
+                        </div>
+                        <p class="text-center text-xs font-bold text-gray-500">黑白电影</p>
+                    </div>
+                    <div class="filter-card p-3 border-2 border-transparent rounded-2xl bg-gray-50" data-filter="sepia(80%) contrast(1.2)">
+                        <div class="w-full aspect-video bg-gray-200 rounded-lg mb-2 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=200&h=100&fit=crop" class="w-full h-full object-cover sepia">
+                        </div>
+                        <p class="text-center text-xs font-bold text-gray-500">怀旧往事</p>
+                    </div>
+                    <div class="filter-card p-3 border-2 border-transparent rounded-2xl bg-gray-50" data-filter="brightness(1.2) contrast(1.1) saturate(1.5)">
+                        <div class="w-full aspect-video bg-gray-200 rounded-lg mb-2 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=200&h=100&fit=crop" class="w-full h-full object-cover saturate-150">
+                        </div>
+                        <p class="text-center text-xs font-bold text-gray-500">鲜艳生活</p>
+                    </div>
+                    <div class="filter-card p-3 border-2 border-transparent rounded-2xl bg-gray-50" data-filter="hue-rotate(180deg)">
+                        <div class="w-full aspect-video bg-gray-200 rounded-lg mb-2 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=200&h=100&fit=crop" class="w-full h-full object-cover hue-rotate-180">
+                        </div>
+                        <p class="text-center text-xs font-bold text-gray-500">梦幻异界</p>
+                    </div>
+                    <div class="filter-card p-3 border-2 border-transparent rounded-2xl bg-gray-50" data-filter="invert(90%)">
+                        <div class="w-full aspect-video bg-gray-200 rounded-lg mb-2 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=200&h=100&fit=crop" class="w-full h-full object-cover invert">
+                        </div>
+                        <p class="text-center text-xs font-bold text-gray-500">底片反转</p>
+                    </div>
+                    <div class="filter-card p-3 border-2 border-transparent rounded-2xl bg-gray-50" data-filter="contrast(2) brightness(0.8) grayscale(50%)">
+                        <div class="w-full aspect-video bg-gray-200 rounded-lg mb-2 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=200&h=100&fit=crop" class="w-full h-full object-cover contrast-200">
+                        </div>
+                        <p class="text-center text-xs font-bold text-gray-500">深厚戏剧</p>
+                    </div>
+                    <div class="filter-card p-3 border-2 border-transparent rounded-2xl bg-gray-50" data-filter="blur(2px) opacity(0.8)">
+                        <div class="w-full aspect-video bg-gray-200 rounded-lg mb-2 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=200&h=100&fit=crop" class="w-full h-full object-cover blur-[2px]">
+                        </div>
+                        <p class="text-center text-xs font-bold text-gray-500">柔焦美梦</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    
+        <!-- 图片风格转换 的专属定制说明与FAQ区 -->
+        <div class="grid md:grid-cols-2 gap-8 mb-12 animate-fade-in custom-faq-section">
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">🎯</span>
+                    专属指南及提示
+                </h2>
+                <div class="bg-white rounded-3xl p-8 shadow-sm border border-pink-50 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-full blur-3xl -mr-10 -mt-10 opacity-50"></div>
+                    <ul class="space-y-4 text-gray-600 list-decimal list-inside text-sm leading-relaxed relative z-10 font-medium">
+                        
+                    </ul>
+                </div>
+            </section>
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-pink-100 text-pink-500 rounded-xl flex items-center justify-center mr-3 text-lg font-bold shadow-sm">💬</span>
+                    图片风格转换 - 常见答疑
+                </h2>
+                <div class="space-y-4">
+                    
+                <div class="bg-white p-5 rounded-2xl border border-pink-50 shadow-sm mt-4 hover:border-pink-200 transition-colors">
+                    <div class="font-bold text-gray-700 mb-2 flex items-center">
+                        <span class="w-1.5 h-1.5 rounded-full bg-pink-400 mr-2"></span>
+                        为啥我处理【图片风格转换】的时候，放在公司电脑处理和随身手机端耗时悬殊如此巨大？
+                    </div>
+                    <div class="text-gray-500 text-sm leading-relaxed pl-3.5">这也是本地纯前端小工具站最大的特性反馈。因为它所有的运算均不借助光纤去发往超级机房借兵，它所有的性能天花板全权依赖于您手中设备的物理硬实力芯片能力。</div>
+                </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <footer class="py-12 text-center text-gray-300 text-xs text-pink-200">
+        © 2026 小Q工具箱 · 纯前端离线实验室
+    </footer>
+
+    <script src="../../assets/js/utils.js"></script>
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const previewStage = document.getElementById('preview-stage');
+        const mainPreview = document.getElementById('main-preview');
+        const filterCards = document.querySelectorAll('.filter-card');
+        const downloadBtn = document.getElementById('download-btn');
+
+        let currentFilter = 'none';
+
+        dropZone.onclick = () => fileInput.click();
+        fileInput.onchange = e => { if(e.target.files[0]) handleFile(e.target.files[0]); };
+
+        function handleFile(file) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                mainPreview.src = e.target.result;
+                dropZone.classList.add('hidden');
+                previewStage.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        filterCards.forEach(card => {
+            card.onclick = () => {
+                filterCards.forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                currentFilter = card.dataset.filter;
+                mainPreview.style.filter = currentFilter;
+            };
+        });
+
+        downloadBtn.onclick = () => {
+            if (!mainPreview.src) return;
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = mainPreview.naturalWidth;
+            canvas.height = mainPreview.naturalHeight;
+
+            // 应用滤镜到 Canvas
+            ctx.filter = currentFilter;
+            ctx.drawImage(mainPreview, 0, 0);
+
+            Utils.downloadFile(canvas.toDataURL('image/jpeg', 0.92), 'style_' + Date.now() + '.jpg', 'image/jpeg');
+            Utils.toast('保存成功！', 'success');
+        };
+    </script>
+
+    <!-- Webmeji Desktop Buddy -->
+    <link rel="stylesheet" href="../../assets/css/webmeji.css">
+    <script src="../../assets/js/webmeji-config.js"></script>
+    <script src="../../assets/js/webmeji.js"></script>
+    <!-- PWA 注册 -->
+    <script src="../../assets/js/pwa-register.js"></script>
+</body>
+</html>
